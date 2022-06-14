@@ -37,7 +37,7 @@ bool TabWidget::right() {
 
 void TabWidget::selectTabByIndex(uint8_t idx) {
  if(_idx < _widgets.size()) {
-     selectTab(_widgets.get(idx));
+     selectTab(_widgets.getByIndex(idx));
  }
 }
 

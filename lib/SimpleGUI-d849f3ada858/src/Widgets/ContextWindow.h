@@ -91,7 +91,7 @@ virtual void _moveFocus(uint8_t to) {
       _selected->hide();
     }
 
-    _selected = _widgets.get(to);
+    _selected = _widgets.getByIndex((uint16_t)to);
     if (_selected != nullptr) _selected->show();
     _idx = to;
   }
@@ -156,14 +156,14 @@ virtual void _moveFocus(uint8_t to) {
                                   _inner.width - 2 * triw - 8,
                                   _titleBarHeight - 2);
     fontRenderer()->setTextColor(fg, bg);
-    Widget *widget = _widgets.get(_idx);
+    Widget *widget = _widgets.getByIndex((uint16_t)_idx);
     if (widget != nullptr) {
       display()->print(widget->getLabel());
     }
   }
 
   virtual void _drawChildren(bool force = false) {  // Override to only show one
-    Widget *widget = _widgets.get(_idx);
+    Widget *widget = _widgets.getByIndex((uint16_t)_idx);
     if (widget != nullptr) {
       widget->draw(force);
     }

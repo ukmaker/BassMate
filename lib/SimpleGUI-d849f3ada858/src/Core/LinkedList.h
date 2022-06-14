@@ -145,7 +145,8 @@ class LinkedList {
 
   int size() { return _size; }
 
-  T* get(uint16_t idx) {
+  T* getByIndex(int idx)
+  {
     if ((idx + 1) > _size) return nullptr;
     LinkedListNode<T>* here = _first;
     while (here != nullptr) {
