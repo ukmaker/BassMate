@@ -1,0 +1,7 @@
+Contains useful bits and pieces
+
+SPI.cpp /  SPI.h - replacements for the sources in the Arduino_Core-STM32 library
+                 - Adds transfer(byte, count) and transfer16(word, count) for 
+                 - much faster SPI TFT flood fills
+
+                 
