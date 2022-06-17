@@ -7,41 +7,45 @@
 
 namespace simplegui {
 
-class KeyboardEventWrapper : public NavKeyEventWrapper<KeyboardWidget> {
+class KeyboardEventWrapper : public NavKeyEventWrapper {
  public:
   KeyboardEventWrapper(KeyboardWidget *keyboard)
       : NavKeyEventWrapper(keyboard) {}
   ~KeyboardEventWrapper() {}
 
+  KeyboardWidget* wrappedKeyboardWidget() {
+    return static_cast<KeyboardWidget*>(this->_wrapped);
+  }
+
   NavKeyEventWrapperBase *handleEvent(Event e) {
     NavKeyEventWrapperBase *to = this;
     switch (e.type) {
       case NAV_DEC:
-        _wrapped->forward();
+        wrappedKeyboardWidget()->forward();
         break;
 
       case NAV_INC:
-        _wrapped->back();
+        wrappedKeyboardWidget()->back();
         break;
 
       case NAV_UP:
-        to = _moveUp(_wrapped->up());
+        to = _moveUp(wrappedKeyboardWidget()->up());
         break;
 
       case NAV_DOWN:
-        to = _moveDown(_wrapped->down());
+        to = _moveDown(wrappedKeyboardWidget()->down());
         break;
 
       case NAV_SELECT:
-        _wrapped->select();
+        wrappedKeyboardWidget()->select();
         break;
 
       case NAV_LEFT:
-        to = _moveLeft(_wrapped->left());
+        to = _moveLeft(wrappedKeyboardWidget()->left());
         break;
 
       case NAV_RIGHT:
-        to = _moveRight(_wrapped->right());
+        to = _moveRight(wrappedKeyboardWidget()->right());
         break;
 
       default:

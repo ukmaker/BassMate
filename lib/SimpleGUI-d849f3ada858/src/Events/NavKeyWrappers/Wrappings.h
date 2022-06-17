@@ -23,7 +23,7 @@ namespace simplegui
     Widget *_w;
   };
 
-  class Wrappings
+  class Wrappings : public EventListener
   {
   public:
 
@@ -31,14 +31,15 @@ namespace simplegui
     ~Wrappings() {}
 
 
-     void focus(NavKeyEventWrapperBase *wrapper);
+     void focusWrapper(NavKeyEventWrapperBase *wrapper);
      NavKeyEventWrapperBase *focus(Widget *w);
      NavKeyEventWrapperBase *wrapperFor(Widget *w);
 
-     void handleEvent(Event e);
+     virtual void handleEvent(Event e);
+      virtual void setEventHandler(EventHandler *handler) {}
+      virtual void unsetEventHandler(EventHandler *handler) {}
 
-    template <class S>
-     SelectEventWrapper<S> *wrap(AbstractSelectWidget<S> *select);
+     SelectEventWrapper *wrapSelect(SelectWidget *select);
 
      KeyboardEventWrapper *wrap(KeyboardWidget *keyboard);
 

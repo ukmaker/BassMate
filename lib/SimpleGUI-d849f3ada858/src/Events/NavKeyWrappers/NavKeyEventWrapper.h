@@ -1,6 +1,7 @@
 #ifndef SIMPLEGUI_NAVKEY_EVENT_WRAPPER_H
 #define SIMPLEGUI_NAVKEY_EVENT_WRAPPER_H
 
+#include "Widgets/Widget.h"
 #include "Events/EventModel.h"
 #include "Events/NavKeyWrappers/NavKeyEventWrapperBase.h"
 
@@ -10,13 +11,12 @@ namespace simplegui {
  * An interfac definition for classes which understand how
  * NavKey (and keyboard arrows) shouldl interact with a widget
  */
-template <class W>
 class NavKeyEventWrapper : public NavKeyEventWrapperBase {
  public:
-  NavKeyEventWrapper(W *wrapped);
+  NavKeyEventWrapper(Widget *wrapped);
   ~NavKeyEventWrapper() {}
 
-  virtual W *wrapped();
+  virtual Widget *wrapped();
 
   // Widgets can re-emit navigation events
   template <class T>
@@ -26,7 +26,7 @@ class NavKeyEventWrapper : public NavKeyEventWrapperBase {
 
  protected:
   FunctionPointerArg1<void, Event> _onEvent;
-  W *_wrapped;
+  Widget *_wrapped;
 };
 
 }  // namespace simplegui

@@ -7,11 +7,15 @@
 
 namespace simplegui {
 
-class ContextWindowEventWrapper : public NavKeyEventWrapper<ContextWindow> {
+class ContextWindowEventWrapper : public NavKeyEventWrapper {
  public:
   ContextWindowEventWrapper(ContextWindow *window)
       : NavKeyEventWrapper(window) {}
   ~ContextWindowEventWrapper() {}
+
+  ContextWindow* wrappedContextWindow() {
+    return static_cast<ContextWindow*>(this->_wrapped);
+  }
 
   virtual NavKeyEventWrapperBase *handleEvent(Event e) {
 
@@ -20,18 +24,18 @@ class ContextWindowEventWrapper : public NavKeyEventWrapper<ContextWindow> {
     switch (e.type) {
       case NAV_DEC:
       case NAV_LEFT:
-        _wrapped->left();
+        wrappedContextWindow()->left();
         break;
 
       case NAV_INC:
       case NAV_RIGHT:
-        _wrapped->right();
+        wrappedContextWindow()->right();
         break;
 
       case NAV_SELECT:
       case NAV_DOWN:
         // give focus to the selected widget
-        _wrapped->focusChild();
+        wrappedContextWindow()->focusChild();
         break;
 
       case NAV_UP:

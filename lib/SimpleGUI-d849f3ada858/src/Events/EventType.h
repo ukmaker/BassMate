@@ -31,11 +31,12 @@ enum EventType {
   NAV_INC = 1 << 16,
   NAV_DEC = 1 << 17,
   NAV_SELECT = 1 << 18,
+  NAV_RELEASE = 1 << 19,
 
   // Generic encoder
-  ENCODER_INC = 1 << 19,
-  ENCODER_DEC = 1 << 20,
-  ENCODER_SELECT = 1 << 21
+  ENCODER_INC = 1 << 20,
+  ENCODER_DEC = 1 << 21,
+  ENCODER_SELECT = 1 << 22
 
 };
 #endif

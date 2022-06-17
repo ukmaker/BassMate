@@ -9,7 +9,7 @@ namespace simplegui {
     }
 
 
-   void Wrappings::focus(NavKeyEventWrapperBase *wrapper) { _focus = wrapper; }
+   void Wrappings::focusWrapper(NavKeyEventWrapperBase *wrapper) { _focus = wrapper; }
 
    NavKeyEventWrapperBase *Wrappings::focus(Widget *w) {
     Wrapped *wrapped;
@@ -40,9 +40,8 @@ namespace simplegui {
     }
   }
 
-  template <class S>
-   SelectEventWrapper<S> *Wrappings::wrap(AbstractSelectWidget<S> *select) {
-    SelectEventWrapper<S> *w = new SelectEventWrapper<S>(select);
+   SelectEventWrapper *Wrappings::wrapSelect(SelectWidget *select) {
+    SelectEventWrapper *w = new SelectEventWrapper(select);
     _append(w, select);
     return w;
   }
@@ -68,6 +67,7 @@ namespace simplegui {
    void Wrappings::_append(NavKeyEventWrapperBase *wrapper, Widget *widget) {
       Wrapped *w = new Wrapped(wrapper, widget);
       _wrappers.append(w);
+      _focus = wrapper;
   }
 
 

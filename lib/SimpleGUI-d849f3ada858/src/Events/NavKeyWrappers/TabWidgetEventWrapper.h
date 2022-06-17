@@ -7,28 +7,32 @@
 
 namespace simplegui {
 
-class TabWidgetEventWrapper : public NavKeyEventWrapper<TabWidget> {
+class TabWidgetEventWrapper : public NavKeyEventWrapper {
  public:
   TabWidgetEventWrapper(TabWidget *tabWidget)
       : NavKeyEventWrapper(tabWidget) {}
   ~TabWidgetEventWrapper() {}
+
+  TabWidget *wrappedTabWidget() {
+    return static_cast<TabWidget*>(this->_wrapped);
+  }
 
   NavKeyEventWrapperBase *handleEvent(Event e) {
     NavKeyEventWrapperBase *to = this;
 
     switch (e.type) {
       case NAV_LEFT:
-        to = _moveLeft(_wrapped->left());
+        to = _moveLeft(wrappedTabWidget()->left());
         break;
 
       case NAV_RIGHT:
-        to = _moveRight(_wrapped->right());
+        to = _moveRight(wrappedTabWidget()->right());
         break;
 
       case NAV_SELECT:
       case NAV_DOWN:
         // give focus to the selected widget
-        _wrapped->focusChild();
+        wrappedTabWidget()->focusChild();
         to = _down;
         break;
 
