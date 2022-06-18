@@ -35,16 +35,6 @@ void Window::_drawChildren(bool force) {
   }
 }
 
-void Window::handleEvent(Event e) {
-  Widget::handleEvent(e);
-  // At this point we can do bubbling, cancelling etc. One day
-  LinkedListIterator<Widget> it = _widgets.getIterator();
-  Widget *w;
-  while ((w = it.next()) != nullptr) {
-    w->handleEvent(e);
-  }
-}
-
 void Window::_adjust() {
   Widget::_adjust();
 

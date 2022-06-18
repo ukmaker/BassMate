@@ -1,5 +1,5 @@
 #include "Events/EventSystem.h"
-
+/*
 EventHandler::EventHandler(EventType eventType, EventHandlerFunction fn)
     : type(eventType) {
   _fp.attach(fn);
@@ -12,3 +12,4 @@ EventHandler::EventHandler(EventType eventType, T* tptr, void (T::*mptr)(Event))
 }
 
 void EventHandler::handle(Event e) { _fp.call(e); }
+*/

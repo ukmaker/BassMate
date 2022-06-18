@@ -3,7 +3,6 @@
 GUI::GUI(GraphicsContext* context) : _context(context)
 {
     _rootWindow = new Window(context);
-    _context->eventDispatcher()->attachListener(_rootWindow);
 }
 
 GraphicsContext* GUI::getGraphicsContext() {

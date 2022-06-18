@@ -13,10 +13,10 @@ namespace simplegui
     return static_cast<SelectWidget*> (this->_wrapped);
   }
 
-  NavKeyEventWrapperBase *SelectEventWrapper::handleEvent(Event e)
+  NavKeyEventWrapper *SelectEventWrapper::handleEvent(Event e)
   {
 
-    NavKeyEventWrapperBase *to = this;
+    NavKeyEventWrapper *to = this;
 
     switch (e.type)
     {

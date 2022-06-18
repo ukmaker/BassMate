@@ -13,7 +13,7 @@ class Widget;
  * A basic widget draws itself in a rectangular area
  **/
 
-class Widget : public EventListener
+class Widget
 {
 public:
     constexpr static char *EMPTY = "_";
@@ -110,13 +110,6 @@ public:
     void unfocus();
     bool hasFocus();
 
-    /**
-     * Implementation of EventListener
-     **/
-    virtual void handleEvent(Event e);
-    virtual void setEventHandler(EventHandler *handler);
-    virtual void unsetEventHandler(EventHandler *handler);
-
     bool intersects(Widget *widget);
 
     /**
@@ -154,11 +147,6 @@ protected:
     virtual void _clearContent(bool force);
     virtual void _adjust();
 
-    /**
-     * Methods to help with event handling
-     **/
-    bool _isEventTarget(Event e);
-
     Widget *_parent = nullptr;
     GraphicsContext *_context;
     uint16_t _fg, _bg;
@@ -179,8 +167,6 @@ protected:
     uint16_t _dirtyContent; // interpreted by the widget to indicate which zone are dirty and need to be redrawn
     bool _dirtyChildren = false;
     bool _revealed = false;
-
-    LinkedList<EventHandler> _handlers;
 };
 
 #endif

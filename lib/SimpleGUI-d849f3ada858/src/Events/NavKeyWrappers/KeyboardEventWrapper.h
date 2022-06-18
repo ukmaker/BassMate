@@ -17,8 +17,8 @@ class KeyboardEventWrapper : public NavKeyEventWrapper {
     return static_cast<KeyboardWidget*>(this->_wrapped);
   }
 
-  NavKeyEventWrapperBase *handleEvent(Event e) {
-    NavKeyEventWrapperBase *to = this;
+  NavKeyEventWrapper *handleEvent(Event e) {
+    NavKeyEventWrapper *to = this;
     switch (e.type) {
       case NAV_DEC:
         wrappedKeyboardWidget()->forward();

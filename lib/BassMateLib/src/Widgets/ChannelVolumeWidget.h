@@ -35,13 +35,29 @@ class ChannelVolumeWidget : public Widget {
     return _percent[channel];
   }
 
-  void increment(uint8_t channel) {
-    setPercent(channel, _percent[channel] + _step);
+  uint8_t getSelectedPercent() {
+    return _percent[_selected];
   }
 
-  void decrement(uint8_t channel) {
-    setPercent(channel,
-               _percent[channel] > _step ? _percent[channel] - _step : 0);
+  void up() {
+    if(_selected > 0) {
+      setSelected(_selected - 1);
+    }
+  }
+
+  void down() {
+    if(_selected < N-1) {
+      setSelected(_selected + 1);
+    }
+  }
+
+  void increment() {
+    setPercent(_selected, _percent[_selected] + _step);
+  }
+
+  void decrement() {
+    setPercent(_selected,
+               _percent[_selected] > _step ? _percent[_selected] - _step : 0);
   }
 
   void setChannelLabel(uint8_t channel, const char *label) {
@@ -85,6 +101,7 @@ class ChannelVolumeWidget : public Widget {
       noteDirtyContent(0xffff);
     }
   }
+
   void setTextRight() {
     if (_textLeft == true) {
       _textLeft = false;
@@ -92,33 +109,33 @@ class ChannelVolumeWidget : public Widget {
     }
   }
 
-  void setHighlight(int c) {
-    if (c > _channels || c < -1) return;
-    if (c != _highlight) {
-      noteDirtyContent((1 << (_highlight + ZONE_TEXT)) +
-                       (1 << _highlight + ZONE_VOLS) + (1 << (c + ZONE_TEXT)) +
+  void setSelected(uint8_t c) {
+    if (c > _channels) return;
+    if (c != _selected) {
+      noteDirtyContent((1 << (_selected + ZONE_TEXT)) +
+                       (1 << _selected + ZONE_VOLS) + (1 << (c + ZONE_TEXT)) +
                        (1 << (c + ZONE_VOLS)));
-      _highlight = c;
+      _selected = c;
     }
   }
 
-  int getHighlight() { return _highlight; }
+  int getSelected() { return _selected; }
 
-  void setHighlightColor(uint16_t c) {
-    if (_highlightColor != c) {
-      _highlightColor = c;
+  void setSelectedColor(uint16_t c) {
+    if (_selectedColor != c) {
+      _selectedColor = c;
       noteDirtyContent(0xffff);
     }
   }
 
-  uint16_t getHighlightColor() { return _highlightColor; }
+  uint16_t getHighlightColor() { return _selectedColor; }
 
  protected:
   uint8_t _percent[N];
   uint8_t _step = 1;
   uint8_t _channels;
-  int _highlight = -1;
-  uint16_t _highlightColor = 0;
+  uint8_t _selected = 0;
+  uint16_t _selectedColor = 0;
   const char *_labels[N];
   int _textWidth = 0;
   int _textMargin = 0;
@@ -152,8 +169,8 @@ class ChannelVolumeWidget : public Widget {
 
       for (int i = 0; i < _channels; i++) {
         uint16_t fg;
-        if (_highlight == i) {
-          fg = _highlightColor;
+        if (hasFocus() && _selected == i) {
+          fg = _selectedColor;
         } else {
           fg = _fg;
         }
@@ -206,8 +223,8 @@ class ChannelVolumeWidget : public Widget {
 
     for (int i = 0; i < _channels; i++) {
       uint16_t fg;
-      if (_highlight == i) {
-        fg = _highlightColor;
+      if (hasFocus() && _selected == i) {
+        fg = _selectedColor;
       } else {
         fg = _fg;
       }

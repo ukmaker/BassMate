@@ -28,11 +28,6 @@ OKCancelDialog::OKCancelDialog(GraphicsContext *context) : Window(context)
         context->display()->height() - cancel->height()
     );
     attach(cancel);
-    
-    EventHandler *ok = new EventHandler(TOUCH_TAP, this, &OKCancelDialog::_handleOK);
-    EventHandler *cancelled = new EventHandler(TOUCH_TAP, this, &OKCancelDialog::_handleCancel);
-    apply->setEventHandler(ok);
-    cancel->setEventHandler(cancelled);
 }
 
 

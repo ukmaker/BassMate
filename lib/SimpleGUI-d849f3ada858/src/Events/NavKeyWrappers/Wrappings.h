@@ -7,55 +7,41 @@
 #include "Events/NavKeyWrappers/KeyboardEventWrapper.h"
 #include "Events/NavKeyWrappers/SelectEventWrapper.h"
 #include "Events/NavKeyWrappers/TabWidgetEventWrapper.h"
-#include "Events/NavKeyWrappers/NavKeyEventWrapperBase.h"
 #include "Widgets/AbstractSelectWidget.h"
 
 namespace simplegui
 {
 
-  class NavKeyEventWrapperBase; // forward declaration
-
-  class Wrapped
-  {
-  public:
-    Wrapped(NavKeyEventWrapperBase *n, Widget *w);
-    NavKeyEventWrapperBase *_n;
-    Widget *_w;
-  };
+  class NavKeyEventWrapper; // forward declaration
 
   class Wrappings : public EventListener
   {
   public:
-
-      Wrappings() {}
+    Wrappings() {}
     ~Wrappings() {}
 
+    void focusWrapper(NavKeyEventWrapper *wrapper);
+    NavKeyEventWrapper *focus(Widget *w);
+    NavKeyEventWrapper *wrapperFor(Widget *w);
 
-     void focusWrapper(NavKeyEventWrapperBase *wrapper);
-     NavKeyEventWrapperBase *focus(Widget *w);
-     NavKeyEventWrapperBase *wrapperFor(Widget *w);
+    virtual void handleEvent(Event e);
+    virtual void setEventHandler(EventHandler *handler) {}
+    virtual void unsetEventHandler(EventHandler *handler) {}
 
-     virtual void handleEvent(Event e);
-      virtual void setEventHandler(EventHandler *handler) {}
-      virtual void unsetEventHandler(EventHandler *handler) {}
+    SelectEventWrapper *wrapSelect(SelectWidget *select);
 
-     SelectEventWrapper *wrapSelect(SelectWidget *select);
+    KeyboardEventWrapper *wrap(KeyboardWidget *keyboard);
 
-     KeyboardEventWrapper *wrap(KeyboardWidget *keyboard);
+    ContextWindowEventWrapper *wrap(ContextWindow *window);
 
-     ContextWindowEventWrapper *wrap(ContextWindow *window);
+    TabWidgetEventWrapper *wrap(TabWidget *tabWidget);
 
-     TabWidgetEventWrapper *wrap(TabWidget *tabWidget);
+    void append(NavKeyEventWrapper *wrapper);
 
   private:
+    NavKeyEventWrapper *_focus;
 
-    
-     NavKeyEventWrapperBase *_focus;
-    
-     LinkedList<Wrapped> _wrappers;
-
-    
-     void _append(NavKeyEventWrapperBase *wrapper, Widget *widget);
+    LinkedList<NavKeyEventWrapper> _wrappers;
   };
 
 } // namespace simplegui

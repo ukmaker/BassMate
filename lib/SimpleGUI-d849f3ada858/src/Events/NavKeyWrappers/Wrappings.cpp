@@ -1,74 +1,86 @@
 #include "Events/NavKeyWrappers/Wrappings.h"
-#include "Events/NavKeyWrappers/NavKeyEventWrapperBase.h"
+#include "Events/NavKeyWrappers/NavKeyEventWrapper.h"
 
-namespace simplegui {
+namespace simplegui
+{
 
-    Wrapped::Wrapped(NavKeyEventWrapperBase *n, Widget *w) {
-      _n = n;
-      _w = w;
-    }
+  void Wrappings::focusWrapper(NavKeyEventWrapper *wrapper) { _focus = wrapper; }
 
-
-   void Wrappings::focusWrapper(NavKeyEventWrapperBase *wrapper) { _focus = wrapper; }
-
-   NavKeyEventWrapperBase *Wrappings::focus(Widget *w) {
-    Wrapped *wrapped;
+  NavKeyEventWrapper *Wrappings::focus(Widget *w)
+  {
+    NavKeyEventWrapper *wrapper;
     _wrappers.reset();
-    while (wrapped = _wrappers.next()) {
-      if (wrapped->_w == w) {
-        focus(wrapped->_w);
-        return wrapped->_n;
+    while (wrapper = _wrappers.next())
+    {
+      if (wrapper->wrapped() == w)
+      {
+        focus(wrapper->wrapped());
+        return wrapper;
       }
     }
     return nullptr;
   }
 
-   NavKeyEventWrapperBase *Wrappings::wrapperFor(Widget *w) {
-    Wrapped *wrapped;
+  NavKeyEventWrapper *Wrappings::wrapperFor(Widget *w)
+  {
+    NavKeyEventWrapper *wrapper;
     _wrappers.reset();
-    while (wrapped = _wrappers.next()) {
-      if (wrapped->_w == w) {
-        return wrapped->_n;
+    while (wrapper = _wrappers.next())
+    {
+      if (wrapper->wrapped() == w)
+      {
+        return wrapper;
       }
     }
     return nullptr;
   }
 
-   void Wrappings::handleEvent(Event e) {
-    if (_focus != nullptr) {
-      _focus->handleEvent(e);
+  void Wrappings::handleEvent(Event e)
+  {
+    if (_focus != nullptr)
+    {
+      NavKeyEventWrapper *next = _focus->handleEvent(e);
+      if (next != _focus && next != nullptr)
+      {
+        _focus->wrapped()->unfocus();
+        next->wrapped()->focus();
+        _focus = next;
+      }
     }
   }
 
-   SelectEventWrapper *Wrappings::wrapSelect(SelectWidget *select) {
+  SelectEventWrapper *Wrappings::wrapSelect(SelectWidget *select)
+  {
     SelectEventWrapper *w = new SelectEventWrapper(select);
-    _append(w, select);
+    append(w);
     return w;
   }
 
-   KeyboardEventWrapper *Wrappings::wrap(KeyboardWidget *keyboard) {
+  KeyboardEventWrapper *Wrappings::wrap(KeyboardWidget *keyboard)
+  {
     KeyboardEventWrapper *w = new KeyboardEventWrapper(keyboard);
-    _append(w, keyboard);
+    append(w);
     return w;
   }
 
-   ContextWindowEventWrapper *Wrappings::wrap(ContextWindow *window) {
+  ContextWindowEventWrapper *Wrappings::wrap(ContextWindow *window)
+  {
     ContextWindowEventWrapper *w = new ContextWindowEventWrapper(window);
-    _append(w, window);
+    append(w);
     return w;
   }
 
-   TabWidgetEventWrapper *Wrappings::wrap(TabWidget *tabWidget) {
+  TabWidgetEventWrapper *Wrappings::wrap(TabWidget *tabWidget)
+  {
     TabWidgetEventWrapper *w = new TabWidgetEventWrapper(tabWidget);
-    _append(w, tabWidget);
+    append(w);
     return w;
   }
 
-   void Wrappings::_append(NavKeyEventWrapperBase *wrapper, Widget *widget) {
-      Wrapped *w = new Wrapped(wrapper, widget);
-      _wrappers.append(w);
-      _focus = wrapper;
+  void Wrappings::append(NavKeyEventWrapper *wrapper)
+  {
+    _wrappers.append(wrapper);
+    _focus = wrapper;
   }
 
-
-}  // namespace simplegui
+} // namespace simplegui

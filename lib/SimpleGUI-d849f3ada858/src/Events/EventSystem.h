@@ -88,20 +88,6 @@ class EventListener {
   virtual void unsetEventHandler(EventHandler *handler) = 0;
 };
 
-typedef void (*EventHandlerFunction)(Event e);
-class EventHandler {
- public:
-  EventHandler(EventType eventType, EventHandlerFunction fn);
-
-  template <typename T>
-  EventHandler(EventType eventType, T *tptr, void (T::*mptr)(Event));
-
-  void handle(Event e);
-
-  EventType type;
-  FunctionPointerArg1<void, Event> _fp;
-};
-
 class EventDispatcher {
  public:
   EventDispatcher();

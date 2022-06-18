@@ -17,8 +17,8 @@ class TabWidgetEventWrapper : public NavKeyEventWrapper {
     return static_cast<TabWidget*>(this->_wrapped);
   }
 
-  NavKeyEventWrapperBase *handleEvent(Event e) {
-    NavKeyEventWrapperBase *to = this;
+  NavKeyEventWrapper *handleEvent(Event e) {
+    NavKeyEventWrapper *to = this;
 
     switch (e.type) {
       case NAV_LEFT:

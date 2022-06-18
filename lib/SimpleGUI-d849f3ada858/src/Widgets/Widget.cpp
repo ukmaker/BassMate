@@ -254,32 +254,6 @@ void Widget::noteDamage() {
   }
 }
 
-void Widget::setEventHandler(EventHandler *handler) {
-  _handlers.appendOnce(handler);
-}
-
-void Widget::unsetEventHandler(EventHandler *handler) {
-  _handlers.remove(handler);
-}
-
-bool Widget::_isEventTarget(Event e) {
-  return !_hidden && e.screenX >= _outer.x &&
-         e.screenX <= (_outer.x + _outer.width) && e.screenY >= _outer.y &&
-         e.screenY <= (_outer.y + _outer.height);
-}
-
-void Widget::handleEvent(Event e) {
-  if (_isEventTarget(e)) {
-    _handlers.reset();
-    EventHandler *h;
-    while ((h = _handlers.next()) != NULL) {
-      if (h->type == e.type) {
-        h->handle(e);
-      }
-    }
-  }
-}
-
 void Widget::adjust() { _adjust(); }
 
 Adafruit_GFX_NG *Widget::display() { return _context->display(); }

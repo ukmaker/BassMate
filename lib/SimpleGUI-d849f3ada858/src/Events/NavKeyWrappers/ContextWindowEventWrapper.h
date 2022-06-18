@@ -5,23 +5,28 @@
 #include "Events/NavKeyWrappers/NavKeyEventWrapper.h"
 #include "Widgets/ContextWindow.h"
 
-namespace simplegui {
+namespace simplegui
+{
 
-class ContextWindowEventWrapper : public NavKeyEventWrapper {
- public:
-  ContextWindowEventWrapper(ContextWindow *window)
-      : NavKeyEventWrapper(window) {}
-  ~ContextWindowEventWrapper() {}
+  class ContextWindowEventWrapper : public NavKeyEventWrapper
+  {
+  public:
+    ContextWindowEventWrapper(ContextWindow *window)
+        : NavKeyEventWrapper(window) {}
+    ~ContextWindowEventWrapper() {}
 
-  ContextWindow* wrappedContextWindow() {
-    return static_cast<ContextWindow*>(this->_wrapped);
-  }
+    ContextWindow *wrappedContextWindow()
+    {
+      return static_cast<ContextWindow *>(this->_wrapped);
+    }
 
-  virtual NavKeyEventWrapperBase *handleEvent(Event e) {
+    virtual NavKeyEventWrapper *handleEvent(Event e)
+    {
 
-    NavKeyEventWrapperBase *to = this;
+      NavKeyEventWrapper *to = this;
 
-    switch (e.type) {
+      switch (e.type)
+      {
       case NAV_DEC:
       case NAV_LEFT:
         wrappedContextWindow()->left();
@@ -39,18 +44,17 @@ class ContextWindowEventWrapper : public NavKeyEventWrapper {
         break;
 
       case NAV_UP:
-       to = _moveUp(true);
-       break;
+        to = _moveUp(true);
+        break;
 
       default:
         _onEvent.call(e);
         break;
-    }
+      }
 
-    return to;
+      return to;
+    };
   };
 
-};
-
-}  // namespace simplegui_navkey
+} // namespace simplegui_navkey
 #endif

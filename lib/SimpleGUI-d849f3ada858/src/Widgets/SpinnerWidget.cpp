@@ -41,15 +41,9 @@ SpinnerWidget::SpinnerWidget(GraphicsContext *context)
     _text.setBackground(_bg);
     _text.setVAlign(VAlign::MIDDLE);
 
-    EventHandler *up = new EventHandler(TOUCH_TAP, this, &SpinnerWidget::_onUpClick);
-    EventHandler *down = new EventHandler(TOUCH_TAP, this, &SpinnerWidget::_onDownClick);
-
     attach(&_upArrow);
     attach(&_text);
     attach(&_downArrow);
-
-    _upArrow.setEventHandler(up);
-    _downArrow.setEventHandler(down);
 }
 
 TextWidget *SpinnerWidget::getTextWidget()

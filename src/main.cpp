@@ -80,24 +80,33 @@ View view(&tft, noteGrid, storage);
 
 Presenter presenter(model, view, noteGrid);
 
-Wrappings *wr = new Wrappings();
-
-NavKeyEventDispatcher nked(wr);
-WrapperSelectWidget<Voice> *s;
-
-
 /**
  * Global event wiring
  */
-void UP_Button_Pressed(i2cNavKey *p) { nked.UP_Button_Pressed(p); }
-void DOWN_Button_Pressed(i2cNavKey *p) { nked.DOWN_Button_Pressed(p); }
-void LEFT_Button_Pressed(i2cNavKey *p) { nked.LEFT_Button_Pressed(p); }
-void RIGHT_Button_Pressed(i2cNavKey *p) { nked.RIGHT_Button_Pressed(p); }
+/*
+void UP_Button_Pressed(i2cNavKey *p) { view.navKeyEventDispatcher->UP_Button_Pressed(p); }
+void DOWN_Button_Pressed(i2cNavKey *p) { view.navKeyEventDispatcher->DOWN_Button_Pressed(p); }
+void LEFT_Button_Pressed(i2cNavKey *p) { view.navKeyEventDispatcher->LEFT_Button_Pressed(p); }
+void RIGHT_Button_Pressed(i2cNavKey *p) { view.navKeyEventDispatcher->RIGHT_Button_Pressed(p); }
 
-void Encoder_Increment(i2cNavKey *p) { nked.Encoder_Increment(p); }
-void Encoder_Decrement(i2cNavKey *p) { nked.Encoder_Decrement(p); }
-void Encoder_Push(i2cNavKey *p) { nked.Encoder_Push(p); }
-void Encoder_Release(i2cNavKey *p) { nked.Encoder_Release(p); }
+void Encoder_Increment(i2cNavKey *p) { view.navKeyEventDispatcher->Encoder_Increment(p); }
+void Encoder_Decrement(i2cNavKey *p) { view.navKeyEventDispatcher->Encoder_Decrement(p); }
+void Encoder_Push(i2cNavKey *p) { view.navKeyEventDispatcher->Encoder_Push(p); }
+void Encoder_Release(i2cNavKey *p) { view.navKeyEventDispatcher->Encoder_Release(p); }
+*/
+
+void UP_Button_Pressed(i2cNavKey *p) { presenter.handleUpPress(); }
+void DOWN_Button_Pressed(i2cNavKey *p) { presenter.handleDownPress(); }
+void LEFT_Button_Pressed(i2cNavKey *p) { presenter.handleLeftPress(); }
+void RIGHT_Button_Pressed(i2cNavKey *p) { presenter.handleRightPress(); }
+
+void Encoder_Increment(i2cNavKey *p) { presenter.handleIncrement(); }
+void Encoder_Decrement(i2cNavKey *p) { presenter.handleDecrement(); }
+void Encoder_Push(i2cNavKey *p) { presenter.handleSelectStart(); }
+void Encoder_Release(i2cNavKey *p) { presenter.handleSelect(); }
+
+
+
 
 void beatCallback(uint8_t beat) { presenter.handleBeat(beat); }
 void noteOnCallback(uint8_t beat, MIDINote note) {
@@ -180,8 +189,7 @@ void setup() {
 
   view.begin();
   view.makeUI();
- s = view.voiceSelect;
-SelectEventWrapper *w = wr->wrapSelect(s);
+  view.wrapHomeWidgets();
 
   trellis.begin();
   noteGrid.attachEventHandler(noteGridEventHandler);

@@ -23,7 +23,7 @@ class SelectEventWrapper : public NavKeyEventWrapper {
  */
   virtual SelectWidget *wrappedSelect();
 
-  virtual NavKeyEventWrapperBase *handleEvent(Event e);
+  virtual NavKeyEventWrapper *handleEvent(Event e);
 };
 
 }  // namespace simplegui_navkey

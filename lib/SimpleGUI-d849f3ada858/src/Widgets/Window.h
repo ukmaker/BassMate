@@ -28,7 +28,6 @@ class Window : public Widget {
    **/
   virtual void attach(Widget *widget);
   virtual void detach(Widget *widget);
-  virtual void handleEvent(Event e);
 
   void setLayout(Layout l);
 
