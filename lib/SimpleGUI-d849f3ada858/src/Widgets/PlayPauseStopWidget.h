@@ -22,7 +22,25 @@ public:
         {
             _state = state;
             noteDirtyContent(1);
+            _onChange.call(this);
         }
+    }
+
+    /**
+     * @brief Toggle between play and pause. If stopped, set to play
+     *
+     */
+    void toggle()
+    {
+        if(_state != PLAY) {
+            setState(PLAY);
+        } else {
+            setState(PAUSE);
+        }
+    }
+
+    uint8_t getState() {
+        return _state;
     }
 
 protected:

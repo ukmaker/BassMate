@@ -20,27 +20,29 @@ namespace simplegui
       return static_cast<ContextWindow *>(this->_wrapped);
     }
 
-    virtual NavKeyEventWrapper *handleEvent(Event e)
+    virtual Widget *handleEvent(Event &e)
     {
 
-      NavKeyEventWrapper *to = this;
+      Widget *to = wrappedContextWindow();
 
       switch (e.type)
       {
       case NAV_DEC:
       case NAV_LEFT:
-        wrappedContextWindow()->left();
+        e.cancelled = true;
+      wrappedContextWindow()->left();
         break;
 
       case NAV_INC:
       case NAV_RIGHT:
+      e.cancelled = true;
         wrappedContextWindow()->right();
         break;
 
       case NAV_SELECT:
       case NAV_DOWN:
         // give focus to the selected widget
-        wrappedContextWindow()->focusChild();
+        to = wrappedContextWindow()->focusChild();
         break;
 
       case NAV_UP:
@@ -48,7 +50,6 @@ namespace simplegui
         break;
 
       default:
-        _onEvent.call(e);
         break;
       }
 

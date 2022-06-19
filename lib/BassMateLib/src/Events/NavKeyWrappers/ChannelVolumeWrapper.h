@@ -23,14 +23,15 @@ namespace bassmate
             return static_cast<ChannelVolumeWidget<T> *>(this->_wrapped);
         }
 
-        virtual NavKeyEventWrapper *handleEvent(Event e)
+        virtual Widget *handleEvent(Event &e)
         {
 
-            NavKeyEventWrapper *to = this;
+            Widget *to = this->wrapped();
 
             switch (e.type)
             {
             case NAV_DEC:
+                e.cancelled = true;
                 wrappedWidget()->decrement();
                 break;
 
@@ -39,6 +40,7 @@ namespace bassmate
                 break;
 
             case NAV_INC:
+                e.cancelled = true;
                 wrappedWidget()->increment();
                 break;
 
@@ -47,6 +49,7 @@ namespace bassmate
                 break;
 
             case NAV_DOWN:
+                e.cancelled = true;
                 wrappedWidget()->down();
                 break;
 
@@ -57,12 +60,12 @@ namespace bassmate
                 }
                 else
                 {
+                    e.cancelled = true;
                     wrappedWidget()->up();
                 }
                 break;
 
             default:
-                _onEvent.call(e);
                 break;
             }
 

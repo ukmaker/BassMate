@@ -142,7 +142,7 @@ namespace bassmate
     void handleKeyboardCancel()
     {
       _state = PRESETS_SAVE;
-      _view.keyboard->unfocus();
+      _view.keyboard->blur();
       updateFocus();
     }
     void handleKeyboardOK()
@@ -192,7 +192,7 @@ namespace bassmate
       case HOME:
       case SEQUENCER_VOLUME:
         _view.selectTopVolume();
-        _view.channelVols->unfocus();
+        _view.channelVols->blur();
         break;
 
       case SEQUENCER_TEMPO:

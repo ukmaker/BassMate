@@ -137,17 +137,18 @@ void TabWidget::setTabPadding(uint8_t p) {
 }
 uint8_t TabWidget::getTabPadding() { return _tabPadding; }
 
-void TabWidget::focusChild() {
+Widget* TabWidget::focusChild() {
   if (_selected != nullptr) {
-    unfocus();
+    blur();
     _selected->focus();
   }
+  return _selected;
 }
 
 void TabWidget::unfocusChild() {
   if (_selected != nullptr) {
     focus();
-    _selected->unfocus();
+    _selected->blur();
   }
 }
 

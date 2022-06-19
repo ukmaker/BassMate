@@ -14,7 +14,5 @@ Window* GUI::rootWindow() {
 }
 
 void GUI::run() {
-    _context->eventDispatcher()->pumpEvents();
     _rootWindow->draw();   
-    
 }

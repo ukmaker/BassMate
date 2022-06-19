@@ -51,41 +51,39 @@ public:
     virtual void setBackground(uint16_t color);
 
     /*
-    * Sets the padding for all the side
-    */
+     * Sets the padding for all the side
+     */
     virtual void setPadding(int pixels);
     /*
-    * Sets the border for all the side
-    */
+     * Sets the border for all the side
+     */
     virtual void setBorderWidth(int width);
     /*
-    * Sets the border color for all the side
-    */
+     * Sets the border color for all the side
+     */
     virtual void setBorderColor(uint16_t colour);
     /*
-    * Sets the margin for all the side
-    */
+     * Sets the margin for all the side
+     */
     virtual void setMargin(int width);
 
-    
     /*
-    * Sets the padding for the given side(s)
-    */
+     * Sets the padding for the given side(s)
+     */
     virtual void setPadding(Box::Side side, int pixels);
     /*
-    * Sets the border for the given side(s)
-    */
+     * Sets the border for the given side(s)
+     */
     virtual void setBorderWidth(Box::Side side, int width);
     /*
-    * Sets the border color for the given side(s)
-    */
+     * Sets the border color for the given side(s)
+     */
     virtual void setBorderColor(Box::Side side, uint16_t colour);
     /*
-    * Sets the margin for for the given side(s)
-    */
+     * Sets the margin for for the given side(s)
+     */
     virtual void setMargin(Box::Side side, int width);
 
-    
     virtual void setBevel(bool bevel);
 
     virtual void setFont(const GFXfont *font);
@@ -101,13 +99,12 @@ public:
      **/
     virtual void clear();
 
-
     void show();
     void hide();
     bool isHidden();
 
     void focus();
-    void unfocus();
+    void blur();
     bool hasFocus();
 
     bool intersects(Widget *widget);
@@ -118,9 +115,9 @@ public:
     void noteDirty();
     bool isDirty();
     /*
-    * Note which zones are dirty - _dirtyContent is ORed with any previous call
-    * and notify the parent (if there is one) that it has a dirty child
-    */
+     * Note which zones are dirty - _dirtyContent is ORed with any previous call
+     * and notify the parent (if there is one) that it has a dirty child
+     */
     void noteDirtyContent(uint16_t zones);
     bool isDirtyContent();
     void noteChildDirty();
@@ -138,6 +135,30 @@ public:
      **/
     Adafruit_GFX_NG *display();
     DefaultFontRenderer_NG *fontRenderer();
+
+    /**************************************************
+     * Templated methods need to be defined in the
+     * header file, not the .cpp file
+     * Otherwise they are not visible to derived classes
+     * Isn't C++ just wonderful...
+     **************************************************/
+    template <class T>
+    void onFocus(T *tptr, void (T::*mptr)(Widget *))
+    {
+        _onFocus.attach(tptr, mptr);
+    }
+
+    template <class T>
+    void onChange(T *tptr, void (T::*mptr)(Widget *))
+    {
+        _onChange.attach(tptr, mptr);
+    }
+
+    template <class T>
+    void onBlur(T *tptr, void (T::*mptr)(Widget *))
+    {
+        _onBlur.attach(tptr, mptr);
+    }
 
 protected:
     virtual void _draw();
@@ -163,10 +184,14 @@ protected:
     Box _box;
     bool _bevel;
 
-    bool _dirty; // if set, this widget has changed and needs to be redrawn
+    bool _dirty;            // if set, this widget has changed and needs to be redrawn
     uint16_t _dirtyContent; // interpreted by the widget to indicate which zone are dirty and need to be redrawn
     bool _dirtyChildren = false;
     bool _revealed = false;
+
+    FunctionPointerArg1<void, Widget *> _onChange;
+    FunctionPointerArg1<void, Widget *> _onFocus;
+    FunctionPointerArg1<void, Widget *> _onBlur;
 };
 
 #endif

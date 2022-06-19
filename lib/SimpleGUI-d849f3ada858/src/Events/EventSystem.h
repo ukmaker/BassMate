@@ -17,8 +17,9 @@ class EventSource;
 class EventHandler;
 class EventDispatcher;
 
-class Event {
- public:
+class Event
+{
+public:
   EventListener *target;
   EventType type;
   EventSource *source;
@@ -27,18 +28,34 @@ class Event {
   // relate to something on-screen
   int screenX;
   int screenY;
+  bool cancelled = false;
+
+  static Event null()
+  {
+    Event n;
+    n.target = nullptr;
+    n.type = NULL_EVENT;
+    n.source = nullptr;
+    n.screenX = 0;
+    n.screenY = 0;
+    return n;
+  }
 };
 
 template <size_t capacity>
-class EventQueue {
- public:
+class EventQueue
+{
+public:
   EventQueue() : size(capacity + 1), write(0), read(0) {}
 
-  bool push(Event e) {
-    if (!full()) {
+  bool push(Event e)
+  {
+    if (!full())
+    {
       events[write++] = e;
 
-      if (write >= size) {
+      if (write >= size)
+      {
         write -= size;
       }
       return true;
@@ -46,10 +63,13 @@ class EventQueue {
     return false;
   }
 
-  Event pull() {
-    if (!empty()) {
+  Event pull()
+  {
+    if (!empty())
+    {
       Event e = events[read++];
-      if (read >= size) read -= size;
+      if (read >= size)
+        read -= size;
       return e;
     }
     Event e;
@@ -61,15 +81,17 @@ class EventQueue {
 
   bool empty() { return read == write; }
 
-  size_t getNumEvents() {
+  size_t getNumEvents()
+  {
     int16_t n = write - read;
-    if (n < 0) n += size;
+    if (n < 0)
+      n += size;
     return (size_t)n;
   }
 
   size_t getCapacity() { return size - 1; }
 
- private:
+private:
   const size_t size;
   size_t write;
   size_t read;
@@ -81,15 +103,15 @@ class EventQueue {
  * An interface
  */
 
-class EventListener {
- public:
+class EventListener
+{
+public:
   virtual void handleEvent(Event e) = 0;
-  virtual void setEventHandler(EventHandler *handler) = 0;
-  virtual void unsetEventHandler(EventHandler *handler) = 0;
 };
 
-class EventDispatcher {
- public:
+class EventDispatcher
+{
+public:
   EventDispatcher();
 
   void attachListener(EventListener *l);
@@ -107,7 +129,7 @@ class EventDispatcher {
    **/
   void pumpEvents();
 
- private:
+private:
   LinkedList<EventListener> _listeners;
   EventQueue<16> _mailbox;
 };

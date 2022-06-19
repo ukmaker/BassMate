@@ -14,7 +14,8 @@ Widget::Widget(GraphicsContext *context)
       _dirtyContent(0xffff),
       _bevel(false),
       _font(nullptr),
-      _focus(false) {
+      _focus(false)
+{
   setMargin(0);
   setPadding(0);
   setBorderWidth(0);
@@ -26,31 +27,39 @@ void Widget::setParent(Widget *parent) { _parent = parent; }
 Widget *Widget::getParent() { return _parent; }
 
 // Location is referred to the offset
-void Widget::setLocation(int x, int y) {
-  if ((_outer.x != (x + _offset.x())) || (_outer.y != y + _offset.y())) {
+void Widget::setLocation(int x, int y)
+{
+  if ((_outer.x != (x + _offset.x())) || (_outer.y != y + _offset.y()))
+  {
     _outer.x = x + _offset.x();
     _outer.y = y + _offset.y();
     adjust();
   }
 }
 
-void Widget::setSize(int width, int height) {
-  if (_outer.width != width || _outer.height != height) {
+void Widget::setSize(int width, int height)
+{
+  if (_outer.width != width || _outer.height != height)
+  {
     _outer.width = width;
     _outer.height = height;
     adjust();
   }
 }
 
-void Widget::setWidth(int width) {
-  if (_outer.width != width) {
+void Widget::setWidth(int width)
+{
+  if (_outer.width != width)
+  {
     _outer.width = width;
     adjust();
   }
 }
 
-void Widget::setHeight(int height) {
-  if (_outer.height != height) {
+void Widget::setHeight(int height)
+{
+  if (_outer.height != height)
+  {
     _outer.height = height;
     adjust();
   }
@@ -64,7 +73,8 @@ int Widget::height() { return _outer.height; }
 
 int Widget::width() { return _outer.width; }
 
-void Widget::setOffset(int x, int y) {
+void Widget::setOffset(int x, int y)
+{
   _outer.x = _outer.x - _offset.x() + x;
   _outer.y = _outer.y - _offset.y() + y;
   _offset.x(x);
@@ -76,15 +86,19 @@ int Widget::offsetX() { return _offset.x(); }
 
 int Widget::offsetY() { return _offset.y(); }
 
-void Widget::setForeground(uint16_t color) {
-  if (_fg != color) {
+void Widget::setForeground(uint16_t color)
+{
+  if (_fg != color)
+  {
     _fg = color;
     noteDirty();
   }
 }
 
-void Widget::setBackground(uint16_t color) {
-  if (_bg != color) {
+void Widget::setBackground(uint16_t color)
+{
+  if (_bg != color)
+  {
     _bg = color;
     noteDirty();
   }
@@ -93,53 +107,65 @@ void Widget::setBackground(uint16_t color) {
 /**
  * Set the amount of padding between the border and a widget edge
  **/
-void Widget::setPadding(int pixels) {
+void Widget::setPadding(int pixels)
+{
   _box.set(Box::Side::ALL, Edge::PADDING, pixels);
   adjust();
 }
-void Widget::setMargin(int pixels) {
+void Widget::setMargin(int pixels)
+{
   _box.set(Box::Side::ALL, Edge::MARGIN, pixels);
   adjust();
 }
 
-void Widget::setBorderWidth(int width) {
+void Widget::setBorderWidth(int width)
+{
   _box.set(Box::Side::ALL, Edge::BORDER, width);
   adjust();
 }
 
-void Widget::setBorderColor(uint16_t colour) {
+void Widget::setBorderColor(uint16_t colour)
+{
   _box.set(Box::Side::ALL, Edge::COLOR, colour);
   adjust();
 }
 
-void Widget::setPadding(Box::Side side, int pixels) {
+void Widget::setPadding(Box::Side side, int pixels)
+{
   _box.set(side, Edge::PADDING, pixels);
   adjust();
 }
-void Widget::setMargin(Box::Side side, int pixels) {
+void Widget::setMargin(Box::Side side, int pixels)
+{
   _box.set(side, Edge::MARGIN, pixels);
   adjust();
 }
 
-void Widget::setBorderWidth(Box::Side side, int width) {
+void Widget::setBorderWidth(Box::Side side, int width)
+{
   _box.set(side, Edge::BORDER, width);
   adjust();
 }
 
-void Widget::setBorderColor(Box::Side side, uint16_t colour) {
+void Widget::setBorderColor(Box::Side side, uint16_t colour)
+{
   _box.set(side, Edge::BORDER, colour);
   adjust();
 }
 
-void Widget::setBevel(bool bevel) {
-  if (_bevel != bevel) {
+void Widget::setBevel(bool bevel)
+{
+  if (_bevel != bevel)
+  {
     _bevel = bevel;
     noteDirty();
   }
 }
 
-void Widget::setFont(const GFXfont *font) {
-  if (_font != font) {
+void Widget::setFont(const GFXfont *font)
+{
+  if (_font != font)
+  {
     _font = font;
     noteDirty();
   }
@@ -147,8 +173,10 @@ void Widget::setFont(const GFXfont *font) {
 
 const GFXfont *Widget::getFont() { return _font; }
 
-void Widget::setLabel(const char *label) {
-  if (_label != label) {
+void Widget::setLabel(const char *label)
+{
+  if (_label != label)
+  {
     _label = label;
     noteDirty();
   }
@@ -156,22 +184,31 @@ void Widget::setLabel(const char *label) {
 
 const char *Widget::getLabel() { return _label; }
 
-void Widget::draw(bool force) {
-  if (_revealed) force = true;
-  if (!_hidden) {
-    if (force) _dirtyContent = 0xffff;
+void Widget::draw(bool force)
+{
+  if (_revealed)
+    force = true;
+  if (!_hidden)
+  {
+    if (force)
+      _dirtyContent = 0xffff;
 
-    if (force || _dirty) {
+    if (force || _dirty)
+    {
       _clear();
       _draw();
       _clearContent(true);
       _drawContent(true);
       _drawChildren(true);
-    } else if (_dirtyContent) {
+    }
+    else if (_dirtyContent)
+    {
       _clearContent(false);
       _drawContent(false);
       _drawChildren(false);
-    } else if (_dirtyChildren) {
+    }
+    else if (_dirtyChildren)
+    {
       _drawChildren(false);
     }
 
@@ -182,36 +219,48 @@ void Widget::draw(bool force) {
   }
 }
 
-void Widget::clear() {
-  if (!_hidden) _clear();
+void Widget::clear()
+{
+  if (!_hidden)
+    _clear();
 }
 
-void Widget::show() {
-  if (_hidden) {
+void Widget::show()
+{
+  if (_hidden)
+  {
     _hidden = false;
     _revealed = true;
     noteDirty();
   }
 }
 
-void Widget::hide() {
-  if (!_hidden) {
+void Widget::hide()
+{
+  if (!_hidden)
+  {
     _hidden = true;
     noteDamage();
   }
 }
 
-void Widget::focus() {
-  if (!_focus) {
+void Widget::focus()
+{
+  if (!_focus)
+  {
     _focus = true;
     noteDirty();
+    _onFocus.call(this);
   }
 }
 
-void Widget::unfocus() {
-  if (_focus) {
+void Widget::blur()
+{
+  if (_focus)
+  {
     _focus = false;
     noteDirty();
+    _onBlur.call(this);
   }
 }
 
@@ -221,24 +270,30 @@ bool Widget::isHidden() { return _hidden; }
 
 bool Widget::intersects(Widget *w) { return _outer.intersects(w->_outer); }
 
-void Widget::noteDirty() {
+void Widget::noteDirty()
+{
   _dirty = true;
   _dirtyContent = true;
   _dirtyChildren = true;
-  if (_parent != nullptr) {
+  if (_parent != nullptr)
+  {
     _parent->noteChildDirty();
   }
 }
-void Widget::noteDirtyContent(uint16_t zones) {
+void Widget::noteDirtyContent(uint16_t zones)
+{
   _dirtyContent |= zones;
-  if (_parent != nullptr) {
+  if (_parent != nullptr)
+  {
     _parent->noteChildDirty();
   }
 }
 
-void Widget::noteChildDirty() {
+void Widget::noteChildDirty()
+{
   _dirtyChildren = true;
-  if (_parent != nullptr) {
+  if (_parent != nullptr)
+  {
     _parent->noteChildDirty();
   }
 }
@@ -247,9 +302,11 @@ bool Widget::hasDirtyChildren() { return _dirtyChildren; }
 bool Widget::isDirty() { return _dirty; }
 bool Widget::isDirtyContent() { return _dirtyContent; }
 
-void Widget::noteDamage() {
+void Widget::noteDamage()
+{
   _dirty = true;
-  if (_parent != nullptr) {
+  if (_parent != nullptr)
+  {
     _parent->noteDirty();
   }
 }
@@ -258,19 +315,24 @@ void Widget::adjust() { _adjust(); }
 
 Adafruit_GFX_NG *Widget::display() { return _context->display(); }
 
-DefaultFontRenderer_NG *Widget::fontRenderer() {
+DefaultFontRenderer_NG *Widget::fontRenderer()
+{
   return _context->fontRenderer();
 }
 
 /**********************************************************
  * Protected methods
  **********************************************************/
-void Widget::_draw() {
+void Widget::_draw()
+{
   Adafruit_GFX_NG *d = display();
   // Draw the border
-  if (_bevel) {
+  if (_bevel)
+  {
     BorderTool::bevel(d, _outer, _box);
-  } else {
+  }
+  else
+  {
     BorderTool::border(d, _outer, _box);
   }
 }
@@ -278,16 +340,21 @@ void Widget::_draw() {
 void Widget::_drawContent(bool force) {}
 void Widget::_drawChildren(bool force){};
 
-void Widget::_clear() {
+void Widget::_clear()
+{
   display()->fillRect(_outer.x, _outer.y, _outer.width, _outer.height, _bg);
 }
 
-void Widget::_clearContent(bool force) {
-  if (force || _dirtyContent) {
+void Widget::_clearContent(bool force)
+{
+  if (force || _dirtyContent)
+  {
     // if the parent has just redrawn the background with the same colour, don't
     // repeat that here
-    if (_parent != nullptr) {
-      if (_parent->_dirty && _parent->_bg == _bg) {
+    if (_parent != nullptr)
+    {
+      if (_parent->_dirty && _parent->_bg == _bg)
+      {
         return;
       }
     }
@@ -295,7 +362,8 @@ void Widget::_clearContent(bool force) {
   }
 }
 
-void Widget::_adjust() {
+void Widget::_adjust()
+{
   // Recalculate size of inner Rect
   // _outer is the overall size of the widget
   // _inner is the area available for content after margin, border and padding

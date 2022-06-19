@@ -40,7 +40,7 @@ class TabWidget : public Window {
   virtual uint8_t getTabBorderWidth();
   virtual void setTabPadding(uint8_t w);
   virtual uint8_t getTabPadding();
-  virtual void focusChild();
+  virtual Widget *focusChild();
   virtual void unfocusChild();
 
  protected:

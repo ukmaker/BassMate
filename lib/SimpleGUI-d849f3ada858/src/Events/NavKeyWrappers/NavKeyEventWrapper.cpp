@@ -19,18 +19,6 @@ namespace simplegui
 
   Widget *NavKeyEventWrapper::wrapped() { return this->_wrapped; }
 
-  // Widgets can re-emit navigation events
-  template <class T>
-  void NavKeyEventWrapper::onEvent(T *tptr, void (T::*mptr)(Event e))
-  {
-    _onEvent.attach(tptr, mptr);
-  }
-
-  void NavKeyEventWrapper::raiseEvent(Event e)
-  {
-    _onEvent.call(e);
-  }
-
   /**
    * Handle the event and return the wrapper which is
    * the new focus for events
@@ -44,39 +32,39 @@ namespace simplegui
    * Protected methods
    ***********************************/
 
-  NavKeyEventWrapper *NavKeyEventWrapper::_moveUp(bool moved)
+  Widget *NavKeyEventWrapper::_moveUp(bool moved)
   {
     if (moved && (_up != nullptr))
     {
-      return _up;
+      return _up->wrapped();
     }
-    return this;
+    return this->wrapped();
   }
 
-  NavKeyEventWrapper *NavKeyEventWrapper::_moveDown(bool moved)
+  Widget *NavKeyEventWrapper::_moveDown(bool moved)
   {
     if (moved && (_down != nullptr))
     {
-      return _down;
+      return _down->wrapped();
     }
-    return this;
+    return this->wrapped();
   }
 
-  NavKeyEventWrapper *NavKeyEventWrapper::_moveLeft(bool moved)
+  Widget *NavKeyEventWrapper::_moveLeft(bool moved)
   {
     if (moved && (_left != nullptr))
     {
-      return _left;
+      return _left->wrapped();
     }
-    return this;
+    return this->wrapped();
   }
 
-  NavKeyEventWrapper *NavKeyEventWrapper::_moveRight(bool moved)
+  Widget *NavKeyEventWrapper::_moveRight(bool moved)
   {
     if (moved && (_right != nullptr))
     {
-      return _right;
+      return _right->wrapped();
     }
-    return this;
+    return this->wrapped();
   }
 }

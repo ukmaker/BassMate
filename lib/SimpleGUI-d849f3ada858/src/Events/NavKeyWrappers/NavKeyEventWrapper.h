@@ -19,17 +19,14 @@ namespace simplegui
 
     virtual Widget *wrapped();
 
-    // Widgets can re-emit navigation events
-    template <class T>
-    void onEvent(T *tptr, void (T::*mptr)(Event e));
-
-    void raiseEvent(Event e);
-
     /**
-     * Handle the event and return the wrapper which is
+     * Handle the event and return the widget which is
      * the new focus for events
+     * 
+     * If the event has been successfully handle then its cancelled property
+     * should be set to false. Otherwise it should be forwarded to the new focus
      */
-    virtual NavKeyEventWrapper *handleEvent(Event e) = 0;
+    virtual Widget *handleEvent(Event &e) = 0;
     virtual void upTo(NavKeyEventWrapper *wrapper);
     virtual void downTo(NavKeyEventWrapper *wrapper);
     virtual void leftTo(NavKeyEventWrapper *wrapper);
@@ -41,12 +38,11 @@ namespace simplegui
     NavKeyEventWrapper *_left;
     NavKeyEventWrapper *_right;
 
-    NavKeyEventWrapper *_moveUp(bool moved);
-    NavKeyEventWrapper *_moveDown(bool moved);
-    NavKeyEventWrapper *_moveLeft(bool moved);
-    NavKeyEventWrapper *_moveRight(bool moved);
+    Widget *_moveUp(bool moved);
+    Widget *_moveDown(bool moved);
+    Widget *_moveLeft(bool moved);
+    Widget *_moveRight(bool moved);
 
-    FunctionPointerArg1<void, Event> _onEvent;
     Widget *_wrapped;
   };
 

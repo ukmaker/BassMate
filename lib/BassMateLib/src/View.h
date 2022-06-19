@@ -27,7 +27,7 @@
 #include "Widgets/WrapperSelectWidget.h"
 #include "Events/NavKeyEventDispatcher.h"
 #include "Events/NavKeyWrappers/Wrappings.h"
-#include "Events/NavKeyWrappers/ChannelVolumeWrapper.h""
+#include "Events/NavKeyWrappers/ChannelVolumeWrapper.h"
 
 #define LEN(N) (sizeof(N) / sizeof(N[0]))
 
@@ -56,18 +56,16 @@ namespace bassmate
     {
       _storage = storage;
       fontRenderer = new DefaultFontRenderer_NG(&defaultFont, 240, 320);
-      dispatcher = new EventDispatcher();
-      context = new GraphicsContext(tft, dispatcher, &defaultFont, fontRenderer);
+      context = new GraphicsContext(tft, &defaultFont, fontRenderer);
       gui = new GUI(context);
       tft->setFontRenderer(fontRenderer);
-      wrappings = new Wrappings();
-      navKeyEventDispatcher = new NavKeyEventDispatcher(wrappings);
     }
 
     void begin()
     {
       gui->rootWindow()->setSize(context->display()->width(),
                                  context->display()->height());
+      makeUI();
     }
 
     void makeUI()
@@ -203,21 +201,6 @@ namespace bassmate
       savingDialog->hide();
     }
 
-    void wrapHomeWidgets()
-    {
-
-     NavKeyEventWrapper *cw = wrappings->wrap(contextWindow);
-      // just a window NavKeyEventWrapper *sw = wrappings->wrap(sequencerWindow);
-      NavKeyEventWrapper *ct = wrappings->wrap(channelTabs);
-      NavKeyEventWrapper *cv = new ChannelVolumeWrapper<4>(channelVols);
-      wrappings->append(cv);
-      ct->downTo(cv);
-      cv->upTo(ct);
-
-      //NavKeyEventWrapper *vs = wrappings->wrap(voiceSelect);
-      //NavKeyEventWrapper *fs = wrappings->wrap(familySelecct);
-    }
-
     void def(Widget *w, const char *label, int width, int height)
     {
       w->setForeground(FG);
@@ -303,14 +286,14 @@ namespace bassmate
 
     void selectPresetsSaveTab()
     {
-      contextWindow->unfocus();
+      contextWindow->blur();
       contextWindow->select(presetsTabs);
       selectTab(presetsTabs, keyboard);
     }
 
     void selectPresetsLoadTab()
     {
-      contextWindow->unfocus();
+      contextWindow->blur();
       contextWindow->select(presetsTabs);
       selectTab(presetsTabs, storageSelect);
       storageSelect->load();
@@ -321,21 +304,21 @@ namespace bassmate
       contextWindow->select(presetsTabs);
       selectTab(presetsTabs, keyboard);
       keyboard->focus();
-      contextWindow->unfocus();
+      contextWindow->blur();
     }
 
     void selectPresetsLoadUI()
     {
       contextWindow->select(presetsTabs);
       selectTab(presetsTabs, storageSelect);
-      contextWindow->unfocus();
+      contextWindow->blur();
       storageSelect->load();
     }
 
     void selectTop()
     {
       contextWindow->select(sequencerWindow);
-      contextWindow->unfocus();
+      contextWindow->blur();
 
       channelTabs->selectTab(channelVols);
       channelVols->setSelected(-1);
@@ -444,10 +427,6 @@ namespace bassmate
     WrapperSelectWidget<Family> *familySelect;
 
     NoteGrid &noteGrid;
-
-    Wrappings *wrappings;
-
-    NavKeyEventDispatcher *navKeyEventDispatcher;
 
   protected:
     Adafruit_ILI9341_NG *_tft;

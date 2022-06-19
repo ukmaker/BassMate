@@ -39,12 +39,14 @@ namespace simplegui
   {
     if (_focus != nullptr)
     {
-      NavKeyEventWrapper *next = _focus->handleEvent(e);
-      if (next != _focus && next != nullptr)
+      Widget *next = _focus->handleEvent(e);
+      NavKeyEventWrapper *wrapper = wrapperFor(next);
+
+      if (wrapper != _focus && wrapper != nullptr)
       {
-        _focus->wrapped()->unfocus();
-        next->wrapped()->focus();
-        _focus = next;
+        _focus->wrapped()->blur();
+        wrapper->wrapped()->focus();
+        _focus = wrapper;
       }
     }
   }

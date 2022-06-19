@@ -13,19 +13,21 @@ namespace simplegui
     return static_cast<SelectWidget*> (this->_wrapped);
   }
 
-  NavKeyEventWrapper *SelectEventWrapper::handleEvent(Event e)
+  Widget *SelectEventWrapper::handleEvent(Event &e)
   {
 
-    NavKeyEventWrapper *to = this;
+    Widget *to = this->wrapped();
 
     switch (e.type)
     {
 
     case NAV_DEC:
+    e.cancelled = true;
       this->wrappedSelect()->scrollDown();
       break;
 
     case NAV_INC:
+    e.cancelled = true;
       this->wrappedSelect()->scrollUp();
       break;
 
@@ -35,11 +37,11 @@ namespace simplegui
       // navigation
       if (this->wrappedSelect()->getSelectedIndex() == 0)
       {
-        this->raiseEvent(e);
         to = this->_moveUp(true);
       }
       else
       {
+    e.cancelled = true;
         this->wrappedSelect()->scrollToTop();
       }
       break;
@@ -47,12 +49,12 @@ namespace simplegui
     case NAV_DOWN:
       if (this->wrappedSelect()->getSelectedIndex() == (this->wrappedSelect()->getNumChoices() - 1))
       {
-        this->raiseEvent(e);
         to = this->_moveDown(true);
       }
       else
       {
-        this->wrappedSelect()->scrollDown();
+     e.cancelled = true;
+       this->wrappedSelect()->scrollDown();
       }
       break;
 
@@ -69,7 +71,6 @@ namespace simplegui
       break;
 
     default:
-      this->raiseEvent(e);
       break;
     }
 

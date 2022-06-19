@@ -14,16 +14,14 @@ class GraphicsContext
 
 public:
 
-    GraphicsContext(Adafruit_GFX_NG* display, EventDispatcher* dispatcher, const GFXfont* defaultFont, DefaultFontRenderer_NG *fontRenderer);
+    GraphicsContext(Adafruit_GFX_NG* display, const GFXfont* defaultFont, DefaultFontRenderer_NG *fontRenderer);
 
     Adafruit_GFX_NG* display();
-    EventDispatcher* eventDispatcher();
     const GFXfont* defaultFont();
     DefaultFontRenderer_NG *fontRenderer();
 
 private:
     Adafruit_GFX_NG* _display;
-    EventDispatcher* _dispatcher;
     const GFXfont* _font;
     DefaultFontRenderer_NG *_fontRenderer;
 };

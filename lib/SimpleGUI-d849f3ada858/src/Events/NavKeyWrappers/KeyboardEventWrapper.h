@@ -5,26 +5,33 @@
 #include "Events/NavKeyWrappers/NavKeyEventWrapper.h"
 #include "Widgets/KeyboardWidget.h"
 
-namespace simplegui {
+namespace simplegui
+{
 
-class KeyboardEventWrapper : public NavKeyEventWrapper {
- public:
-  KeyboardEventWrapper(KeyboardWidget *keyboard)
-      : NavKeyEventWrapper(keyboard) {}
-  ~KeyboardEventWrapper() {}
+  class KeyboardEventWrapper : public NavKeyEventWrapper
+  {
+  public:
+    KeyboardEventWrapper(KeyboardWidget *keyboard)
+        : NavKeyEventWrapper(keyboard) {}
+    ~KeyboardEventWrapper() {}
 
-  KeyboardWidget* wrappedKeyboardWidget() {
-    return static_cast<KeyboardWidget*>(this->_wrapped);
-  }
+    KeyboardWidget *wrappedKeyboardWidget()
+    {
+      return static_cast<KeyboardWidget *>(this->_wrapped);
+    }
 
-  NavKeyEventWrapper *handleEvent(Event e) {
-    NavKeyEventWrapper *to = this;
-    switch (e.type) {
+    Widget *handleEvent(Event &e)
+    {
+      Widget *to = this->wrapped();
+      switch (e.type)
+      {
       case NAV_DEC:
+        e.cancelled = true;
         wrappedKeyboardWidget()->forward();
         break;
 
       case NAV_INC:
+        e.cancelled = true;
         wrappedKeyboardWidget()->back();
         break;
 
@@ -37,6 +44,7 @@ class KeyboardEventWrapper : public NavKeyEventWrapper {
         break;
 
       case NAV_SELECT:
+        e.cancelled = true;
         wrappedKeyboardWidget()->select();
         break;
 
@@ -49,12 +57,11 @@ class KeyboardEventWrapper : public NavKeyEventWrapper {
         break;
 
       default:
-        _onEvent.call(e);
         break;
-    }
+      }
 
-    return to;
+      return to;
+    };
   };
-};
-}  // namespace simplegui
+} // namespace simplegui
 #endif

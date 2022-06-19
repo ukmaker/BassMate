@@ -5,52 +5,60 @@
 #include "Events/NavKeyWrappers/NavKeyEventWrapper.h"
 #include "Widgets/TabWidget.h"
 
-namespace simplegui {
+namespace simplegui
+{
 
-class TabWidgetEventWrapper : public NavKeyEventWrapper {
- public:
-  TabWidgetEventWrapper(TabWidget *tabWidget)
-      : NavKeyEventWrapper(tabWidget) {}
-  ~TabWidgetEventWrapper() {}
+  class TabWidgetEventWrapper : public NavKeyEventWrapper
+  {
+  public:
+    TabWidgetEventWrapper(TabWidget *tabWidget)
+        : NavKeyEventWrapper(tabWidget) {}
+    ~TabWidgetEventWrapper() {}
 
-  TabWidget *wrappedTabWidget() {
-    return static_cast<TabWidget*>(this->_wrapped);
-  }
+    TabWidget *wrappedTabWidget()
+    {
+      return static_cast<TabWidget *>(this->_wrapped);
+    }
 
-  NavKeyEventWrapper *handleEvent(Event e) {
-    NavKeyEventWrapper *to = this;
+    Widget *handleEvent(Event &e)
+    {
 
-    switch (e.type) {
+      Widget *to = this->wrapped();
+
+      switch (e.type)
+      {
       case NAV_LEFT:
-        to = _moveLeft(wrappedTabWidget()->left());
+        e.cancelled = true;
+        _moveLeft(wrappedTabWidget()->left());
         break;
 
       case NAV_RIGHT:
+        e.cancelled = true;
         to = _moveRight(wrappedTabWidget()->right());
         break;
 
       case NAV_SELECT:
       case NAV_DOWN:
         // give focus to the selected widget
-        wrappedTabWidget()->focusChild();
-        to = _down;
+        e.cancelled = true;
+        to = wrappedTabWidget()->focusChild();
         break;
 
       case NAV_DEC:
       case NAV_INC:
+        e.cancelled = true;
         // just ignore these
         break;
 
       case NAV_UP:
       default:
-        _onEvent.call(e);
-        to = _up;
+        e.cancelled = true;
+        to = _up->wrapped();
         break;
-    }
-    return to;
+      }
+      return to;
+    };
   };
 
-};
-
-}  // namespace simplegui
+} // namespace simplegui
 #endif
