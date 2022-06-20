@@ -241,7 +241,7 @@ namespace bassmate
     void selectContextSequencer()
     {
       contextWindow->focus();
-      contextWindow->select(sequencerWindow);
+      contextWindow->selectWidget(sequencerWindow);
       channelTabs->selectTab(channelVols);
       channelVols->setSelected(-1);
       volume->setForeground(FG);
@@ -253,7 +253,7 @@ namespace bassmate
     void selectContextPresets()
     {
       contextWindow->focus();
-      contextWindow->select(presetsTabs);
+      contextWindow->selectWidget(presetsTabs);
       unselectTabs(presetsTabs);
     }
 
@@ -287,21 +287,21 @@ namespace bassmate
     void selectPresetsSaveTab()
     {
       contextWindow->blur();
-      contextWindow->select(presetsTabs);
+      contextWindow->selectWidget(presetsTabs);
       selectTab(presetsTabs, keyboard);
     }
 
     void selectPresetsLoadTab()
     {
       contextWindow->blur();
-      contextWindow->select(presetsTabs);
+      contextWindow->selectWidget(presetsTabs);
       selectTab(presetsTabs, storageSelect);
       storageSelect->load();
     }
 
     void selectPresetsSaveUI()
     {
-      contextWindow->select(presetsTabs);
+      contextWindow->selectWidget(presetsTabs);
       selectTab(presetsTabs, keyboard);
       keyboard->focus();
       contextWindow->blur();
@@ -309,7 +309,7 @@ namespace bassmate
 
     void selectPresetsLoadUI()
     {
-      contextWindow->select(presetsTabs);
+      contextWindow->selectWidget(presetsTabs);
       selectTab(presetsTabs, storageSelect);
       contextWindow->blur();
       storageSelect->load();
@@ -317,7 +317,7 @@ namespace bassmate
 
     void selectTop()
     {
-      contextWindow->select(sequencerWindow);
+      contextWindow->selectWidget(sequencerWindow);
       contextWindow->blur();
 
       channelTabs->selectTab(channelVols);

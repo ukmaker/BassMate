@@ -29,7 +29,8 @@ namespace bassmate
         virtual void clearPresets() =0;
 
         virtual void channelRefresh(uint8_t channel) =0;
-        virtual void loadRefresh() =0;
+        virtual void familyRefresh(uint8_t channel) =0;
+        virtual void presetsRefresh() =0;
 
     };
 }

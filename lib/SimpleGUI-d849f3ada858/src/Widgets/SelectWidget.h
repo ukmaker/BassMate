@@ -79,16 +79,6 @@ class SelectWidget : public Widget {
 
   uint16_t getHighlightColor() { return _highlightColor; }
 
-  /*
-   * Register an event handler to be called whenever a change occurs:
-   * - scrollUp or scrollDown
-   * - setSelected
-   */
-  template <class T>
-  void onChange(T *tptr, void (T::*mptr)(Event e)) {
-    _onChange.attach(tptr, mptr);
-  }
-
   void scrollUp() {
     _viewIndex++;
     if (_viewIndex >= getNumChoices()) {
@@ -211,11 +201,7 @@ class SelectWidget : public Widget {
   }
 
   void _changed() {
-    Event e;
-    e.screenX = 0;
-    e.screenY = 0;
-    e.type = EventType::WIDGET_CHANGED;
-    _onChange.call(e);
+    _onChange.call(this);
   }
 
  private:
@@ -225,7 +211,5 @@ class SelectWidget : public Widget {
   uint16_t _viewIndex = 0;
   bool _wrap = false;
   uint16_t _highlightColor = 0xffff;
-
-  FunctionPointerArg1<void, Event> _onChange;
 };
 #endif

@@ -49,14 +49,14 @@ public:
 
   void select(uint8_t idx)
   {
-    if (idx != _idx)
+    if (idx != _idx || _selected == nullptr)
     {
       _moveFocus(idx);
       noteDirtyContent(ZONE_TITLE | ZONE_CONTENT);
     }
   }
 
-  void select(Widget *widget)
+  void selectWidget(Widget *widget)
   {
     if (_widgets.contains(widget))
     {
@@ -83,6 +83,10 @@ public:
 
   Widget *focusChild()
   {
+    if(_selected == nullptr) {
+      _moveFocus(_idx);
+    }
+
     if (_selected != nullptr)
     {
       blur();
@@ -93,6 +97,10 @@ public:
 
   void unfocusChild()
   {
+    if(_selected == nullptr) {
+      _moveFocus(_idx);
+    }
+    
     if (_selected != nullptr)
     {
       focus();

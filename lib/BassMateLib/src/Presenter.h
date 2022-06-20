@@ -170,7 +170,7 @@ namespace bassmate
      * Called when a preset is selected
      * Triggers a load/delete/cancel dialog
      */
-    void handleStorageChange(Event e)
+    void handleStorageChange(Widget *w)
     {
       _state = VIEW_PRESET;
       Storage::Preset p = _view.storageSelect->getSelectedValue();

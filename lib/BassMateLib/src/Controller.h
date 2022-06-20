@@ -60,6 +60,10 @@ public:
         }
     }
 
+    /*
+     * View callbacks
+     */
+
     void volumeChange(uint8_t volume)
     {
         _model._midi.setVolume(225 + (volume * 29) / 100);
@@ -93,19 +97,60 @@ public:
         }
     }
 
-    void channelVolumeChange(uint8_t channel, int volume) { }
+    void channelVolumeChange(uint8_t channel, int volume)
+    {
+        _model._midi.setVolume(channel, (volume * 127) / 100);
+    }
 
-    void voiceChange(uint8_t channel, int voiceId) { }
-    void voicePreviewChange(uint8_t channel, int voiceId) { }
-    void familyChange(uint8_t channel, int familyId) { }
+    void voiceChange(uint8_t channel, int voiceId)
+    {
+        Instrument i = _model._midi.getChannelBank(channel).getInstrumentById(voiceId);
+        _model._sequencer.setInstrument(channel, i);
+        MIDINote note = { channel, i.defaultNote, 127 };
+        _model._midi.setInstrument(channel, voiceId);
+        _model._midi.noteOn(note);
+    }
+
+    void voicePreviewChange(uint8_t channel, int voiceId)
+    {
+        Instrument currentVoice = _model._midi.getChannelInstrument(channel);
+        Instrument i = _model._midi.getChannelBank(channel).getInstrumentById(voiceId);
+        MIDINote note = { channel, i.defaultNote, 127 };
+        _model._midi.setInstrument(channel, voiceId);
+        _model._midi.noteOn(note);
+        _model._midi.setInstrument(channel, currentVoice.voiceId);
+    }
+
+    void channelRefresh(uint8_t channel)
+    {
+        _view.setChannelInstruments(channel,
+            _model._midi.getChannelFamily(channel),
+            _model._midi.getChannelVoice(channel));
+    }
+
+    void familyChange(uint8_t channel, int familyId)
+    {
+        if (familyId != _model._midi.getChannelFamily(channel).id) {
+            // assign the default instrument for the family
+            // this also assigns the family as a side-effect
+            Family family = _model._midi.getPercussionBank().getFamilyById(familyId);
+            voiceChange(channel, family.voices[0].id);
+        }
+    }
+
+    void familyRefresh(uint8_t channel)
+    {
+        _view.setChannelFamily(
+            channel,
+            _model._midi.getChannelBank(channel).getBank(),
+            _model._midi.getChannelFamily(channel));
+    }
 
     void loadPreset(uint8_t idx) { }
     void deletePreset(uint8_t idx) { }
     void savePreset(char* name, uint8_t nameLen) { }
     void clearPresets() { }
-
-    void channelRefresh(uint8_t channel) { }
-    void loadRefresh() { }
+    void presetsRefresh() { }
 
 protected:
     IView& _view;
