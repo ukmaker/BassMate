@@ -219,6 +219,7 @@ public:
         case NAV_UP:
             if (channelVols->getSelected() == 0) {
                 channelVols->blur();
+                channelTabs->blur();
                 transition(&NavKeyView::volumeHandler);
             } else {
                 channelVols->up();
@@ -260,12 +261,54 @@ public:
             break;
 
         case NAV_SELECT:
-          voiceSelect->selectCurrent();
-          break;
-
-        case NAV_RIGHT:
+            voiceSelect->selectCurrent();
             break;
 
+        case NAV_LEFT:
+            voiceSelect->blur();
+            transition(&NavKeyView::channelVolsHandler);
+            break;
+
+        case NAV_RIGHT:
+            voiceSelect->blur();
+            transition(&NavKeyView::familySelectHandler);
+            break;
+
+        default:
+            break;
+        }
+    }
+
+    void familySelectHandler(Event e)
+    {
+        familySelect->focus();
+        switch (e.type) {
+        case NAV_INC:
+            familySelect->scrollDown();
+            break;
+
+        case NAV_DEC:
+            familySelect->scrollUp();
+            break;
+
+        case NAV_UP:
+            familySelect->scrollToTop();
+            break;
+
+        case NAV_DOWN:
+            familySelect->scrollToBottom();
+            break;
+
+        case NAV_SELECT:
+            familySelect->selectCurrent();
+            break;
+
+        case NAV_LEFT:
+            familySelect->blur();
+            transition(&NavKeyView::channelInstrumentsHandler);
+            break;
+
+        case NAV_RIGHT:
         default:
             break;
         }
@@ -291,7 +334,7 @@ public:
         case NAV_DOWN: {
             presetsTabs->blur();
             Widget* target = presetsTabs->focusChild();
-            if (target == presetsWindow) {
+            if (target == selectPreset) {
                 transition(&NavKeyView::selectPresetHandler);
             } else {
                 transition(&NavKeyView::savePresetHandler);
@@ -305,6 +348,38 @@ public:
 
     void selectPresetHandler(Event e)
     {
+        selectPreset->focus();
+        switch (e.type) {
+        case NAV_INC:
+            selectPreset->scrollDown();
+            break;
+
+        case NAV_DEC:
+            selectPreset->scrollUp();
+            break;
+
+        case NAV_UP:
+            if (selectPreset->getViewIndex() == 0) {
+                selectPreset->blur();
+                transition(&NavKeyView::presetsHandler);
+            } else {
+                selectPreset->scrollToTop();
+            }
+            break;
+
+        case NAV_DOWN:
+            selectPreset->scrollToBottom();
+            break;
+
+        case NAV_SELECT:
+            selectPreset->selectCurrent();
+            break;
+
+        case NAV_LEFT:
+        case NAV_RIGHT:
+        default:
+            break;
+        }
     }
 
     void loadPresetsHandler(Event e)
@@ -327,21 +402,12 @@ public:
 
     void channelTabsOnFocus(Widget* w)
     {
-        channelTabs->setTabSelectedFontColor(BG);
-        channelTabs->setTabUnselectedFontColor(WHITE);
-        channelTabs->setTabSelectedColor(HL);
-        channelTabs->setTabUnselectedColor(BG);
-        channelTabs->selectTab(channelVols);
-        channelVols->setLabel("Vol");
-        familySelect->setLabel("Family");
+        focusTabs(channelTabs);
     }
 
     void channelTabsOnBlur(Widget* w)
     {
-        channelTabs->setTabSelectedFontColor(FG);
-        channelTabs->setTabUnselectedFontColor(FG);
-        channelTabs->setTabSelectedColor(BG);
-        channelTabs->setTabUnselectedColor(BG);
+        blurTabs(channelTabs);
         channelTabs->selectTab(channelVols);
         channelVols->setSelected(-1);
     }
@@ -370,6 +436,16 @@ public:
         playPauseStopWidget->setForeground(FG);
     }
 
+    void channelVolsOnFocus(Widget* w)
+    {
+        channelTabs->selectTab(channelVols);
+        channelVols->setLabel("Vol");
+        familySelect->setLabel("Family");
+    }
+
+    void channelVolsOnBlur(Widget* w)
+    {
+    }
     void voiceSelectOnFocus(Widget* w)
     {
         // get updated values
@@ -378,7 +454,6 @@ public:
         _controller->familyRefresh(channel);
         // set the labels on the tabs
         channelTabs->selectTab(voiceSelect);
-        // channelTabs->focusChild();
         channelVols->setLabel(channelNames[channel]);
         familySelect->setLabel(familySelect->getSelectedValue().name);
     }
@@ -387,30 +462,84 @@ public:
     {
     }
 
+    void familySelectOnFocus(Widget* w)
+    {
+        _controller->familyRefresh(channelVols->getSelected());
+        // force redraw to take account of the family name change
+        channelTabs->noteDirty();
+        channelTabs->selectTab(familySelect);
+    }
+
+    void familySelectOnBlur(Widget* w)
+    {
+    }
+
+    void presetsTabsOnFocus(Widget* w)
+    {
+        focusTabs(presetsTabs);
+    }
+
+    void presetsTabsOnBlur(Widget* w)
+    {
+        blurTabs(presetsTabs);
+    }
+
+    void selectPresetOnFocus(Widget* w)
+    {
+        focusSelect(selectPreset);
+        selectPreset->load();
+    }
+
+    void selectPresetOnBlur(Widget* w)
+    {
+        blurSelect(selectPreset);
+    }
+
+    void focusTabs(TabWidget* t)
+    {
+        t->setTabSelectedFontColor(BG);
+        t->setTabUnselectedFontColor(WHITE);
+        t->setTabSelectedColor(HL);
+        t->setTabUnselectedColor(BG);
+    }
+
+    void blurTabs(TabWidget* t)
+    {
+        t->setTabSelectedFontColor(BG);
+        t->setTabUnselectedFontColor(WHITE);
+        t->setTabSelectedColor(FG);
+        t->setTabUnselectedColor(BG);
+    }
+
+    void focusSelect(SelectWidget* s)
+    {
+        s->setHighlightColor(HL);
+    }
+
+    void blurSelect(SelectWidget* s)
+    {
+        s->setHighlightColor(FG);
+    }
+
+    void selectTab(TabWidget* w, Widget* t)
+    {
+        w->setTabSelectedFontColor(BG);
+        w->setTabUnselectedFontColor(WHITE);
+        w->setTabSelectedColor(HL);
+        w->setTabUnselectedColor(BG);
+        w->selectTab(t);
+    }
+
     void begin()
     {
         gui->rootWindow()->setSize(context->display()->width(),
             context->display()->height());
         makeUI();
-        attachHandlers();
         _fp.attach(this, &NavKeyView::volumeHandler);
         contextWindow->select(0);
         contextWindow->blur();
         volumeWidget->focus();
-    }
-
-    void attachHandlers()
-    {
-        contextWindow->onFocus(this, &NavKeyView::contextWindowOnFocus);
-        contextWindow->onBlur(this, &NavKeyView::contextWindowOnFocus);
-        channelTabs->onFocus(this, &NavKeyView::channelTabsOnFocus);
-        channelTabs->onBlur(this, &NavKeyView::channelTabsOnBlur);
-        volumeWidget->onFocus(this, &NavKeyView::masterVolumeOnFocus);
-        volumeWidget->onBlur(this, &NavKeyView::masterVolumeOnBlur);
-        tempoWidget->onFocus(this, &NavKeyView::tempoOnFocus);
-        tempoWidget->onBlur(this, &NavKeyView::tempoOnBlur);
-        voiceSelect->onFocus(this, &NavKeyView::voiceSelectOnFocus);
-        voiceSelect->onBlur(this, &NavKeyView::voiceSelectOnBlur);
+        selectPreset->load();
     }
 
     void makeUI()
@@ -432,6 +561,8 @@ public:
             contextWindow->setTitleBarBackground(HL);
             contextWindow->setTitleBarForeground(BG);
             contextWindow->setTitleBarHeight(30);
+            contextWindow->onFocus(this, &NavKeyView::contextWindowOnFocus);
+            contextWindow->onBlur(this, &NavKeyView::contextWindowOnFocus);
         }
 
         sequencerWindow = new Window(context);
@@ -457,6 +588,8 @@ public:
             volumeWidget->setStep(1);
             volumeWidget->setMode(VolumeWidget::ANTILOG);
             volumeWidget->onChange(this, &NavKeyView::onVolumeChange);
+            volumeWidget->onFocus(this, &NavKeyView::masterVolumeOnFocus);
+            volumeWidget->onBlur(this, &NavKeyView::masterVolumeOnBlur);
         }
 
         volumeLabel = new TextWidget(context);
@@ -474,6 +607,8 @@ public:
             tempoWidget->setStep(1);
             tempoWidget->setFont(&defaultFont);
             tempoWidget->setLocation(200, 0);
+            tempoWidget->onFocus(this, &NavKeyView::tempoOnFocus);
+            tempoWidget->onBlur(this, &NavKeyView::tempoOnBlur);
         }
 
         playPauseStopWidget = new PlayPauseStopWidget(context);
@@ -487,6 +622,8 @@ public:
         defTab(channelTabs, "channelTabs");
         {
             channelTabs->setLocation(0, 30);
+            channelTabs->onFocus(this, &NavKeyView::channelTabsOnFocus);
+            channelTabs->onBlur(this, &NavKeyView::channelTabsOnBlur);
         }
 
         VoiceWrapper* wrapper = new VoiceWrapper();
@@ -496,6 +633,8 @@ public:
             voiceSelect->setLocation(0, 0);
             voiceSelect->setHighlightColor(HL);
             voiceSelect->onChange(this, &NavKeyView::onVoiceChange);
+            voiceSelect->onFocus(this, &NavKeyView::voiceSelectOnFocus);
+            voiceSelect->onBlur(this, &NavKeyView::voiceSelectOnBlur);
         }
 
         FamilyWrapper* familyWrapper = new FamilyWrapper();
@@ -504,6 +643,9 @@ public:
         {
             familySelect->setLocation(0, 0);
             familySelect->setHighlightColor(HL);
+            familySelect->onChange(this, &NavKeyView::onFamilyChange);
+            familySelect->onFocus(this, &NavKeyView::familySelectOnFocus);
+            familySelect->onBlur(this, &NavKeyView::familySelectOnBlur);
         }
 
         channelVols = new ChannelVolumeWidget<4>(context);
@@ -524,10 +666,17 @@ public:
             channelVols->setTextRight();
             channelVols->setSelectedColor(HL);
             channelVols->setStep(5);
+            channelVols->onFocus(this, &NavKeyView::channelVolsOnFocus);
+            channelVols->onBlur(this, &NavKeyView::channelVolsOnBlur);
         }
 
-        storageSelect = new StorageSelectWidget<8>(context, _storage);
-        def(storageSelect, "Load", 280, 170);
+        selectPreset = new StorageSelectWidget<8>(context, _storage);
+        def(selectPreset, "Load", 280, 170);
+        {
+            selectPreset->setHighlightColor(FG);
+            selectPreset->onFocus(this, &NavKeyView::selectPresetOnFocus);
+            selectPreset->onBlur(this, &NavKeyView::selectPresetOnBlur);
+        }
 
         presetPreviewWidget = new PresetPreviewWidget(context);
         def(presetPreviewWidget, "Presets", 280, 200);
@@ -555,9 +704,11 @@ public:
         {
             presetsTabs->setLocation(0, 30);
             presetsTabs->setSize(299, 190);
-            presetsTabs->attach(storageSelect);
+            presetsTabs->attach(selectPreset);
             presetsTabs->attach(keyboard);
             presetsTabs->attach(presetPreviewWidget);
+            presetsTabs->onFocus(this, &NavKeyView::presetsTabsOnFocus);
+            presetsTabs->onBlur(this, &NavKeyView::presetsTabsOnBlur);
         }
 
         sequencerWindow->attach(volumeWidget);
@@ -599,7 +750,7 @@ public:
         w->setTabPadding(2);
         w->setTabSelectedFontColor(BG);
         w->setTabUnselectedFontColor(WHITE);
-        w->setTabSelectedColor(HL);
+        w->setTabSelectedColor(FG);
         w->setTabUnselectedColor(BG);
         w->setLayout(Window::FIXED);
         w->setLabel(label);
@@ -702,12 +853,12 @@ public:
 
     void onLoadPreset(Widget* w)
     {
-        _controller->loadPreset(storageSelect->getSelectedIndex());
+        _controller->loadPreset(selectPreset->getSelectedIndex());
     }
 
     void onDeletePreset(Widget* w)
     {
-        _controller->deletePreset(storageSelect->getSelectedIndex());
+        _controller->deletePreset(selectPreset->getSelectedIndex());
     }
 
     void onSavePreset(Widget* w)
@@ -769,7 +920,7 @@ public:
 
     Window* functionsContainer;
     TabWidget* presetsTabs;
-    StorageSelectWidget<8>* storageSelect;
+    StorageSelectWidget<8>* selectPreset;
     PresetPreviewWidget* presetPreviewWidget;
     KeyboardWidget* keyboard;
     char textBuffer[9];

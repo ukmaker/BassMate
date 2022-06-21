@@ -79,7 +79,7 @@ class SelectWidget : public Widget {
 
   uint16_t getHighlightColor() { return _highlightColor; }
 
-  void scrollUp() {
+  void scrollDown() {
     _viewIndex++;
     if (_viewIndex >= getNumChoices()) {
       _viewIndex = getNumChoices() - 1;
@@ -89,7 +89,7 @@ class SelectWidget : public Widget {
     }
   }
 
-  void scrollDown() {
+  void scrollUp() {
     if (_viewIndex > 0) {
       _viewIndex--;
       noteDirtyContent(ZONE_CONTENT);
@@ -189,7 +189,7 @@ class SelectWidget : public Widget {
         }
         if (i == _viewIndex) {
           display()->fillTriangle(_inner.x, y1, _inner.x, y1 + h,
-                                  _inner.x + triangleWidth, y1 + h / 2, _fg);
+                                  _inner.x + triangleWidth, y1 + h / 2, _highlightColor);
         }
       }
       display()->print("\n");
