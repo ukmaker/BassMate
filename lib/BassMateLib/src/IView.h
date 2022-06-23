@@ -2,23 +2,19 @@
 #define BM_I_VIEW_H
 #include <Arduino.h>
 #include "VS1053/Voice.h"
-#include "Core/FunctionPointer.h"
-#include "FunctionArgs.h"
+#include "Storage.h"
 
-namespace bassmate
-{
+namespace bassmate {
 
-  /*
-   * Intteface defining a UI view
-   * **/
-  class IView
-  {
-  public:
-    enum PlayPauseStop
-    {
-      PLAY,
-      PAUSE,
-      STOP
+/*
+ * Intteface defining a UI view
+ * **/
+class IView {
+public:
+    enum PlayPauseStop {
+        PLAY,
+        PAUSE,
+        STOP
     };
 
     /*
@@ -34,11 +30,12 @@ namespace bassmate
     virtual void setPlayPauseStop(PlayPauseStop pps) = 0;
     virtual void setChannelVolume(uint8_t channel, uint8_t volume) = 0;
     virtual void setChannelInstruments(uint8_t channel, const Family instruments,
-                                       const Voice selectedInstrument) = 0;
-    virtual void setChannelFamily(uint8_t channel, const Bank *bank,
-                                  const Family selectedFamily) = 0;
-
-
-  };
+        const Voice selectedInstrument)
+        = 0;
+    virtual void setChannelFamily(uint8_t channel, const Bank* bank,
+        const Family selectedFamily)
+        = 0;
+    virtual void setPresetPreview(Storage::Preset p) = 0;
+};
 } // namespace bassmate
 #endif

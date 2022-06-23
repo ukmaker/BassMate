@@ -23,6 +23,7 @@ namespace bassmate
         virtual void voicePreviewChange(uint8_t channel, int voiceId) =0;
         virtual void familyChange(uint8_t channel, int familyId) =0;
 
+        virtual void previewPreset(uint8_t idx) =0;
         virtual void loadPreset(uint8_t idx) =0;
         virtual void deletePreset(uint8_t idx) =0;
         virtual void savePreset(char *name, uint8_t nameLen) =0;

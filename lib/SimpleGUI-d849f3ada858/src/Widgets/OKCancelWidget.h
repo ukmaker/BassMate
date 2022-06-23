@@ -28,17 +28,17 @@ class OKCancelWidget : public Widget {
   }
 
   template <class T>
-  void onOK(T *tptr, void (T::*mptr)()) {
+  void onOK(T *tptr, void (T::*mptr)(Widget*)) {
     _okCallback.attach(tptr, mptr);
   }
 
   template <class T>
-  void onCancel(T *tptr, void (T::*mptr)()) {
+  void onCancel(T *tptr, void (T::*mptr)(Widget*)) {
     _cancelCallback.attach(tptr, mptr);
   }
 
   template <class T>
-  void onUserKey(T *tptr, void (T::*mptr)()) {
+  void onUserKey(T *tptr, void (T::*mptr)(Widget*)) {
     _userCallback.attach(tptr, mptr);
   }
 
@@ -107,19 +107,19 @@ class OKCancelWidget : public Widget {
     switch (_state) {
       case OK: {
         noteDirtyContent(ZONE_BUTTONS);
-        _okCallback.call();
+        _okCallback.call(this);
         break;
       }
 
       case CANCEL: {
         noteDirtyContent(ZONE_BUTTONS);
-        _cancelCallback.call();
+        _cancelCallback.call(this);
         break;
       }
 
       case USER: {
         noteDirtyContent(ZONE_BUTTONS);
-        _userCallback.call();
+        _userCallback.call(this);
         break;
       }
 
@@ -131,7 +131,7 @@ class OKCancelWidget : public Widget {
  protected:
   uint16_t _highlightForegroundColor, _highlightBackgroundColor;
   FunctionPointerArg1<void, char> _keyPressCallback;
-  FunctionPointer _okCallback, _cancelCallback, _userCallback;
+  FunctionPointerArg1<void, Widget*> _okCallback, _cancelCallback, _userCallback;
 
   const char *_ok = "OK";
   const char *_cancel = "Cancel";
@@ -157,7 +157,7 @@ class OKCancelWidget : public Widget {
   }
 
   uint16_t _buttonsY() {
-    return _inner.top() + 8 * fontRenderer()->getFontHeight();
+    return _inner.top() + fontRenderer()->getFontHeight();
   }
 
   virtual void _drawContent(bool force) {
@@ -168,7 +168,7 @@ class OKCancelWidget : public Widget {
     int dy = dx;
 
     uint16_t l = _inner.left() + dx;
-    uint16_t t = _inner.top() + 4 * dy;
+    uint16_t t = _inner.top();// + dy;
     int16_t x, y, x1, y1 = 0;
     uint16_t w, h = 0;
 
@@ -176,9 +176,9 @@ class OKCancelWidget : public Widget {
       // OK and Cancel buttons
       // And user button if enabled
 
-      uint16_t cancelWidth, okWidth, userWidth, usedWidth = 0, n = 3;
+      uint16_t cancelWidth=0, okWidth=0, userWidth=0, usedWidth = 0, n = 3;
       x = l;
-      y = t + 1.5 * dy;
+      y = t;// + 1.5 * dy;
       fontRenderer()->getTextBounds(_ok, x, y, &x1, &y1, &okWidth, &h);
       usedWidth += okWidth;
 

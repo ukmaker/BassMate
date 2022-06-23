@@ -146,6 +146,7 @@ public:
             _model._midi.getChannelFamily(channel));
     }
 
+    void previewPreset(uint8_t idx) { }
     void loadPreset(uint8_t idx) { }
     void deletePreset(uint8_t idx) { }
     void savePreset(char* name, uint8_t nameLen) { }

@@ -23,7 +23,10 @@
 #include "SimpleGUI.h"
 #include "Widgets/ChannelVolumeWidget.h"
 #include "Widgets/ContextWindow.h"
+#include "Widgets/DialogWindow.h"
 #include "Widgets/KeyboardWidget.h"
+#include "Widgets/OKCancelWidget.h"
+
 #include "Widgets/OptionSelectWidget.h"
 #include "Widgets/PlayPauseStopWidget.h"
 #include "Widgets/PresetPreviewWidget.h"
@@ -373,6 +376,10 @@ public:
 
         case NAV_SELECT:
             selectPreset->selectCurrent();
+            contextWindow->hide();
+            loadPresetDialog->hide();
+            loadPresetDialog->show();
+            transition(&NavKeyView::loadPresetButtonsHandler);
             break;
 
         case NAV_LEFT:
@@ -382,8 +389,27 @@ public:
         }
     }
 
-    void loadPresetsHandler(Event e)
+    void loadPresetButtonsHandler(Event e)
     {
+        loadPresetDialog->blur();
+        loadPresetDialog->focus();
+        switch (e.type) {
+
+        case NAV_SELECT:
+            loadPresetOKCancelWidget->select();
+            break;
+
+        case NAV_LEFT:
+            loadPresetOKCancelWidget->left();
+            break;
+
+        case NAV_RIGHT:
+            loadPresetOKCancelWidget->right();
+            break;
+
+        default:
+            break;
+        }
     }
 
     void savePresetHandler(Event e)
@@ -678,9 +704,6 @@ public:
             selectPreset->onBlur(this, &NavKeyView::selectPresetOnBlur);
         }
 
-        presetPreviewWidget = new PresetPreviewWidget(context);
-        def(presetPreviewWidget, "Presets", 280, 200);
-
         keyboard = new KeyboardWidget(context, textBuffer, 9);
         def(keyboard, "Save", 280, 200);
         {
@@ -706,10 +729,46 @@ public:
             presetsTabs->setSize(299, 190);
             presetsTabs->attach(selectPreset);
             presetsTabs->attach(keyboard);
-            presetsTabs->attach(presetPreviewWidget);
             presetsTabs->onFocus(this, &NavKeyView::presetsTabsOnFocus);
             presetsTabs->onBlur(this, &NavKeyView::presetsTabsOnBlur);
         }
+
+        /**
+         * Construct a dialog for loading a Preset
+         * TextWidget
+         * PresetPreviewWidget
+         * OKCancelWidget
+         */
+        loadPresetDialog = new DialogWindow(context);
+        loadPresetDialog->setTraversable(false);
+        loadPresetDialog->setBackground(RED);
+
+        presetLabelWidget = new TextWidget(context);
+        def(presetLabelWidget, "Preset:", 280, 30);
+        {
+            presetLabelWidget->setLocation(0, 0);
+        }
+
+        presetPreviewWidget = new PresetPreviewWidget(context);
+        def(presetPreviewWidget, "Presets", 280, 160);
+        {
+            presetPreviewWidget->setLocation(0, 20);
+        }
+
+        loadPresetOKCancelWidget = new OKCancelWidget(context);
+        def(loadPresetOKCancelWidget, "", 280, 30);
+        {
+            loadPresetOKCancelWidget->setHighlightForegroundColor(BLACK);
+            loadPresetOKCancelWidget->setHighlightBackgroundColor(YELLOW);
+            loadPresetOKCancelWidget->setLocation(0, 100);
+            loadPresetOKCancelWidget->onOK(this, &NavKeyView::onLoadPresetOK);
+            loadPresetOKCancelWidget->onCancel(this, &NavKeyView::onLoadPresetCancel);
+        }
+
+        // attached first so it gets focus first
+       // loadPresetDialog->attach(presetLabelWidget);
+       // loadPresetDialog->attach(presetPreviewWidget);
+        loadPresetDialog->attachFocus(loadPresetOKCancelWidget);
 
         sequencerWindow->attach(volumeWidget);
         sequencerWindow->attach(volumeLabel);
@@ -725,7 +784,9 @@ public:
         contextWindow->attach(presetsTabs);
         gui->rootWindow()->attach(contextWindow);
         gui->rootWindow()->attach(savingDialog);
+        gui->rootWindow()->attach(loadPresetDialog);
         savingDialog->hide();
+        loadPresetDialog->hide();
     }
 
     void def(Widget* w, const char* label, int width, int height)
@@ -811,6 +872,10 @@ public:
         familySelect->setSelectedValue(selectedFamily);
     }
 
+    void setPresetPreview(Storage::Preset p)
+    {
+    }
+
     /********************************************************************
      * The following callbacks are to communicate a change in the value
      * of a component
@@ -851,9 +916,21 @@ public:
         _controller->familyChange(channelVols->getSelected(), familySelect->getSelectedValue().id);
     }
 
-    void onLoadPreset(Widget* w)
+    void onPreviewPreset(Widget* w)
+    {
+        _controller->previewPreset(selectPreset->getSelectedIndex());
+    }
+
+    void onLoadPresetOK(Widget* w)
     {
         _controller->loadPreset(selectPreset->getSelectedIndex());
+        loadPresetDialog->hide();
+        contextWindow->show();
+        transition(&NavKeyView::volumeHandler);
+    }
+
+    void onLoadPresetCancel(Widget* w)
+    {
     }
 
     void onDeletePreset(Widget* w)
@@ -921,9 +998,13 @@ public:
     Window* functionsContainer;
     TabWidget* presetsTabs;
     StorageSelectWidget<8>* selectPreset;
-    PresetPreviewWidget* presetPreviewWidget;
     KeyboardWidget* keyboard;
     char textBuffer[9];
+
+    DialogWindow* loadPresetDialog;
+    TextWidget* presetLabelWidget;
+    PresetPreviewWidget* presetPreviewWidget;
+    OKCancelWidget* loadPresetOKCancelWidget;
 
     TabWidget* channelTabs;
     ChannelVolumeWidget<4>* channelVols;

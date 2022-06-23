@@ -3,6 +3,7 @@
 Window::Window(GraphicsContext *context) : Widget(context) {
   setSize(context->display()->width(), context->display()->height());
   setLocation(0, 0);
+  setLayout(FIXED);
 }
 
 void Window::setLayout(Layout l) {
