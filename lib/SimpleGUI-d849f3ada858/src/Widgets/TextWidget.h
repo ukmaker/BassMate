@@ -30,7 +30,7 @@ protected:
     /**************************
      * Custom data of this class
      **************************/
-    const char *_text;
+    char _text[16];
     HAlign _halign;
     VAlign _valign;
 };

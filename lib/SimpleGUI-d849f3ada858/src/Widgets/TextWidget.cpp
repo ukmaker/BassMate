@@ -17,9 +17,9 @@ TextWidget::TextWidget(GraphicsContext *context, GFXfont *font) : Widget(context
 
 void TextWidget::setText(const char *text)
 {
-    if (_text != text)
+    if (strncmp(_text, text, strlen(text)) != 0)
     {
-        _text = text;
+        strncpy(_text, text, strlen(text));
         noteDirtyContent(ZONE_CONTENT);
     }
 }

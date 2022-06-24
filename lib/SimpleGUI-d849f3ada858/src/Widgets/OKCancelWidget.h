@@ -153,7 +153,7 @@ class OKCancelWidget : public Widget {
   virtual void _clearButtons() {
     uint16_t h = fontRenderer()->getFontHeight() +
                  10;  // including button padding and border
-    display()->fillRect(0, _buttonsY(), _inner.width, h, RED);
+    display()->fillRect(0, _buttonsY(), _inner.width, h, _bg);
   }
 
   uint16_t _buttonsY() {
@@ -164,11 +164,11 @@ class OKCancelWidget : public Widget {
     fontRenderer()->setFont(_font);
     fontRenderer()->setTextColor(_fg, _bg);
 
-    int dx = fontRenderer()->getFontHeight();
-    int dy = dx;
+    int dy = fontRenderer()->getFontHeight();
+    int dx = dy;
 
     uint16_t l = _inner.left() + dx;
-    uint16_t t = _inner.top();// + dy;
+    uint16_t t = _inner.top();
     int16_t x, y, x1, y1 = 0;
     uint16_t w, h = 0;
 
@@ -178,7 +178,7 @@ class OKCancelWidget : public Widget {
 
       uint16_t cancelWidth=0, okWidth=0, userWidth=0, usedWidth = 0, n = 3;
       x = l;
-      y = t;// + 1.5 * dy;
+      y = t;
       fontRenderer()->getTextBounds(_ok, x, y, &x1, &y1, &okWidth, &h);
       usedWidth += okWidth;
 

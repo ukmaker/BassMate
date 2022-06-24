@@ -1,20 +1,27 @@
-#ifndef SIMPLEGUI_KEYBOARD_WIDGET_H
-#define SIMPLEGUI_KEYBOARD_WIDGET_H
+#ifndef SIMPLEGUI_KEYBOARD_AND_BUTTONS_WIDGET_H
+#define SIMPLEGUI_KEYBOARD_AND_BUTTONS_WIDGET_H
 
 #include "Widget.h"
 #include "Core/ColorsRGB16.h"
 
 namespace simplegui {
 
-class KeyboardWidget : public Widget {
+class KeyboardAndButtonsWidget : public Widget {
 public:
+    typedef void (*KeyPressCallback)(char c);
+    typedef void (*OKCancelCallback)();
+
     enum State { KEYS,
-        TEXT };
+        TEXT,
+        OK,
+        CANCEL,
+        USER };
 
     static const uint16_t ZONE_KEYS = 1;
     static const uint16_t ZONE_TEXT = 2;
+    static const uint16_t ZONE_BUTTONS = 4;
 
-    KeyboardWidget(GraphicsContext* context, char* buf, uint8_t buflen)
+    KeyboardAndButtonsWidget(GraphicsContext* context, char* buf, uint8_t buflen)
         : Widget(context)
         , _buf(buf)
         , _buflen(buflen - 1)
@@ -28,7 +35,32 @@ public:
         _len = _lastLen = 0;
         _lastState = KEYS;
         _changed = true;
+        _user = false;
         _dirtyContent = 0xffff;
+    }
+
+    template <class T>
+    void onKeyPress(T* tptr, void (T::*mptr)(char c))
+    {
+        _keyPressCallback.attach(tptr, mptr);
+    }
+
+    template <class T>
+    void onOK(T* tptr, void (T::*mptr)())
+    {
+        _okCallback.attach(tptr, mptr);
+    }
+
+    template <class T>
+    void onCancel(T* tptr, void (T::*mptr)())
+    {
+        _cancelCallback.attach(tptr, mptr);
+    }
+
+    template <class T>
+    void onUserKey(T* tptr, void (T::*mptr)())
+    {
+        _userCallback.attach(tptr, mptr);
     }
 
     void setText(char* text, uint8_t len)
@@ -51,6 +83,13 @@ public:
     uint8_t getTextLen()
     {
         return _len;
+    }
+
+    void setUserLabel(const char* label)
+    {
+        _userLabel = label;
+        _user = true;
+        noteDirtyContent(ZONE_BUTTONS);
     }
 
     void setHighlightForegroundColor(uint16_t color)
@@ -84,18 +123,28 @@ public:
 
         bool moved = true;
 
-        if (_state == KEYS) {
+        switch (_state) {
+        case KEYS: {
             if (_y > 0) {
                 _y--;
                 noteDirtyContent(ZONE_KEYS);
             } else {
                 moved = false;
             }
-        } else {
-            noteDirtyContent(ZONE_TEXT | ZONE_KEYS);
-            _state = KEYS;
+            break;
         }
 
+        case TEXT: {
+            noteDirtyContent(ZONE_TEXT | ZONE_KEYS);
+            _state = KEYS;
+            break;
+        }
+
+        default: {
+            _state = TEXT;
+            noteDirtyContent(ZONE_BUTTONS | ZONE_TEXT);
+        }
+        }
         _noteChanged();
         return moved;
     }
@@ -104,7 +153,8 @@ public:
     {
         bool moved = true;
 
-        if (_state == KEYS) {
+        switch (_state) {
+        case KEYS: {
             if (_y < 3) {
                 _y++;
                 noteDirtyContent(ZONE_KEYS);
@@ -112,43 +162,154 @@ public:
                 _state = TEXT;
                 noteDirtyContent(ZONE_KEYS | ZONE_TEXT);
             }
-        } else {
-            moved = false;
+            break;
         }
 
+        case TEXT: {
+            noteDirtyContent(ZONE_TEXT | ZONE_BUTTONS);
+            _state = CANCEL;
+            break;
+        }
+
+        default:
+            moved = false;
+            break;
+        }
         _noteChanged();
         return moved;
     }
 
     bool left()
     {
-        if (_state == KEYS) {
-            _left();
-        } else {
+        bool moved = true;
+
+        switch (_state) {
+        case KEYS: {
+            moved = _left();
+            break;
+        }
+        case TEXT: {
             // treat as backspace
             _delete();
             noteDirtyContent(ZONE_TEXT);
+            break;
+        }
+        case USER: {
+            _state = OK;
+            noteDirtyContent(ZONE_BUTTONS);
+            break;
+        }
+        case OK: {
+            _state = CANCEL;
+            noteDirtyContent(ZONE_BUTTONS);
+            break;
+        }
+        default:
+            moved = false;
+            break;
+        }
+        _noteChanged();
+
+        return moved;
+    }
+
+    bool back()
+    {
+
+        bool moved = false;
+
+        switch (_state) {
+        case KEYS: {
+            moved = _left();
+            break;
         }
 
+        default:
+            break;
+        }
         _noteChanged();
-        return true;
+        return moved;
     }
 
     bool right()
     {
-        if (_state == KEYS) {
-            _right();
+        bool moved = true;
+
+        switch (_state) {
+        case KEYS: {
+            moved = _right();
+            break;
+        }
+        case CANCEL: {
+            _state = OK;
+            noteDirtyContent(ZONE_BUTTONS);
+            break;
+        }
+
+        case OK:
+            if (_user) {
+                _state = USER;
+                noteDirtyContent(ZONE_BUTTONS);
+                break;
+            } else {
+                moved = false;
+            }
+
+        default:
+            moved = false;
+            break;
         }
         _noteChanged();
-        return true;
+        return moved;
+    }
+
+    bool forward()
+    {
+        bool moved = true;
+
+        switch (_state) {
+        case KEYS: {
+            moved = _right();
+            break;
+        }
+        default:
+            moved = false;
+            break;
+        }
+        _noteChanged();
+        return moved;
     }
 
     void select()
     {
-        if (_state == KEYS) {
+        switch (_state) {
+        case KEYS: {
             char c = _map[_y][_x];
             _append(c);
-            _onChange.call(this);
+            _keyPressCallback.call(c);
+            break;
+        }
+
+        case OK: {
+            noteDirtyContent(ZONE_BUTTONS);
+            _okCallback.call();
+            break;
+        }
+
+        case CANCEL: {
+            noteDirtyContent(ZONE_BUTTONS);
+            _cancelCallback.call();
+            break;
+        }
+
+        case USER: {
+            noteDirtyContent(ZONE_BUTTONS);
+            _userCallback.call();
+            break;
+        }
+
+        default:
+            break;
         }
     }
 
@@ -156,6 +317,13 @@ protected:
     uint8_t _x, _y;
     char _c;
     uint16_t _highlightForegroundColor, _highlightBackgroundColor;
+    FunctionPointerArg1<void, char> _keyPressCallback;
+    FunctionPointer _okCallback, _cancelCallback, _userCallback;
+
+    const char* _ok = "OK";
+    const char* _cancel = "Cancel";
+    bool _user = false;
+    const char* _userLabel;
 
     char* _buf;
     uint8_t _buflen;
@@ -250,6 +418,9 @@ protected:
         if (force) {
             Widget::_clearContent(force);
         } else {
+            if (_dirtyContent & ZONE_BUTTONS) {
+                _clearButtons();
+            }
             if (_dirtyContent & ZONE_KEYS) {
                 _clearKeys();
             }
@@ -257,6 +428,12 @@ protected:
                 _clearText();
             }
         }
+    }
+
+    virtual void _clearButtons()
+    {
+        uint16_t h = fontRenderer()->getFontHeight() + 10; // including button padding and border
+        display()->fillRect(0, _buttonsY(), _inner.width, h, RED);
     }
 
     virtual void _clearKeys()
@@ -283,6 +460,11 @@ protected:
     {
         int dx = fontRenderer()->getFontHeight();
         display()->fillRect(_keyX(x, y), _keyY(x, y), dx, dx, color);
+    }
+
+    uint16_t _buttonsY()
+    {
+        return _inner.top() + 8 * fontRenderer()->getFontHeight();
     }
 
     uint16_t _keyX(uint8_t x, uint8_t y)
@@ -351,11 +533,70 @@ protected:
             fontRenderer()->removeTextWindow();
         }
 
+        if (force || _dirty || (_dirtyContent & ZONE_BUTTONS)) {
+            // OK and Cancel buttons
+            // And user button if enabled
+
+            uint16_t cancelWidth, okWidth, userWidth, usedWidth = 0, n = 3;
+            x = l;
+            y = t + 1.5 * dy;
+            fontRenderer()->getTextBounds(_ok, x, y, &x1, &y1, &okWidth, &h);
+            usedWidth += okWidth;
+
+            fontRenderer()->getTextBounds(_cancel, x, y, &x1, &y1, &cancelWidth, &h);
+            usedWidth += cancelWidth;
+
+            if (_user) {
+                fontRenderer()->getTextBounds(_userLabel, x, y, &x1, &y1, &userWidth,
+                    &h);
+                usedWidth += userWidth;
+                n = 4;
+            }
+            // space the buttons equal on all sides
+            uint16_t remainingWidth = _inner.width - usedWidth;
+            uint16_t spacing = remainingWidth / n;
+
+            _button(x + spacing, y, cancelWidth, dy, 3, 2, _cancel, _state == CANCEL);
+            _button(x + cancelWidth + 2 * spacing, y, okWidth, dy, 3, 2, _ok,
+                _state == OK);
+            if (_user)
+                _button(x + cancelWidth + okWidth + 3 * spacing, y, okWidth, dy, 3, 2,
+                    _userLabel, _state == USER);
+        }
         _lastX = _x;
         _lastY = _y;
         _lastLen = _len;
         _lastState = _state;
         _changed = false;
+    }
+
+    /*
+     * x, y : top left location of button
+     * w, h : width and height of the text
+     * p : padding to put bottom, left and right of the text
+     * b: border width of the button outline
+     */
+    void _button(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint8_t p,
+        uint8_t b, const char* text, bool highlight)
+    {
+        uint16_t fg, bg;
+
+        if (highlight && hasFocus()) {
+            fg = _highlightForegroundColor;
+            bg = _highlightBackgroundColor;
+        } else {
+            fg = _fg;
+            bg = _bg;
+        }
+
+        display()->fillRoundRect(x, y, w + 2 * (b + p), h + 2 * b + p, 2 * b, fg);
+
+        display()->fillRoundRect(x + b, y + b, w + 2 * p, h + p, 2 * b, bg);
+        fontRenderer()->setTextColor(fg, bg);
+
+        fontRenderer()->setTextWindow(x + b + p, y + p, w + 2 * p, h + p);
+        display()->write(text);
+        fontRenderer()->removeTextWindow();
     }
 };
 } // namespace simplegui

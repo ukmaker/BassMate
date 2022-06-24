@@ -69,7 +69,7 @@ public:
         _widgets.reset();
         while ((w = _widgets.next()) != NULL) {
             if(w != _focus) {
-                w->hide();
+                w->blur();
             }
         }       
         if(_focus != nullptr) {

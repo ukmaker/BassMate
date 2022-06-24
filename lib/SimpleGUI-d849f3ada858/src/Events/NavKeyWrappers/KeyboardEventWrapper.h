@@ -27,12 +27,12 @@ namespace simplegui
       {
       case NAV_DEC:
         e.cancelled = true;
-        wrappedKeyboardWidget()->forward();
+        wrappedKeyboardWidget()->left();
         break;
 
       case NAV_INC:
         e.cancelled = true;
-        wrappedKeyboardWidget()->back();
+        wrappedKeyboardWidget()->right();
         break;
 
       case NAV_UP:

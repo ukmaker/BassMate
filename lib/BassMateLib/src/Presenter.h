@@ -69,8 +69,6 @@ namespace bassmate
       _view.volume->setPercent(80);
       _model._midi.setVolume(225 + (_view.volume->getValue() * 29) / 100);
       _model._midi.setBass(15);
-      _view.keyboard->onCancel(this, &Presenter::handleKeyboardCancel);
-      _view.keyboard->onOK(this, &Presenter::handleKeyboardOK);
       _view.storageSelect->onChange(this, &Presenter::handleStorageChange);
       _state = SEQUENCER_VOLUME;
       updateFocus();
@@ -531,10 +529,6 @@ namespace bassmate
         _view.familySelect->scrollUp();
         break;
 
-      case PRESETS_SAVE_UI:
-        _view.keyboard->forward();
-        break;
-
       case PRESETS_LOAD_UI:
         _view.storageSelect->scrollUp();
         break;
@@ -571,10 +565,6 @@ namespace bassmate
 
       case SEQUENCER_CHANNEL_INSTRUMENT_GROUP:
         _view.familySelect->scrollDown();
-        break;
-
-      case PRESETS_SAVE_UI:
-        _view.keyboard->back();
         break;
 
       case PRESETS_LOAD_UI:

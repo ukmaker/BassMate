@@ -146,8 +146,17 @@ public:
             _model._midi.getChannelFamily(channel));
     }
 
-    void previewPreset(uint8_t idx) { }
-    void loadPreset(uint8_t idx) { }
+    void previewPreset(uint8_t idx)
+    {
+        Storage::Preset p = _model._storage->get(idx);
+        _view.setPresetPreview(p);
+    }
+
+    void loadPreset(uint8_t idx)
+    {
+        Storage::Preset p = _model._storage->get(idx);
+    }
+
     void deletePreset(uint8_t idx) { }
     void savePreset(char* name, uint8_t nameLen) { }
     void clearPresets() { }
