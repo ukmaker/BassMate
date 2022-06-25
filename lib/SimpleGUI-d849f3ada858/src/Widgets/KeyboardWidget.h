@@ -1,8 +1,8 @@
 #ifndef SIMPLEGUI_KEYBOARD_WIDGET_H
 #define SIMPLEGUI_KEYBOARD_WIDGET_H
 
-#include "Widget.h"
 #include "Core/ColorsRGB16.h"
+#include "Widget.h"
 
 namespace simplegui {
 
@@ -75,6 +75,14 @@ public:
 
     char getValue() { return _c; }
 
+    void top()
+    {
+        _x = 0;
+        _y = 0;
+        _state = KEYS;
+        noteDirty();
+    }
+
     /*
      * Move the cursor up one line.
      * returns true if movement happened
@@ -105,9 +113,9 @@ public:
         bool moved = true;
 
         if (_state == KEYS) {
+            noteDirtyContent(ZONE_KEYS);
             if (_y < 3) {
                 _y++;
-                noteDirtyContent(ZONE_KEYS);
             } else {
                 _state = TEXT;
                 noteDirtyContent(ZONE_KEYS | ZONE_TEXT);
@@ -249,6 +257,8 @@ protected:
         fontRenderer()->setFont(_font);
         if (force) {
             Widget::_clearContent(force);
+            _clearKeys();
+            _clearText();
         } else {
             if (_dirtyContent & ZONE_KEYS) {
                 _clearKeys();
@@ -271,7 +281,7 @@ protected:
         uint16_t d = fontRenderer()->getFontHeight();
         uint16_t l = _inner.left() + d;
         uint16_t t = _inner.top() + 4 * d;
-        if (_state == TEXT) {
+        if (hasFocus() && _state == TEXT) {
             display()->fillRect(l, t, _inner.width - d, d + 2,
                 _highlightBackgroundColor);
         } else {
@@ -338,7 +348,7 @@ protected:
 
         // now draw the text in the buffer
         if (force || _dirty || (_dirtyContent & ZONE_TEXT)) {
-            if (_state == TEXT) {
+            if (hasFocus() && _state == TEXT) {
                 fontRenderer()->setTextColor(_highlightForegroundColor,
                     _highlightBackgroundColor);
             } else {

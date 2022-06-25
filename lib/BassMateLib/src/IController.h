@@ -26,7 +26,7 @@ namespace bassmate
         virtual void previewPreset(uint8_t idx) =0;
         virtual void loadPreset(uint8_t idx) =0;
         virtual void deletePreset(uint8_t idx) =0;
-        virtual void savePreset(char *name, uint8_t nameLen) =0;
+        virtual void savePreset(char *name, uint8_t nameLen, bool overwrite) =0;
         virtual void clearPresets() =0;
 
         virtual void channelRefresh(uint8_t channel) =0;

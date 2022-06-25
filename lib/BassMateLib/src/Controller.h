@@ -158,7 +158,20 @@ public:
     }
 
     void deletePreset(uint8_t idx) { }
-    void savePreset(char* name, uint8_t nameLen) { }
+    void savePreset(char* name, uint8_t nameLen, bool overwrite)
+    {
+        Storage::Preset p = PresetHandler::getActivePreset(&_model._midi, &_model._sequencer);
+        p.setName(name, nameLen);
+        if (_model._storage->exists(p) && !overwrite) {
+            _view.notifyPresetExists(p);
+        } else {
+            if(_model._storage->save(p)) {
+                _view.notifyPresetSaved(p);
+            } else {
+                _view.notifyPresetSaveFailed(p);
+            }
+        }
+    }
     void clearPresets() { }
     void presetsRefresh() { }
 

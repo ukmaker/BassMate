@@ -39,6 +39,8 @@
 #include "Widgets/VolumeWidget.h"
 #include "Widgets/WrapperSelectWidget.h"
 
+#include "Core/Timer.h"
+
 namespace bassmate {
 
 using namespace simplegui;
@@ -88,6 +90,343 @@ public:
     {
         _fp.attach(this, mptr);
         _fp.call(Event::null());
+    }
+
+    void begin()
+    {
+        gui->rootWindow()->setSize(context->display()->width(),
+            context->display()->height());
+        makeUI();
+        _fp.attach(this, &NavKeyView::volumeHandler);
+        contextWindow->select(0);
+        contextWindow->blur();
+        volumeWidget->focus();
+        selectPreset->load();
+    }
+
+    void makeUI()
+    {
+        def(gui->rootWindow(), "ROOT", 320, 240);
+        {
+            gui->rootWindow()->setBorderWidth(8);
+            gui->rootWindow()->setBackground(BG);
+            gui->rootWindow()->setBorderColor(FG);
+            gui->rootWindow()->setPadding(2);
+            gui->rootWindow()->setBevel(true);
+            gui->rootWindow()->setLayout(Window::FIXED);
+        }
+
+        contextWindow = new ContextWindow(context);
+        def(contextWindow, "topWindow", 300, 220);
+        {
+            contextWindow->setLayout(Window::FIXED);
+            contextWindow->setTitleBarBackground(HL);
+            contextWindow->setTitleBarForeground(BG);
+            contextWindow->setTitleBarHeight(30);
+            contextWindow->onFocus(this, &NavKeyView::contextWindowOnFocus);
+            contextWindow->onBlur(this, &NavKeyView::contextWindowOnFocus);
+        }
+
+        sequencerWindow = new Window(context);
+        def(sequencerWindow, "Sequencer", 300, 178);
+        {
+            sequencerWindow->setLayout(Window::FIXED);
+            sequencerWindow->setLocation(0, 32);
+        }
+
+        presetsWindow = new Window(context);
+        def(presetsWindow, "Presets", 300, 178);
+        {
+            presetsWindow->setLayout(Window::FIXED);
+            presetsWindow->setLocation(0, 32);
+            presetsWindow->setBackground(BG);
+        }
+
+        volumeWidget = new VolumeWidget(context);
+        def(volumeWidget, "Volume", 60, 16);
+        {
+            volumeWidget->setPercent(75);
+            volumeWidget->setLocation(6, 6);
+            volumeWidget->setStep(1);
+            volumeWidget->setMode(VolumeWidget::ANTILOG);
+            volumeWidget->onChange(this, &NavKeyView::onVolumeChange);
+            volumeWidget->onFocus(this, &NavKeyView::masterVolumeOnFocus);
+            volumeWidget->onBlur(this, &NavKeyView::masterVolumeOnBlur);
+        }
+
+        volumeLabel = new TextWidget(context);
+        def(volumeLabel, "", 100, 28);
+        {
+            volumeLabel->setText("Vol");
+            volumeLabel->setLocation(68, 0);
+        }
+
+        tempoWidget = new ValueWidget(context);
+        def(tempoWidget, "", 60, 28);
+        {
+            tempoWidget->setMax(300);
+            tempoWidget->setMin(20);
+            tempoWidget->setStep(1);
+            tempoWidget->setFont(&defaultFont);
+            tempoWidget->setLocation(200, 0);
+            tempoWidget->onFocus(this, &NavKeyView::tempoOnFocus);
+            tempoWidget->onBlur(this, &NavKeyView::tempoOnBlur);
+        }
+
+        playPauseStopWidget = new PlayPauseStopWidget(context);
+        def(playPauseStopWidget, "", 20, 20);
+        {
+            playPauseStopWidget->setLocation(270, 0);
+            playPauseStopWidget->onChange(this, &NavKeyView::onPlayPauseStop);
+        }
+
+        channelTabs = new TabWidget(context);
+        defTab(channelTabs, "channelTabs");
+        {
+            channelTabs->setLocation(0, 30);
+            channelTabs->onFocus(this, &NavKeyView::channelTabsOnFocus);
+            channelTabs->onBlur(this, &NavKeyView::channelTabsOnBlur);
+        }
+
+        VoiceWrapper* wrapper = new VoiceWrapper();
+        voiceSelect = new WrapperSelectWidget<Voice>(context, wrapper, nullptr, 0);
+        def(voiceSelect, "Voice", 290, 160);
+        {
+            voiceSelect->setLocation(0, 0);
+            voiceSelect->setHighlightColor(HL);
+            voiceSelect->onChange(this, &NavKeyView::onVoiceChange);
+            voiceSelect->onFocus(this, &NavKeyView::voiceSelectOnFocus);
+            voiceSelect->onBlur(this, &NavKeyView::voiceSelectOnBlur);
+        }
+
+        FamilyWrapper* familyWrapper = new FamilyWrapper();
+        familySelect = new WrapperSelectWidget<Family>(context, familyWrapper, nullptr, 0);
+        def(familySelect, "Family", 290, 160);
+        {
+            familySelect->setLocation(0, 0);
+            familySelect->setHighlightColor(HL);
+            familySelect->onChange(this, &NavKeyView::onFamilyChange);
+            familySelect->onFocus(this, &NavKeyView::familySelectOnFocus);
+            familySelect->onBlur(this, &NavKeyView::familySelectOnBlur);
+        }
+
+        channelVols = new ChannelVolumeWidget<4>(context);
+        def(channelVols, "Vol", 290, 120);
+        {
+            channelVols->setPercent(0, 75);
+            channelVols->setPercent(1, 60);
+            channelVols->setPercent(2, 45);
+            channelVols->setPercent(3, 30);
+            channelVols->setChannelLabel(0, "--");
+            channelVols->setChannelLabel(1, "--");
+            channelVols->setChannelLabel(2, "--");
+            channelVols->setChannelLabel(3, "--");
+            channelVols->setLocation(0, 0);
+            channelVols->setTextMargin(4);
+            channelVols->setTextWidth(195);
+            channelVols->setFont(&defaultFont);
+            channelVols->setTextRight();
+            channelVols->setSelectedColor(HL);
+            channelVols->setStep(5);
+            channelVols->onFocus(this, &NavKeyView::channelVolsOnFocus);
+            channelVols->onBlur(this, &NavKeyView::channelVolsOnBlur);
+        }
+
+        selectPreset = new StorageSelectWidget<8>(context, _storage);
+        def(selectPreset, "Load", 280, 170);
+        {
+            selectPreset->setHighlightColor(FG);
+            selectPreset->onFocus(this, &NavKeyView::selectPresetOnFocus);
+            selectPreset->onBlur(this, &NavKeyView::selectPresetOnBlur);
+            selectPreset->onChange(this, &NavKeyView::onPreviewPreset);
+        }
+
+        savePresetDialog = new DialogWindow(context);
+        savePresetDialog->setLabel("Save");
+        savePresetDialog->setTraversable(false);
+        savePresetDialog->setBackground(BG);
+        savePresetDialog->setSize(300, 220);
+
+        savePresetOKCancelWidget = new OKCancelWidget(context);
+        def(savePresetOKCancelWidget, "", 280, 30);
+        {
+            savePresetOKCancelWidget->setHighlightForegroundColor(BLACK);
+            savePresetOKCancelWidget->setHighlightBackgroundColor(YELLOW);
+            savePresetOKCancelWidget->setLocation(0, 120);
+            savePresetOKCancelWidget->onOK(this, &NavKeyView::onSavePresetOK);
+            savePresetOKCancelWidget->onCancel(this, &NavKeyView::onSavePresetCancel);
+            savePresetOKCancelWidget->onFocus(this, &NavKeyView::saveButtonsOnFocus);
+            savePresetOKCancelWidget->onBlur(this, &NavKeyView::saveButtonsOnBlur);
+        }
+
+        keyboard = new KeyboardWidget(context, textBuffer, 9);
+        def(keyboard, "", 280, 115);
+        {
+            keyboard->setHighlightForegroundColor(BLACK);
+            keyboard->setHighlightBackgroundColor(YELLOW);
+            keyboard->setText("hello world", 11);
+            keyboard->setLocation(0, 0);
+            keyboard->setBackground(BG);
+            keyboard->onFocus(this, &NavKeyView::keyboardOnFocus);
+            keyboard->onBlur(this, &NavKeyView::keyboardOnBlur);
+        }
+        savePresetDialog->attach(savePresetOKCancelWidget);
+        savePresetDialog->attachFocus(keyboard);
+
+        savingDialog = new TextWidget(context);
+        def(savingDialog, "", 300, 30);
+        {
+            savingDialog->setText("Saving..");
+            savingDialog->setLocation(0, 30);
+            savingDialog->setHAlign(HAlign::CENTER);
+            savingDialog->setVAlign(VAlign::MIDDLE);
+            savingDialog->hide();
+        }
+
+        overwritePresetDialog = new DialogWindow(context);
+        overwritePresetDialog->setLabel("Replace");
+        overwritePresetDialog->setTraversable(false);
+        overwritePresetDialog->setBackground(RED);
+        overwritePresetDialog->setSize(300, 220);
+
+        overwritePresetLabelWidget = new TextWidget(context);
+        def(overwritePresetLabelWidget, "Replace:", 280, 30);
+        {
+            overwritePresetLabelWidget->setLocation(0, 0);
+            overwritePresetLabelWidget->setText("Preset exists. Overwrite?");
+            overwritePresetLabelWidget->setForeground(WHITE);
+            overwritePresetLabelWidget->setBackground(RED);
+        }
+
+        overwritePresetOKCancelWidget = new OKCancelWidget(context);
+        def(overwritePresetOKCancelWidget, "", 280, 30);
+        {
+            overwritePresetOKCancelWidget->setBackground(RED);
+            overwritePresetOKCancelWidget->setHighlightForegroundColor(BLACK);
+            overwritePresetOKCancelWidget->setHighlightBackgroundColor(YELLOW);
+            overwritePresetOKCancelWidget->setLocation(0, 120);
+            overwritePresetOKCancelWidget->onOK(this, &NavKeyView::onOverwritePresetOK);
+            overwritePresetOKCancelWidget->onCancel(this, &NavKeyView::onOverwritePresetCancel);
+        }
+
+        overwritePresetDialog->attach(overwritePresetLabelWidget);
+        overwritePresetDialog->attachFocus(overwritePresetOKCancelWidget);
+
+        presetsTabs = new TabWidget(context);
+        defTab(presetsTabs, "Presets");
+        {
+            presetsTabs->setLocation(0, 30);
+            presetsTabs->setSize(299, 190);
+            presetsTabs->attach(selectPreset);
+            presetsTabs->attach(savePresetDialog);
+            presetsTabs->onFocus(this, &NavKeyView::presetsTabsOnFocus);
+            presetsTabs->onBlur(this, &NavKeyView::presetsTabsOnBlur);
+        }
+
+        /**
+         * Construct a dialog for loading a Preset
+         * TextWidget
+         * PresetPreviewWidget
+         * OKCancelWidget
+         */
+        loadPresetDialog = new DialogWindow(context);
+        loadPresetDialog->setTraversable(false);
+        loadPresetDialog->setBackground(BG);
+        loadPresetDialog->setSize(300, 220);
+
+        presetLabelWidget = new TextWidget(context);
+        def(presetLabelWidget, "Preset:", 280, 30);
+        {
+            presetLabelWidget->setLocation(0, 0);
+        }
+
+        presetPreviewWidget = new PresetPreviewWidget(context);
+        def(presetPreviewWidget, "Presets", 280, 160);
+        {
+            presetPreviewWidget->setLocation(0, 20);
+            presetPreviewWidget->setBackground(LIGHTGRAY);
+        }
+
+        loadPresetOKCancelWidget = new OKCancelWidget(context);
+        def(loadPresetOKCancelWidget, "", 280, 30);
+        {
+            loadPresetOKCancelWidget->setHighlightForegroundColor(BLACK);
+            loadPresetOKCancelWidget->setHighlightBackgroundColor(YELLOW);
+            loadPresetOKCancelWidget->setLocation(0, 190);
+            loadPresetOKCancelWidget->onOK(this, &NavKeyView::onLoadPresetOK);
+            loadPresetOKCancelWidget->onCancel(this, &NavKeyView::onLoadPresetCancel);
+        }
+
+        loadPresetDialog->attach(presetLabelWidget);
+        loadPresetDialog->attach(presetPreviewWidget);
+        loadPresetDialog->attachFocus(loadPresetOKCancelWidget);
+
+        sequencerWindow->attach(volumeWidget);
+        sequencerWindow->attach(volumeLabel);
+        sequencerWindow->attach(tempoWidget);
+        sequencerWindow->attach(playPauseStopWidget);
+        channelTabs->attach(channelVols);
+        channelTabs->attach(voiceSelect);
+        channelTabs->attach(familySelect);
+
+        sequencerWindow->attach(channelTabs);
+
+        contextWindow->attach(sequencerWindow);
+        contextWindow->attach(presetsTabs);
+        gui->rootWindow()->attach(contextWindow);
+        gui->rootWindow()->attach(savingDialog);
+        gui->rootWindow()->attach(loadPresetDialog);
+        gui->rootWindow()->attach(overwritePresetDialog);
+        savingDialog->hide();
+        loadPresetDialog->hide();
+        overwritePresetDialog->hide();
+    }
+
+    void def(Widget* w, const char* label, int width, int height)
+    {
+        w->setForeground(FG);
+        w->setBackground(BG);
+        w->setLabel(label);
+        w->setSize(width, height);
+    }
+
+    void defTab(TabWidget* w, const char* label)
+    {
+        w->setForeground(FG);
+        w->setBackground(BG);
+        w->setBackground(BG);
+        w->setTabWidth(99);
+        w->setTabHeight(32);
+        w->setBorderWidth(2);
+        w->setBorderColor(WHITE);
+        w->setTabBorderColor(WHITE);
+        w->setTabBorderWidth(2);
+        w->setTabPadding(2);
+        w->setTabSelectedFontColor(BG);
+        w->setTabUnselectedFontColor(WHITE);
+        w->setTabSelectedColor(FG);
+        w->setTabUnselectedColor(BG);
+        w->setLayout(Window::FIXED);
+        w->setLabel(label);
+        w->setSize(299, 160);
+    }
+
+    /********************************************************************
+     * Implementation of EventListener
+     ********************************************************************/
+    void handleEvent(Event e)
+    {
+        _fp.call(e);
+    }
+
+    /********************************************************************
+     * Implementation of IView
+     ********************************************************************/
+    void run()
+    {
+        _timer.tick();
+        gui->run();
+        noteGrid.tick();
     }
 
     /*********************************************************************
@@ -479,8 +818,27 @@ public:
         }
     }
 
-    void savePresetHandler(Event e)
+    void handleOverwritePresetButtons(Event e)
     {
+        overwritePresetOKCancelWidget->focus();
+        switch (e.type) {
+        case NAV_LEFT:
+        case NAV_DEC:
+            overwritePresetOKCancelWidget->left();
+            break;
+
+        case NAV_RIGHT:
+        case NAV_INC:
+            overwritePresetOKCancelWidget->right();
+            break;
+
+        case NAV_SELECT:
+            overwritePresetOKCancelWidget->select();
+            break;
+
+        default:
+            break;
+        }
     }
 
     void contextWindowOnFocus(Widget* w)
@@ -642,309 +1000,20 @@ public:
         w->selectTab(t);
     }
 
-    void begin()
+    void goHome()
     {
-        gui->rootWindow()->setSize(context->display()->width(),
-            context->display()->height());
-        makeUI();
-        _fp.attach(this, &NavKeyView::volumeHandler);
-        contextWindow->select(0);
-        contextWindow->blur();
-        volumeWidget->focus();
-        selectPreset->load();
-    }
-
-    void makeUI()
-    {
-        def(gui->rootWindow(), "ROOT", 320, 240);
-        {
-            gui->rootWindow()->setBorderWidth(8);
-            gui->rootWindow()->setBackground(BG);
-            gui->rootWindow()->setBorderColor(FG);
-            gui->rootWindow()->setPadding(2);
-            gui->rootWindow()->setBevel(true);
-            gui->rootWindow()->setLayout(Window::FIXED);
-        }
-
-        contextWindow = new ContextWindow(context);
-        def(contextWindow, "topWindow", 300, 220);
-        {
-            contextWindow->setLayout(Window::FIXED);
-            contextWindow->setTitleBarBackground(HL);
-            contextWindow->setTitleBarForeground(BG);
-            contextWindow->setTitleBarHeight(30);
-            contextWindow->onFocus(this, &NavKeyView::contextWindowOnFocus);
-            contextWindow->onBlur(this, &NavKeyView::contextWindowOnFocus);
-        }
-
-        sequencerWindow = new Window(context);
-        def(sequencerWindow, "Sequencer", 300, 178);
-        {
-            sequencerWindow->setLayout(Window::FIXED);
-            sequencerWindow->setLocation(0, 32);
-        }
-
-        presetsWindow = new Window(context);
-        def(presetsWindow, "Presets", 300, 178);
-        {
-            presetsWindow->setLayout(Window::FIXED);
-            presetsWindow->setLocation(0, 32);
-            presetsWindow->setBackground(BG);
-        }
-
-        volumeWidget = new VolumeWidget(context);
-        def(volumeWidget, "Volume", 60, 16);
-        {
-            volumeWidget->setPercent(75);
-            volumeWidget->setLocation(6, 6);
-            volumeWidget->setStep(1);
-            volumeWidget->setMode(VolumeWidget::ANTILOG);
-            volumeWidget->onChange(this, &NavKeyView::onVolumeChange);
-            volumeWidget->onFocus(this, &NavKeyView::masterVolumeOnFocus);
-            volumeWidget->onBlur(this, &NavKeyView::masterVolumeOnBlur);
-        }
-
-        volumeLabel = new TextWidget(context);
-        def(volumeLabel, "", 100, 28);
-        {
-            volumeLabel->setText("Vol");
-            volumeLabel->setLocation(68, 0);
-        }
-
-        tempoWidget = new ValueWidget(context);
-        def(tempoWidget, "", 60, 28);
-        {
-            tempoWidget->setMax(300);
-            tempoWidget->setMin(20);
-            tempoWidget->setStep(1);
-            tempoWidget->setFont(&defaultFont);
-            tempoWidget->setLocation(200, 0);
-            tempoWidget->onFocus(this, &NavKeyView::tempoOnFocus);
-            tempoWidget->onBlur(this, &NavKeyView::tempoOnBlur);
-        }
-
-        playPauseStopWidget = new PlayPauseStopWidget(context);
-        def(playPauseStopWidget, "", 20, 20);
-        {
-            playPauseStopWidget->setLocation(270, 0);
-            playPauseStopWidget->onChange(this, &NavKeyView::onPlayPauseStop);
-        }
-
-        channelTabs = new TabWidget(context);
-        defTab(channelTabs, "channelTabs");
-        {
-            channelTabs->setLocation(0, 30);
-            channelTabs->onFocus(this, &NavKeyView::channelTabsOnFocus);
-            channelTabs->onBlur(this, &NavKeyView::channelTabsOnBlur);
-        }
-
-        VoiceWrapper* wrapper = new VoiceWrapper();
-        voiceSelect = new WrapperSelectWidget<Voice>(context, wrapper, nullptr, 0);
-        def(voiceSelect, "Voice", 290, 160);
-        {
-            voiceSelect->setLocation(0, 0);
-            voiceSelect->setHighlightColor(HL);
-            voiceSelect->onChange(this, &NavKeyView::onVoiceChange);
-            voiceSelect->onFocus(this, &NavKeyView::voiceSelectOnFocus);
-            voiceSelect->onBlur(this, &NavKeyView::voiceSelectOnBlur);
-        }
-
-        FamilyWrapper* familyWrapper = new FamilyWrapper();
-        familySelect = new WrapperSelectWidget<Family>(context, familyWrapper, nullptr, 0);
-        def(familySelect, "Family", 290, 160);
-        {
-            familySelect->setLocation(0, 0);
-            familySelect->setHighlightColor(HL);
-            familySelect->onChange(this, &NavKeyView::onFamilyChange);
-            familySelect->onFocus(this, &NavKeyView::familySelectOnFocus);
-            familySelect->onBlur(this, &NavKeyView::familySelectOnBlur);
-        }
-
-        channelVols = new ChannelVolumeWidget<4>(context);
-        def(channelVols, "Vol", 290, 120);
-        {
-            channelVols->setPercent(0, 75);
-            channelVols->setPercent(1, 60);
-            channelVols->setPercent(2, 45);
-            channelVols->setPercent(3, 30);
-            channelVols->setChannelLabel(0, "--");
-            channelVols->setChannelLabel(1, "--");
-            channelVols->setChannelLabel(2, "--");
-            channelVols->setChannelLabel(3, "--");
-            channelVols->setLocation(0, 0);
-            channelVols->setTextMargin(4);
-            channelVols->setTextWidth(195);
-            channelVols->setFont(&defaultFont);
-            channelVols->setTextRight();
-            channelVols->setSelectedColor(HL);
-            channelVols->setStep(5);
-            channelVols->onFocus(this, &NavKeyView::channelVolsOnFocus);
-            channelVols->onBlur(this, &NavKeyView::channelVolsOnBlur);
-        }
-
-        selectPreset = new StorageSelectWidget<8>(context, _storage);
-        def(selectPreset, "Load", 280, 170);
-        {
-            selectPreset->setHighlightColor(FG);
-            selectPreset->onFocus(this, &NavKeyView::selectPresetOnFocus);
-            selectPreset->onBlur(this, &NavKeyView::selectPresetOnBlur);
-            selectPreset->onChange(this, &NavKeyView::onPreviewPreset);
-        }
-
-        savePresetDialog = new DialogWindow(context);
-        savePresetDialog->setLabel("Save");
-        savePresetDialog->setTraversable(false);
-        savePresetDialog->setBackground(BG);
-        savePresetDialog->setSize(300, 220);
-
-        savePresetOKCancelWidget = new OKCancelWidget(context);
-        def(savePresetOKCancelWidget, "", 280, 30);
-        {
-            savePresetOKCancelWidget->setHighlightForegroundColor(BLACK);
-            savePresetOKCancelWidget->setHighlightBackgroundColor(YELLOW);
-            savePresetOKCancelWidget->setLocation(0, 120);
-            savePresetOKCancelWidget->onOK(this, &NavKeyView::onSavePresetOK);
-            savePresetOKCancelWidget->onCancel(this, &NavKeyView::onSavePresetCancel);
-            savePresetOKCancelWidget->onFocus(this, &NavKeyView::saveButtonsOnFocus);
-            savePresetOKCancelWidget->onBlur(this, &NavKeyView::saveButtonsOnBlur);
-        }
-
-        keyboard = new KeyboardWidget(context, textBuffer, 9);
-        def(keyboard, "", 280, 115);
-        {
-            keyboard->setHighlightForegroundColor(BLACK);
-            keyboard->setHighlightBackgroundColor(YELLOW);
-            keyboard->setText("hello world", 11);
-            keyboard->setLocation(0, 0);
-            keyboard->setBackground(RED);
-            keyboard->onFocus(this, &NavKeyView::keyboardOnFocus);
-            keyboard->onBlur(this, &NavKeyView::keyboardOnBlur);
-        }
-        savePresetDialog->attach(savePresetOKCancelWidget);
-        savePresetDialog->attachFocus(keyboard);
-
-        savingDialog = new TextWidget(context);
-        def(savingDialog, "", 300, 190);
-        {
-            savingDialog->setText("Saving..");
-            savingDialog->setLocation(0, 30);
-            savingDialog->setHAlign(HAlign::CENTER);
-            savingDialog->setVAlign(VAlign::MIDDLE);
-            savingDialog->hide();
-        }
-
-        presetsTabs = new TabWidget(context);
-        defTab(presetsTabs, "Presets");
-        {
-            presetsTabs->setLocation(0, 30);
-            presetsTabs->setSize(299, 190);
-            presetsTabs->attach(selectPreset);
-            presetsTabs->attach(savePresetDialog);
-            presetsTabs->onFocus(this, &NavKeyView::presetsTabsOnFocus);
-            presetsTabs->onBlur(this, &NavKeyView::presetsTabsOnBlur);
-        }
-
-        /**
-         * Construct a dialog for loading a Preset
-         * TextWidget
-         * PresetPreviewWidget
-         * OKCancelWidget
-         */
-        loadPresetDialog = new DialogWindow(context);
-        loadPresetDialog->setTraversable(false);
-        loadPresetDialog->setBackground(BG);
-        loadPresetDialog->setSize(300, 220);
-
-        presetLabelWidget = new TextWidget(context);
-        def(presetLabelWidget, "Preset:", 280, 30);
-        {
-            presetLabelWidget->setLocation(0, 0);
-        }
-
-        presetPreviewWidget = new PresetPreviewWidget(context);
-        def(presetPreviewWidget, "Presets", 280, 160);
-        {
-            presetPreviewWidget->setLocation(0, 20);
-            presetPreviewWidget->setBackground(LIGHTGRAY);
-        }
-
-        loadPresetOKCancelWidget = new OKCancelWidget(context);
-        def(loadPresetOKCancelWidget, "", 280, 30);
-        {
-            loadPresetOKCancelWidget->setHighlightForegroundColor(BLACK);
-            loadPresetOKCancelWidget->setHighlightBackgroundColor(YELLOW);
-            loadPresetOKCancelWidget->setLocation(0, 190);
-            loadPresetOKCancelWidget->onOK(this, &NavKeyView::onLoadPresetOK);
-            loadPresetOKCancelWidget->onCancel(this, &NavKeyView::onLoadPresetCancel);
-        }
-
-        loadPresetDialog->attach(presetLabelWidget);
-        loadPresetDialog->attach(presetPreviewWidget);
-        loadPresetDialog->attachFocus(loadPresetOKCancelWidget);
-
-        sequencerWindow->attach(volumeWidget);
-        sequencerWindow->attach(volumeLabel);
-        sequencerWindow->attach(tempoWidget);
-        sequencerWindow->attach(playPauseStopWidget);
-        channelTabs->attach(channelVols);
-        channelTabs->attach(voiceSelect);
-        channelTabs->attach(familySelect);
-
-        sequencerWindow->attach(channelTabs);
-
-        contextWindow->attach(sequencerWindow);
-        contextWindow->attach(presetsTabs);
-        gui->rootWindow()->attach(contextWindow);
-        gui->rootWindow()->attach(savingDialog);
-        gui->rootWindow()->attach(loadPresetDialog);
+        savingDialog->setBackground(BG);
+        savingDialog->setForeground(FG);
         savingDialog->hide();
-        loadPresetDialog->hide();
-    }
-
-    void def(Widget* w, const char* label, int width, int height)
-    {
-        w->setForeground(FG);
-        w->setBackground(BG);
-        w->setLabel(label);
-        w->setSize(width, height);
-    }
-
-    void defTab(TabWidget* w, const char* label)
-    {
-        w->setForeground(FG);
-        w->setBackground(BG);
-        w->setBackground(BG);
-        w->setTabWidth(99);
-        w->setTabHeight(32);
-        w->setBorderWidth(2);
-        w->setBorderColor(WHITE);
-        w->setTabBorderColor(WHITE);
-        w->setTabBorderWidth(2);
-        w->setTabPadding(2);
-        w->setTabSelectedFontColor(BG);
-        w->setTabUnselectedFontColor(WHITE);
-        w->setTabSelectedColor(FG);
-        w->setTabUnselectedColor(BG);
-        w->setLayout(Window::FIXED);
-        w->setLabel(label);
-        w->setSize(299, 160);
-    }
-
-    /********************************************************************
-     * Implementation of EventListener
-     ********************************************************************/
-    void handleEvent(Event e)
-    {
-        _fp.call(e);
-    }
-
-    /********************************************************************
-     * Implementation of IView
-     ********************************************************************/
-    void run()
-    {
-        gui->run();
-        noteGrid.tick();
+        keyboard->blur();
+        keyboard->top();
+        savePresetOKCancelWidget->blur();
+        presetsTabs->selectTabByIndex(0);
+        presetsTabs->blur();
+        contextWindow->show();
+        contextWindow->select(0);
+        contextWindow->focusChild();
+        transition(&NavKeyView::volumeHandler);
     }
 
     /********************************************************************
@@ -988,6 +1057,37 @@ public:
     {
         presetPreviewWidget->setPreset(p);
         presetLabelWidget->setText(p.name);
+    }
+
+    void notifyPresetExists(Storage::Preset p)
+    {
+        overwritePresetDialog->show();
+        contextWindow->hide();
+        transition(&NavKeyView::handleOverwritePresetButtons);
+    }
+
+    void notifyPresetSaved(Storage::Preset p)
+    {
+        contextWindow->hide();
+        overwritePresetDialog->hide();
+        savingDialog->setText("Preset saved");
+        savingDialog->show();
+        _timer.setTimeout(1000, this, &NavKeyView::presetSaveDialogTimeout);
+    }
+
+    void notifyPresetSaveFailed(Storage::Preset p)
+    {
+        overwritePresetDialog->hide();
+        savingDialog->setBackground(RED);
+        savingDialog->setForeground(WHITE);
+        savingDialog->setText("Could not save");
+        savingDialog->show();
+        _timer.setTimeout(1000, this, &NavKeyView::presetSaveDialogTimeout);
+    }
+
+    void presetSaveDialogTimeout()
+    {
+        goHome();
     }
 
     /********************************************************************
@@ -1039,10 +1139,7 @@ public:
     {
         _controller->loadPreset(selectPreset->getSelectedIndex());
         loadPresetDialog->hide();
-        contextWindow->show();
-        contextWindow->select(0);
-        contextWindow->focusChild();
-        transition(&NavKeyView::volumeHandler);
+        goHome();
     }
 
     void onLoadPresetCancel(Widget* w)
@@ -1055,22 +1152,38 @@ public:
 
     void onSavePresetOK(Widget* w)
     {
+        // Notify the Contoller of a request
+        // to save the current sequence as a preset
+        _controller->savePreset(keyboard->getText(), keyboard->getTextLen(), false);
+        // this will cause the controller to call back with one of
+        // notifyPresetExists
+        // notifyPresetSaved
+        // notifyPresetSaveFailed
+    }
+
+    void onOverwritePresetOK(Widget* w)
+    {
+        // Notify the Contoller of a request
+        // to save the current sequence as a preset
+        _controller->savePreset(keyboard->getText(), keyboard->getTextLen(), true);
     }
 
     void onSavePresetCancel(Widget* w)
     {
-        savePresetOKCancelWidget->blur();
+        goHome();
+    }
+
+    void onOverwritePresetCancel(Widget* w)
+    {
+        overwritePresetDialog->hide();
+        contextWindow->show();
+        contextWindow->focusChild();
         transition(&NavKeyView::presetsHandler);
     }
 
     void onDeletePreset(Widget* w)
     {
         _controller->deletePreset(selectPreset->getSelectedIndex());
-    }
-
-    void onSavePreset(Widget* w)
-    {
-        _controller->savePreset(keyboard->getText(), keyboard->getTextLen());
     }
 
     void onClearPresets(Widget* w)
@@ -1087,12 +1200,12 @@ public:
      * @brief Called when the channel dialog is show to ask for the correct
      * set of instrument choices
      */
-    void onChannelRefresh(uint8_t channel)
+    void requestChannelRefresh(uint8_t channel)
     {
         _controller->channelRefresh(channel);
     }
 
-    void onFamilyRefresh(uint8_t channel)
+    void requestFamilyRefresh(uint8_t channel)
     {
         _controller->familyRefresh(channel);
     }
@@ -1101,7 +1214,7 @@ public:
      * @brief Called when the load dialog is displayed to refresh the list
      * of saved presets
      */
-    void onPresetsRefresh()
+    void requestPresetsRefresh()
     {
         _controller->presetsRefresh();
     }
@@ -1144,7 +1257,13 @@ public:
     PresetPreviewWidget* presetPreviewWidget;
     OKCancelWidget* loadPresetOKCancelWidget;
 
+    DialogWindow* overwritePresetDialog;
+    TextWidget* overwritePresetLabelWidget;
+    OKCancelWidget* overwritePresetOKCancelWidget;
+
     NoteGrid& noteGrid;
+
+    Timer _timer;
 };
 } // namespace bassmate
 #endif

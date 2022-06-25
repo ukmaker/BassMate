@@ -36,6 +36,9 @@ public:
         const Family selectedFamily)
         = 0;
     virtual void setPresetPreview(Storage::Preset p) = 0;
+    virtual void notifyPresetExists(Storage::Preset p) =0;
+    virtual void notifyPresetSaved(Storage::Preset p) = 0;
+    virtual void notifyPresetSaveFailed(Storage::Preset p) = 0;
 };
 } // namespace bassmate
 #endif
