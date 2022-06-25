@@ -19,7 +19,11 @@ public:
     }
 
 protected:
+
     Storage::Preset _preset;
+
+    uint16_t _activeButtonColor = GREEN;
+    uint16_t _inactiveButtonColor = WHITE;
 
     virtual void _drawContent(bool force)
     {
@@ -41,10 +45,10 @@ protected:
         for (uint8_t y = 0; y < 4; y++) {
             uint16_t x0 = _inner.left() + dx;
             for (uint8_t x = 0; x < 8; x++) {
-                if (_preset.lines[y].notes[x].note != 0) {
-                    display()->fillRoundRect(x0, y0, w, h, r, _fg);
+                if (_preset.lines[y].active[x]) {
+                    display()->fillRoundRect(x0, y0, w, h, r, _activeButtonColor);
                 } else {
-                    display()->fillRoundRect(x0, y0, w, h, r, _bg);
+                    display()->fillRoundRect(x0, y0, w, h, r, _inactiveButtonColor);
                 }
                 x0 += dx;
             }

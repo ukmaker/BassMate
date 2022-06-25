@@ -21,6 +21,7 @@
 #include "HardwareSerial.h"
 #include "NoteGrid.h"
 #include "SimpleGUI.h"
+#include "Widgets/Button.h"
 #include "Widgets/ChannelVolumeWidget.h"
 #include "Widgets/ContextWindow.h"
 #include "Widgets/DialogWindow.h"
@@ -157,7 +158,7 @@ public:
         volumeLabel = new TextWidget(context);
         def(volumeLabel, "", 100, 28);
         {
-            volumeLabel->setText("Vol");
+            volumeLabel->setText("Vol ");
             volumeLabel->setLocation(68, 0);
         }
 
@@ -317,8 +318,6 @@ public:
         {
             presetsTabs->setLocation(0, 30);
             presetsTabs->setSize(299, 190);
-            presetsTabs->attach(selectPreset);
-            presetsTabs->attach(savePresetDialog);
             presetsTabs->onFocus(this, &NavKeyView::presetsTabsOnFocus);
             presetsTabs->onBlur(this, &NavKeyView::presetsTabsOnBlur);
         }
@@ -353,8 +352,22 @@ public:
             loadPresetOKCancelWidget->setHighlightForegroundColor(BLACK);
             loadPresetOKCancelWidget->setHighlightBackgroundColor(YELLOW);
             loadPresetOKCancelWidget->setLocation(0, 190);
+            loadPresetOKCancelWidget->setUserLabel("Delete");
+            loadPresetOKCancelWidget->setUserBackgroundColor(RED);
             loadPresetOKCancelWidget->onOK(this, &NavKeyView::onLoadPresetOK);
             loadPresetOKCancelWidget->onCancel(this, &NavKeyView::onLoadPresetCancel);
+            loadPresetOKCancelWidget->onUserKey(this, &NavKeyView::onDeletePresetOK);
+        }
+
+        eraseAllPresetsButton = new Button(context);
+        def(eraseAllPresetsButton, "Reset", 280, 220);
+        {
+            eraseAllPresetsButton->setLocation(0, 0);
+            eraseAllPresetsButton->setHighlightForegroundColor(BLACK);
+            eraseAllPresetsButton->setHighlightBackgroundColor(YELLOW);
+            eraseAllPresetsButton->setBackground(RED);
+            eraseAllPresetsButton->setForeground(WHITE);
+            eraseAllPresetsButton->onClick(this, &NavKeyView::onEraseAllPresetsClick);
         }
 
         loadPresetDialog->attach(presetLabelWidget);
@@ -370,6 +383,10 @@ public:
         channelTabs->attach(familySelect);
 
         sequencerWindow->attach(channelTabs);
+
+        presetsTabs->attach(selectPreset);
+        presetsTabs->attach(savePresetDialog);
+        presetsTabs->attach(eraseAllPresetsButton);
 
         contextWindow->attach(sequencerWindow);
         contextWindow->attach(presetsTabs);
@@ -679,9 +696,12 @@ public:
             Widget* target = presetsTabs->focusChild();
             if (target == selectPreset) {
                 transition(&NavKeyView::selectPresetHandler);
-            } else {
+            } else if (target == savePresetDialog) {
                 transition(&NavKeyView::savePresetKeyboardHandler);
+            } else {
+                transition(&NavKeyView::eraseAllPresetsButtonHandler);
             }
+
         } break;
 
         default:
@@ -834,6 +854,24 @@ public:
 
         case NAV_SELECT:
             overwritePresetOKCancelWidget->select();
+            break;
+
+        default:
+            break;
+        }
+    }
+
+    void eraseAllPresetsButtonHandler(Event e)
+    {
+        eraseAllPresetsButton->focus();
+        switch (e.type) {
+        case NAV_SELECT:
+            eraseAllPresetsButton->select();
+            break;
+
+        case NAV_UP:
+            eraseAllPresetsButton->blur();
+            transition(&NavKeyView::presetsHandler);
             break;
 
         default:
@@ -1042,6 +1080,7 @@ public:
     void setChannelInstruments(uint8_t channel, const Family instruments,
         const Voice selectedInstrument)
     {
+        channelVols->setSelected(channel);
         voiceSelect->setValues(instruments.voices, instruments.numVoices);
         voiceSelect->setSelectedValue(selectedInstrument);
     }
@@ -1072,6 +1111,7 @@ public:
         overwritePresetDialog->hide();
         savingDialog->setText("Preset saved");
         savingDialog->show();
+        selectPreset->load();
         _timer.setTimeout(1000, this, &NavKeyView::presetSaveDialogTimeout);
     }
 
@@ -1142,6 +1182,14 @@ public:
         goHome();
     }
 
+    void onDeletePresetOK(Widget* w)
+    {
+        _controller->deletePreset(selectPreset->getSelectedIndex());
+        loadPresetDialog->hide();
+        selectPreset->load();
+        goHome();
+    }
+
     void onLoadPresetCancel(Widget* w)
     {
         loadPresetDialog->hide();
@@ -1184,11 +1232,14 @@ public:
     void onDeletePreset(Widget* w)
     {
         _controller->deletePreset(selectPreset->getSelectedIndex());
+        selectPreset->load();
     }
 
-    void onClearPresets(Widget* w)
+    void onEraseAllPresetsClick(Widget* w)
     {
         _controller->clearPresets();
+        selectPreset->load();
+        goHome();
     }
 
     /********************************************************************
@@ -1208,15 +1259,6 @@ public:
     void requestFamilyRefresh(uint8_t channel)
     {
         _controller->familyRefresh(channel);
-    }
-
-    /*
-     * @brief Called when the load dialog is displayed to refresh the list
-     * of saved presets
-     */
-    void requestPresetsRefresh()
-    {
-        _controller->presetsRefresh();
     }
 
 protected:
@@ -1260,6 +1302,8 @@ public:
     DialogWindow* overwritePresetDialog;
     TextWidget* overwritePresetLabelWidget;
     OKCancelWidget* overwritePresetOKCancelWidget;
+
+    Button* eraseAllPresetsButton;
 
     NoteGrid& noteGrid;
 

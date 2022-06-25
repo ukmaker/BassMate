@@ -24,6 +24,23 @@ public:
 
     ~Controller() { }
 
+    void begin()
+    {
+        for (int i = 3; i >= 0; i--) {
+            voiceChange(i, _model._midi.getChannelVoice(i).id);
+            channelRefresh(i);
+            _view.setChannelVolume(i, 100);
+            _model._midi.setVolume(i, 127);
+        }
+
+        _view.setTempo(90);
+        tempoChange(90);
+
+        _view.setVolume(80);
+        _model._midi.setVolume(225 + (80 * 29) / 100);
+        _model._midi.setBass(15);
+    }
+
     /*
      * Sequencer events
      */
@@ -155,9 +172,18 @@ public:
     void loadPreset(uint8_t idx)
     {
         Storage::Preset p = _model._storage->get(idx);
+        PresetHandler::setActivePreset(&_model._midi, &_model._sequencer, &_noteGrid, p);
+        channelRefresh(3);
+        channelRefresh(2);
+        channelRefresh(1);
+        channelRefresh(0);
     }
 
-    void deletePreset(uint8_t idx) { }
+    void deletePreset(uint8_t idx) { 
+        _model._storage->remove(idx);
+    }
+
+
     void savePreset(char* name, uint8_t nameLen, bool overwrite)
     {
         Storage::Preset p = PresetHandler::getActivePreset(&_model._midi, &_model._sequencer);
@@ -165,15 +191,18 @@ public:
         if (_model._storage->exists(p) && !overwrite) {
             _view.notifyPresetExists(p);
         } else {
-            if(_model._storage->save(p)) {
+            if (_model._storage->save(p)) {
                 _view.notifyPresetSaved(p);
             } else {
                 _view.notifyPresetSaveFailed(p);
             }
         }
     }
-    void clearPresets() { }
-    void presetsRefresh() { }
+
+    void clearPresets()
+    {
+        _model._storage->format();
+    }
 
 protected:
     IView& _view;

@@ -148,16 +148,31 @@ public:
         _onFocus.attach(tptr, mptr);
     }
 
+    void onFocus(void (*mptr)(Widget *))
+    {
+        _onFocus.attach(mptr);
+    }
+
     template <class T>
     void onChange(T *tptr, void (T::*mptr)(Widget *))
     {
         _onChange.attach(tptr, mptr);
     }
 
+    void onChange(void (*mptr)(Widget *))
+    {
+        _onChange.attach(mptr);
+    }
+
     template <class T>
     void onBlur(T *tptr, void (T::*mptr)(Widget *))
     {
         _onBlur.attach(tptr, mptr);
+    }
+
+    void onBlur(void (*mptr)(Widget *))
+    {
+        _onBlur.attach(mptr);
     }
 
 protected:

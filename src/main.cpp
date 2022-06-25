@@ -245,6 +245,7 @@ void setup()
     sequencer.setTempo(70);
 
     model.begin();
+    controller.begin();
     // presenter.begin();
     // view.testFillScreen();
 }

@@ -7,6 +7,7 @@
 TextWidget::TextWidget(GraphicsContext *context) : Widget(context),
                                                    _halign(LEFT), _valign(TOP)
 {
+    memset(_text, 0, 64);
 }
 
 TextWidget::TextWidget(GraphicsContext *context, GFXfont *font) : Widget(context),
@@ -19,7 +20,7 @@ void TextWidget::setText(const char *text)
 {
     if (strncmp(_text, text, strlen(text)) != 0)
     {
-        strncpy(_text, text, strlen(text));
+        strcpy(_text, text);
         noteDirtyContent(ZONE_CONTENT);
     }
 }

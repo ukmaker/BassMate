@@ -48,6 +48,13 @@ class OKCancelWidget : public Widget {
     noteDirtyContent(ZONE_BUTTONS);
   }
 
+  void setUserBackgroundColor(uint16_t color) {
+    if (_userBackgroundColor != color) {
+      _userBackgroundColor = color;
+      noteDirtyContent(0xffff);
+    }    
+  }
+
   void setHighlightForegroundColor(uint16_t color) {
     if (_highlightForegroundColor != color) {
       _highlightForegroundColor = color;
@@ -129,7 +136,7 @@ class OKCancelWidget : public Widget {
   }
 
  protected:
-  uint16_t _highlightForegroundColor, _highlightBackgroundColor;
+  uint16_t _highlightForegroundColor, _highlightBackgroundColor, _userBackgroundColor;
   FunctionPointerArg1<void, char> _keyPressCallback;
   FunctionPointerArg1<void, Widget*> _okCallback, _cancelCallback, _userCallback;
 
@@ -200,7 +207,7 @@ class OKCancelWidget : public Widget {
               _state == OK);
       if (_user)
         _button(x + cancelWidth + okWidth + 3 * spacing, y, okWidth, dy, 3, 2,
-                _userLabel, _state == USER);
+                _userLabel, _state == USER, true);
     }
   }
 
@@ -211,12 +218,16 @@ class OKCancelWidget : public Widget {
    * b: border width of the button outline
    */
   void _button(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint8_t p,
-               uint8_t b, const char *text, bool highlight) {
+               uint8_t b, const char *text, bool highlight, bool user=false) {
     uint16_t fg, bg;
 
     if (highlight && hasFocus()) {
       fg = _highlightForegroundColor;
-      bg = _highlightBackgroundColor;
+      if(user) {
+        bg = _userBackgroundColor;
+      } else {
+        bg = _highlightBackgroundColor;
+      }
     } else {
       fg = _fg;
       bg = _bg;

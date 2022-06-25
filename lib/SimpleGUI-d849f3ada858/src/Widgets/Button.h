@@ -1,5 +1,5 @@
-#ifndef SIMPLEGUI_OKCANCEL_WIDGET_H
-#define SIMPLEGUI_OKCANCEL_WIDGET_H
+#ifndef SIMPLEGUI_BUTTON_H
+#define SIMPLEGUI_BUTTON_H
 
 #include "Core/ColorsRGB16.h"
 #include "Widget.h"
@@ -8,7 +8,6 @@ namespace simplegui {
 
 class Button : public Widget {
  public:
-  typedef void (*ButtonCallback)();
 
   static const uint16_t ZONE_BUTTONS = 1;
 
@@ -18,9 +17,22 @@ class Button : public Widget {
     _dirtyContent = 0xffff;
   }
 
+  ~Button() {}
+
+  /**
+   * @brief This is just a synonym for onChange to register the
+   * callback to be called when the button is clicked
+   * 
+   * @param tptr 
+   * @param mptr 
+   */
   template <class T>
-  void onClick(T *tptr, void (T::*mptr)()) {
-    _clickCallback.attach(tptr, mptr);
+  void onClick(T *tptr, void (T::*mptr)(Widget*)) {
+    _onChange.attach(tptr, mptr);
+  }
+
+  void onClick(void (*mptr)(Widget*)) {
+    _onChange.attach(mptr);
   }
 
   void setHighlightForegroundColor(uint16_t color) {
@@ -43,12 +55,11 @@ class Button : public Widget {
 
   void select() {
     noteDirtyContent(ZONE_BUTTONS);
-    _clickCallback.call();
+    _onChange.call(this);
   }
 
  protected:
   uint16_t _highlightForegroundColor, _highlightBackgroundColor;
-  FunctionPointer _clickCallback;
 
   virtual void _drawContent(bool force) {
     fontRenderer()->setFont(_font);
@@ -58,15 +69,19 @@ class Button : public Widget {
     int dy = dx;
 
     uint16_t l = _inner.left() + dx;
-    uint16_t t = _inner.top() + 4 * dy;
+    uint16_t t = _inner.top();
     int16_t x, y, x1, y1 = 0;
     uint16_t w, h = 0;
 
     if (force || _dirty || _dirtyContent) {
       uint16_t width = 0;
       x = l;
-      y = t + 1.5 * dy;
+      y = t;
       fontRenderer()->getTextBounds(_label, x, y, &x1, &y1, &width, &h);
+
+      // centre the button vertically and horizontally
+      x = _inner.left() + (_inner.width - width) / 2;
+      y = _inner.top() + (_inner.height - dy)/2;
 
       _button(x, y, width, dy, 3, 2, _label, hasFocus());
     }
