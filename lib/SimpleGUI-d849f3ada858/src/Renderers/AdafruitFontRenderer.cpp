@@ -1,6 +1,4 @@
 #include "AdafruitFontRenderer.h"
-
-#include "Adafruit_SPITFT.h"
 #include "Displays/adafruit_pgmspace.h"
 
 namespace simplegui {
@@ -516,6 +514,6 @@ uint16_t AdafruitFontRenderer::getFontHeight()
     return (int16_t)textsize_y * (uint8_t)pgm_read_byte(&gfxFont->yAdvance);
 }
 
-void AdafruitFontRenderer::setBlitter(STMDMA* stmdma) { _stmdma = stmdma; }
+void AdafruitFontRenderer::setDMA(DMA* stmdma) { _stmdma = stmdma; }
 
 }

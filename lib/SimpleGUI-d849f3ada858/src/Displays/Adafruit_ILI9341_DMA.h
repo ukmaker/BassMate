@@ -37,16 +37,16 @@
 #define SIMPLEGUI_ADAFRUIT_ILI9341_STMDMA_H
 
 #include "Adafruit_ILI9341.h"
-#include "STMDMA.h"
+#include "Hardware/STM_SPIDMA.h"
 
 namespace simplegui {
 
-class Adafruit_ILI9341_STMDMA : public Adafruit_ILI9341 {
+class Adafruit_ILI9341_DMA : public Adafruit_ILI9341 {
 public:
-    Adafruit_ILI9341_STMDMA(SPIClass* spiClass, int8_t dc, int8_t cs = -1,
+    Adafruit_ILI9341_DMA(SPIClass* spiClass, int8_t dc, int8_t cs = -1,
         int8_t rst = -1);
 
-    void setSTMDMA(STMDMA* stmdma);
+    void setDMA(STM_SPIDMA* stmdma);
 
     // override
     virtual void fillRect(int16_t x, int16_t y, int16_t w, int16_t h,
@@ -56,7 +56,7 @@ public:
         int16_t h, uint16_t color);
 
 protected:
-    STMDMA* _stmdma;
+    STM_SPIDMA* _stmdma;
 };
 
 }

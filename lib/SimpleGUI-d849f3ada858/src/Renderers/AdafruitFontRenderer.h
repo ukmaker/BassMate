@@ -9,8 +9,8 @@
 #endif
 #include "Core/Align.h"
 #include "FontRenderer.h"
-#include "Displays/STMDMA.h"
 #include "gfxfont.h"
+#include "Hardware/DMA.h"
 
 namespace simplegui {
 
@@ -65,7 +65,7 @@ public:
         int16_t* minx, int16_t* miny, int16_t* maxx,
         int16_t* maxy);
 
-    void setBlitter(STMDMA* stmdma);
+    void setDMA(DMA* stmdma);
 
 protected:
     bool textWindowed; ///< Should text windowing be applied
@@ -74,7 +74,7 @@ protected:
     int16_t textY; ///< Top of text window
     int16_t textH; ///< Height of text window
     int8_t ymin, ymax; // Max and min y-offsets from zero for any character in the current font
-    STMDMA* _stmdma;
+    DMA* _stmdma;
     VAlign _valign;
     HAlign _halign;
     bool _prepared;

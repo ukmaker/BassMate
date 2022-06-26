@@ -7,7 +7,7 @@
 
 #include <Adafruit_GFX.h> // Core graphics library
 
-#include "Displays/Adafruit_ILI9341_STMDMA.h"
+#include "Displays/Adafruit_ILI9341_DMA.h"
 #include "Core/BorderTool.h"
 #include "Core/ColorsRGB16.h"
 #include "Renderers/AdafruitFontRenderer.h"
@@ -54,7 +54,7 @@ public:
     const GFXfont defaultFont = FreeSans9pt7b;
     const char* channelNames[4] = { "CH #1", "CH #2", "CH #3", "CH #4" };
 
-    NavKeyView(Adafruit_ILI9341_STMDMA* tft, NoteGrid& ng, Storage* storage)
+    NavKeyView(Adafruit_ILI9341_DMA* tft, NoteGrid& ng, Storage* storage)
         : _tft(tft)
         , noteGrid(ng)
     {
@@ -1268,7 +1268,7 @@ public:
     GraphicsContext *context;
     GUI *gui;
     Storage *_storage;
-    Adafruit_ILI9341_STMDMA *_tft;
+    Adafruit_ILI9341_DMA *_tft;
 
     ContextWindow* contextWindow;
 

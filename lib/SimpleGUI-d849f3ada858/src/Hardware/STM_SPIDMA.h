@@ -6,8 +6,7 @@
  * Should allow high-speed flood-fills and fast buffered write
  * for font rendering
  */
-#include <stdint.h>
-
+#include "DMA.h"
 #include "Adafruit_SPITFT.h"
 #include "SPI.h"
 #include "stm32f411xe.h"
@@ -16,11 +15,12 @@ extern volatile bool spiDmaTransferComplete;
 
 namespace simplegui {
 
-class STMDMA {
+class STM_SPIDMA : public DMA {
+  
  public:
-  STMDMA(Adafruit_SPITFT *display, uint16_t bufferSize, SPI_TypeDef *spi, DMA_Stream_TypeDef *dma);
+  STM_SPIDMA(Adafruit_SPITFT *display, uint16_t bufferSize, SPI_TypeDef *spi, DMA_Stream_TypeDef *dma);
 
-  ~STMDMA();
+  ~STM_SPIDMA();
 
   void begin();
   void fillRect(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color);

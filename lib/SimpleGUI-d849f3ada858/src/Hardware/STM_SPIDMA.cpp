@@ -1,10 +1,8 @@
-#include "STMDMA.h"
-
-#include "Adafruit_ILI9341_STMDMA.h"
+#include "STM_SPIDMA.h"
 
 namespace simplegui {
 
-STMDMA::STMDMA(Adafruit_SPITFT* display, uint16_t bufferSize,
+STM_SPIDMA::STM_SPIDMA(Adafruit_SPITFT* display, uint16_t bufferSize,
     SPI_TypeDef* spi, DMA_Stream_TypeDef* dma)
     : _display(display)
 {
@@ -18,9 +16,9 @@ STMDMA::STMDMA(Adafruit_SPITFT* display, uint16_t bufferSize,
     _fw = _fl = 0;
 }
 
-STMDMA::~STMDMA() { }
+STM_SPIDMA::~STM_SPIDMA() { }
 
-void STMDMA::begin()
+void STM_SPIDMA::begin()
 {
     /* DMA controller clock enable */
     __HAL_RCC_DMA2_CLK_ENABLE();
@@ -70,7 +68,7 @@ void STMDMA::begin()
     __HAL_LINKDMA(&_spi, hdmatx, _dma);
 }
 
-void STMDMA::fillRect(uint16_t x, uint16_t y, uint16_t w, uint16_t h,
+void STM_SPIDMA::fillRect(uint16_t x, uint16_t y, uint16_t w, uint16_t h,
     uint16_t color)
 {
     uint32_t total = w * h;
@@ -102,7 +100,7 @@ void STMDMA::fillRect(uint16_t x, uint16_t y, uint16_t w, uint16_t h,
         ;
 }
 
-void STMDMA::beginWindow(uint16_t x, uint16_t y, uint16_t w, uint16_t h,
+void STM_SPIDMA::beginWindow(uint16_t x, uint16_t y, uint16_t w, uint16_t h,
     uint16_t backgroundColor)
 {
     _fw = w;
@@ -114,13 +112,13 @@ void STMDMA::beginWindow(uint16_t x, uint16_t y, uint16_t w, uint16_t h,
     _display->setAddrWindow(x, y, w, h);
 }
 
-void STMDMA::drawWindowPixel(int16_t x, int16_t y, uint16_t color)
+void STM_SPIDMA::drawWindowPixel(int16_t x, int16_t y, uint16_t color)
 {
     if (x >= 0 && y >= 0)
         _buffer[x + (y * _fw)] = byteSwap(color);
 }
 
-void STMDMA::flushWindow()
+void STM_SPIDMA::flushWindow()
 {
     while (!spiDmaTransferComplete)
         ;
@@ -130,13 +128,13 @@ void STMDMA::flushWindow()
     }
 }
 
-void STMDMA::waitComplete()
+void STM_SPIDMA::waitComplete()
 {
     while (!spiDmaTransferComplete)
         ;
 }
 
-uint16_t STMDMA::byteSwap(uint16_t w)
+uint16_t STM_SPIDMA::byteSwap(uint16_t w)
 {
     uint8_t hb = w >> 8;
     w = hb | (w << 8);

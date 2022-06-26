@@ -1,7 +1,7 @@
 #include <Wire.h>
 #include "Model.h"
 #include "NoteGrid.h"
-#include "Displays/STMDMA.h"
+#include "Hardware/STM_SPIDMA.h"
 #include "Controller.h"
 #include "Events/NavKeyEventDispatcher.h"
 #include "NavKeyView.h"
@@ -32,10 +32,10 @@
 using namespace bassmate;
 
 SPIClass spi2(MOSI, MISO, SCK, SC_CS);
-Adafruit_ILI9341_STMDMA tft = Adafruit_ILI9341_STMDMA(&spi2, SC_DC, SC_CS, SC_RESET);
+Adafruit_ILI9341_DMA tft = Adafruit_ILI9341_DMA(&spi2, SC_DC, SC_CS, SC_RESET);
 
 volatile bool spiDmaTransferComplete = true;
-STMDMA stmdma(&tft, 32768, SPI2, DMA1_Stream4);
+STM_SPIDMA stmdma(&tft, 32768, SPI2, DMA1_Stream4);
 
 extern "C" {
 void DMA1_Stream4_IRQHandler()
@@ -179,8 +179,8 @@ void setup()
 
     setupNavKey();
 
-    tft.setSTMDMA(&stmdma);
-    view.fontRenderer->setBlitter(&stmdma);
+    tft.setDMA(&stmdma);
+    view.fontRenderer->setDMA(&stmdma);
     HAL_DMA_RegisterCallback(&stmdma._dma, HAL_DMA_XFER_CPLT_CB_ID, DMACallback);
     spiDmaTransferComplete = true;
     stmdma.begin();
