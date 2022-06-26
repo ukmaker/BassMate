@@ -481,6 +481,10 @@ public:
             transition(&NavKeyView::tempoHandler);
             break;
 
+        case NAV_SELECT:
+            volumeWidget->toggleMute();
+            break;
+
         default:
             break;
         }
