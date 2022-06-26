@@ -2,6 +2,44 @@
 
 namespace simplegui {
 
+/***
+ * Note that this implementation uses DMA1 Stream 4 for SPI2
+ * If you need to use different DMA or SPI, you'll need to
+ * modify the code appropriately and implement the corresponding
+ * interrupt handlers
+ *
+ *
+ * Your main.cpp should look something like this:
+ * 
+ 
+    volatile bool spiDmaTransferComplete = true;
+    STM_SPIDMA stmdma(&tft, 32768, SPI2, DMA1_Stream4);
+
+    extern "C" {
+    void DMA1_Stream4_IRQHandler()
+    {
+        HAL_DMA_IRQHandler(&stmdma._dma);
+        // spiDmaTransferComplete = true;
+    }
+    }
+
+    extern "C" {
+    void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef* hspi)
+    {
+        spiDmaTransferComplete = true;
+    }
+    }
+*
+*
+* And in your setup routine you'll need:
+*
+    tft.setDMA(&stmdma);
+    view.fontRenderer->setDMA(&stmdma);
+    HAL_DMA_RegisterCallback(&stmdma._dma, HAL_DMA_XFER_CPLT_CB_ID, DMACallback);
+    spiDmaTransferComplete = true;
+    stmdma.begin();
+ ***/
+
 STM_SPIDMA::STM_SPIDMA(Adafruit_SPITFT* display, uint16_t bufferSize,
     SPI_TypeDef* spi, DMA_Stream_TypeDef* dma)
     : _display(display)
@@ -21,16 +59,13 @@ STM_SPIDMA::~STM_SPIDMA() { }
 void STM_SPIDMA::begin()
 {
     /* DMA controller clock enable */
-    __HAL_RCC_DMA2_CLK_ENABLE();
     __HAL_RCC_DMA1_CLK_ENABLE();
 
     /* DMA interrupt init */
     /* DMA1_Stream4_IRQn interrupt configuration */
     HAL_NVIC_SetPriority(DMA1_Stream4_IRQn, 0, 0);
     HAL_NVIC_EnableIRQ(DMA1_Stream4_IRQn);
-    /* DMA2_Stream2_IRQn interrupt configuration */
-    HAL_NVIC_SetPriority(DMA2_Stream2_IRQn, 0, 0);
-    HAL_NVIC_EnableIRQ(DMA2_Stream2_IRQn);
+
     // Wire up the SPI
     _spi.Init.Mode = SPI_MODE_MASTER;
     _spi.Init.Direction = SPI_DIRECTION_2LINES;

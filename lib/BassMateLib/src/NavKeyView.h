@@ -1,6 +1,7 @@
 #ifndef BM_NAVKEY_VIEW_H
 #define BM_NAVKEY_VIEW_H
 
+#include "Core/GUI.h"
 #include "Events/EventModel.h"
 #include "IController.h"
 #include "IView.h"
@@ -13,9 +14,8 @@
 #include "Renderers/AdafruitFontRenderer.h"
 #include "Events/NavKeyEventDispatcher.h"
 #include "Fonts/FreeSans9pt7b.h"
-#include "HardwareSerial.h"
+
 #include "NoteGrid.h"
-#include "SimpleGUI.h"
 #include "Widgets/Button.h"
 #include "Widgets/ChannelVolumeWidget.h"
 #include "Widgets/ContextWindow.h"
