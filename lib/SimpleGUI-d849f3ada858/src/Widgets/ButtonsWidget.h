@@ -99,9 +99,9 @@ class ButtonsWidget : public Widget {
 
   uint16_t _getButtonWidth(uint8_t idx) {
     if (idx < _numButtons) {
-      int x = 0, x1;
-      int y = 0, y1;
-      int w, h;
+      int16_t x = 0, x1 = 0;
+      int16_t y = 0, y1 = 0;
+      uint16_t w = 0 , h = 0;
       const char *l = _labels[idx];
       fontRenderer()->getTextBounds(l, x, y, &x1, &y1, &w, &h);
       return w + 10;
