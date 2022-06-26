@@ -2,6 +2,8 @@
 
 #include "Core/BorderTool.h"
 
+namespace simplegui {
+
 Widget::Widget(GraphicsContext *context)
     : _context(context),
       _fg(0xffff),
@@ -302,9 +304,9 @@ void Widget::noteDamage()
 
 void Widget::adjust() { _adjust(); }
 
-Adafruit_GFX_NG *Widget::display() { return _context->display(); }
+Adafruit_GFX *Widget::display() { return _context->display(); }
 
-DefaultFontRenderer_NG *Widget::fontRenderer()
+FontRenderer *Widget::fontRenderer()
 {
   return _context->fontRenderer();
 }
@@ -314,7 +316,7 @@ DefaultFontRenderer_NG *Widget::fontRenderer()
  **********************************************************/
 void Widget::_draw()
 {
-  Adafruit_GFX_NG *d = display();
+  Adafruit_GFX *d = display();
   // Draw the border
   if (_bevel)
   {
@@ -358,4 +360,5 @@ void Widget::_adjust()
   // _inner is the area available for content after margin, border and padding
   _inner.resize(_outer, _box);
   noteDamage();
+}
 }

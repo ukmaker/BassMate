@@ -2,7 +2,7 @@
 #define SIMPLEGUI_EVENT_TYPE_H
 
 // Defines core event types which can be used/re-used by other packages
-
+namespace simplegui {
 enum EventType {
 
   NULL_EVENT = 0,
@@ -39,4 +39,5 @@ enum EventType {
   ENCODER_SELECT = 1 << 22
 
 };
+}
 #endif

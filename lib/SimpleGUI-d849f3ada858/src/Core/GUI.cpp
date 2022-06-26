@@ -1,5 +1,5 @@
 #include "GUI.h"
-
+namespace simplegui {
 GUI::GUI(GraphicsContext* context) : _context(context)
 {
     _rootWindow = new Window(context);
@@ -15,4 +15,5 @@ Window* GUI::rootWindow() {
 
 void GUI::run() {
     _rootWindow->draw();   
+}
 }

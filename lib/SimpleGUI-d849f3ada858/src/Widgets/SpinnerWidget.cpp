@@ -2,7 +2,7 @@
 
 #include "resources/BlueButtonLeft_50x64_bmp.h"
 #include "resources/BlueButtonRight_50x64_bmp.h"
-
+namespace simplegui {
 SpinnerWidget::SpinnerWidget(GraphicsContext *context)
     : Window(context),
       _upArrow(context), _text(context), _downArrow(context),
@@ -151,4 +151,5 @@ void SpinnerWidget::_onDownClick(Event e)
         _value = _min;
     }
     _update();
+}
 }

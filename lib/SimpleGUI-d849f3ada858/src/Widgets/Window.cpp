@@ -1,5 +1,7 @@
 #include "Widgets/Window.h"
 
+namespace simplegui {
+ 
 Window::Window(GraphicsContext *context) : Widget(context) {
   setSize(context->display()->width(), context->display()->height());
   setLocation(0, 0);
@@ -62,4 +64,5 @@ void Window::_adjust() {
       }
     }
   }
+}
 }

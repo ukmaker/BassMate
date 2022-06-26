@@ -1,5 +1,5 @@
 #include "Events/EventSystem.h"
-
+namespace simplegui {
 EventDispatcher::EventDispatcher() {
 }
 
@@ -30,4 +30,5 @@ void EventDispatcher::pumpEvents()
     if(e.type != EventType::NULL_EVENT) {
         dispatchEvent(e);
     }
+}
 }

@@ -3,7 +3,7 @@
 
 #include "Widgets/Widget.h"
 #include "gfxfont.h"
-
+namespace simplegui {
 class ValueWidget : public Widget {
  public:
   ValueWidget(GraphicsContext *context) : Widget(context) {}
@@ -77,13 +77,11 @@ class ValueWidget : public Widget {
    */
   virtual void _drawContent(bool force = false) {
 
-    Adafruit_GFX_NG *d = display();
-
     const GFXfont *f = fontRenderer()->getFont();
     fontRenderer()->setFont(_font);
     fontRenderer()->setTextColor(_fg, _bg);
     fontRenderer()->setTextWindow(_inner.x(), _inner.y(), _inner.width(), _inner.height());
-    display()->print(_value);
+    fontRenderer()->print(_value);
     fontRenderer()->removeTextWindow();
     fontRenderer()->setFont(f);
   }
@@ -96,5 +94,5 @@ class ValueWidget : public Widget {
   uint8_t _mode = LINEAR;
   const GFXfont *_font;
 };
-
+}
 #endif

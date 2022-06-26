@@ -4,7 +4,7 @@
 #include <algorithm>
 #include "Point.h"
 #include "Box.h"
-
+namespace simplegui {
 class Rectangle
 {
 
@@ -87,5 +87,5 @@ public:
     protected:
     int _x, _y, _width, _height;
 };
-
+}
 #endif

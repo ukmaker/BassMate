@@ -111,7 +111,7 @@ class Button : public Widget {
     fontRenderer()->setTextColor(fg, bg);
 
     fontRenderer()->setTextWindow(x + b + p, y + p, w + 2 * p, h + p);
-    display()->write(text);
+    fontRenderer()->write(text);
     fontRenderer()->removeTextWindow();
   }
 };

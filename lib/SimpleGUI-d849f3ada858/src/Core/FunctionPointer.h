@@ -19,7 +19,7 @@
 #include <string.h>
 #include <stdint.h>
  
-//namespace simplegui {
+namespace simplegui {
  
 /* If we had variaditic templates, this wouldn't be a problem, but until C++11 is enabled, we are stuck with multiple classes... */
  
@@ -180,6 +180,6 @@ private:
 typedef FunctionPointerArg1<void, void> FunctionPointer;
 typedef FunctionPointerArg1<void, int> event_callback_t;
  
-//} // namespace simplegui
+} // namespace simplegui
  
 #endif

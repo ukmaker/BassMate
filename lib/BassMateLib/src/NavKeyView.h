@@ -5,12 +5,12 @@
 #include "IController.h"
 #include "IView.h"
 
-#include <Adafruit_GFX_NG.h> // Core graphics library
+#include <Adafruit_GFX.h> // Core graphics library
 
-#include "Adafruit_ILI9341_NG.h"
+#include "Displays/Adafruit_ILI9341_STMDMA.h"
 #include "Core/BorderTool.h"
 #include "Core/ColorsRGB16.h"
-#include "DefaultFontRenderer_NG.h"
+#include "Renderers/AdafruitFontRenderer.h"
 #include "Events/NavKeyEventDispatcher.h"
 #include "Fonts/FreeSans9pt7b.h"
 #include "HardwareSerial.h"
@@ -54,15 +54,14 @@ public:
     const GFXfont defaultFont = FreeSans9pt7b;
     const char* channelNames[4] = { "CH #1", "CH #2", "CH #3", "CH #4" };
 
-    NavKeyView(Adafruit_ILI9341_NG* tft, NoteGrid& ng, Storage* storage)
+    NavKeyView(Adafruit_ILI9341_STMDMA* tft, NoteGrid& ng, Storage* storage)
         : _tft(tft)
         , noteGrid(ng)
     {
         _storage = storage;
-        fontRenderer = new DefaultFontRenderer_NG(&defaultFont, 240, 320);
+        fontRenderer = new AdafruitFontRenderer(&defaultFont, tft, 240, 320);
         context = new GraphicsContext(tft, &defaultFont, fontRenderer);
         gui = new GUI(context);
-        tft->setFontRenderer(fontRenderer);
         _controller = nullptr;
     }
 
@@ -1265,16 +1264,16 @@ protected:
     IController* _controller;
 
 public:
-    DefaultFontRenderer_NG* fontRenderer;
-    GraphicsContext* context;
-    GUI* gui;
-    Storage* _storage;
-    Adafruit_ILI9341_NG* _tft;
+    AdafruitFontRenderer *fontRenderer;
+    GraphicsContext *context;
+    GUI *gui;
+    Storage *_storage;
+    Adafruit_ILI9341_STMDMA *_tft;
 
     ContextWindow* contextWindow;
 
-    Window* sequencerWindow;
-    VolumeWidget* volumeWidget;
+    Window *sequencerWindow;
+    VolumeWidget *volumeWidget;
     TextWidget *volumeLabel, *savingDialog, *selectionTextWidget;
     ValueWidget* tempoWidget;
     PlayPauseStopWidget* playPauseStopWidget;

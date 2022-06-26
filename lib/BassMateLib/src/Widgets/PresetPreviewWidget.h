@@ -4,6 +4,9 @@
 #include "Widgets/Widget.h"
 
 namespace bassmate {
+
+using namespace simplegui;
+
 class PresetPreviewWidget : public Widget {
 public:
     PresetPreviewWidget(GraphicsContext* context)
@@ -19,7 +22,6 @@ public:
     }
 
 protected:
-
     Storage::Preset _preset;
 
     uint16_t _activeButtonColor = GREEN;

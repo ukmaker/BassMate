@@ -1,5 +1,5 @@
 #include "Widgets/BitmapWidget.h"
-
+namespace simplegui {
 BitmapWidget::BitmapWidget(GraphicsContext *context) : 
 Widget(context), _monochrome(false), _bitmapWidth(0), _bitmapHeight(0)
 {
@@ -50,4 +50,5 @@ void BitmapWidget::_drawContent(bool force)
     } else {
         display()->drawRGBBitmap(_inner.x(), _inner.y(), (uint16_t*)_bitmap, _inner.width(), _inner.height());
     }
+}
 }

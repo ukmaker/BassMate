@@ -5,6 +5,8 @@
 #include "Widgets/AbstractSelectWidget.h"
 
 namespace bassmate {
+  
+using namespace simplegui;
 
 template <uint8_t N>
 class StorageSelectWidget : public AbstractSelectWidget<Storage::Preset> {

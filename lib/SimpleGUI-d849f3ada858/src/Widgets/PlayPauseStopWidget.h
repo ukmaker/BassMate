@@ -1,7 +1,7 @@
 #ifndef SIMPLEGUI_PPSWIDGET_H
 #define SIMPLEGUI_PPSWIDGET_H
 #include "Widgets/Widget.h"
-
+namespace simplegui {
 class PlayPauseStopWidget : public Widget
 {
 
@@ -72,4 +72,5 @@ protected:
         }
     }
 };
+}
 #endif

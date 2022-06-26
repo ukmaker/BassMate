@@ -1,6 +1,6 @@
 #ifndef SIMPLEGUI_POINT_H
 #define SIMPLEGUI_POINT_H
-
+namespace simplegui {
 class Point {
     
     public:
@@ -22,5 +22,5 @@ class Point {
     
 };
 
-
+}
 #endif

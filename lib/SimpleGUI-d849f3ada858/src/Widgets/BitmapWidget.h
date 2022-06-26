@@ -2,7 +2,7 @@
 #define SIMPLEGUI_BITMAP_WIDGET_H
 
 #include "Widgets/Widget.h"
-
+namespace simplegui {
 class BitmapWidget : public Widget {
     
     public:
@@ -28,5 +28,5 @@ class BitmapWidget : public Widget {
         bool _monochrome;
         int _bitmapWidth, _bitmapHeight;
 };
-
+}
 #endif

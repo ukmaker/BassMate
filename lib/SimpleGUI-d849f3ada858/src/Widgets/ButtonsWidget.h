@@ -94,7 +94,7 @@ class ButtonsWidget : public Widget {
   virtual void _clearButtons() {
     // including button padding and border
     uint16_t h = fontRenderer()->getFontHeight() + 10;
-    display()->fillRect(0, _buttonsY(), _inner._width, h, RED);
+    display()->fillRect(0, _buttonsY(), _inner.width(), h, RED);
   }
 
   uint16_t _getButtonWidth(uint8_t idx) {
@@ -135,7 +135,7 @@ class ButtonsWidget : public Widget {
         usedWidth += _buttonWidth[i];
       }
       // space the buttons equal on all sides
-      uint16_t remainingWidth = _inner._width - usedWidth;
+      uint16_t remainingWidth = _inner.width() - usedWidth;
       uint16_t spacing = remainingWidth / _numButtons;
 
       for (uint8_t i = 0; i < _numButtons; i++) {
@@ -171,7 +171,7 @@ class ButtonsWidget : public Widget {
     fontRenderer()->setTextColor(fg, bg);
 
     fontRenderer()->setTextWindow(x + b + p, y + p, w + 2 * p, h + p);
-    display()->write(text);
+    fontRenderer()->write(text);
     fontRenderer()->removeTextWindow();
   }
 };

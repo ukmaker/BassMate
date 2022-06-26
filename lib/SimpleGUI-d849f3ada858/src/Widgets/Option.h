@@ -1,7 +1,7 @@
 #ifndef SIMPLEGUI_OPTION_H
 #define SIMPLEGUI_OPTION_H
 
-
+namespace simplegui {
 template <typename T>
 struct Option {
   char *text;
@@ -17,5 +17,5 @@ class Opt {
 
   T value;
 };
-
+}
 #endif

@@ -1,7 +1,7 @@
 #include <Wire.h>
 #include "Model.h"
 #include "NoteGrid.h"
-#include "STMDMA.h"
+#include "Displays/STMDMA.h"
 #include "Controller.h"
 #include "Events/NavKeyEventDispatcher.h"
 #include "NavKeyView.h"
@@ -32,7 +32,7 @@
 using namespace bassmate;
 
 SPIClass spi2(MOSI, MISO, SCK, SC_CS);
-Adafruit_ILI9341_NG tft = Adafruit_ILI9341_NG(&spi2, SC_DC, SC_CS, SC_RESET);
+Adafruit_ILI9341_STMDMA tft = Adafruit_ILI9341_STMDMA(&spi2, SC_DC, SC_CS, SC_RESET);
 
 volatile bool spiDmaTransferComplete = true;
 STMDMA stmdma(&tft, 32768, SPI2, DMA1_Stream4);
@@ -77,20 +77,9 @@ Model model(navkey, NK_INT, midi, sequencer, storage);
 /*
  * View
  */
-#ifdef NEW_VIEW
 NavKeyView view(&tft, noteGrid, storage);
 NavKeyEventDispatcher navKeyEventDispatcher(&view);
 Controller controller(model, view, noteGrid);
-#else
-View view(&tft, noteGrid, storage);
-
-Presenter presenter(model, view, noteGrid);
-#endif
-/**
- * Global event wiring
- */
-#ifdef NEW_VIEW
-
 void UP_Button_Pressed(i2cNavKey* p)
 {
     navKeyEventDispatcher.UP_Button_Pressed(p);
@@ -118,37 +107,6 @@ void noteGridKeyPressCallback(uint8_t x, uint8_t y)
 {
     controller.handleNoteGridKeyPress(x, y);
 }
-
-#else
-
-void UP_Button_Pressed(i2cNavKey* p)
-{
-    presenter.handleUpPress();
-}
-void DOWN_Button_Pressed(i2cNavKey* p) { presenter.handleDownPress(); }
-void LEFT_Button_Pressed(i2cNavKey* p) { presenter.handleLeftPress(); }
-void RIGHT_Button_Pressed(i2cNavKey* p) { presenter.handleRightPress(); }
-
-void Encoder_Increment(i2cNavKey* p) { presenter.handleIncrement(); }
-void Encoder_Decrement(i2cNavKey* p) { presenter.handleDecrement(); }
-void Encoder_Push(i2cNavKey* p) { presenter.handleSelectStart(); }
-void Encoder_Release(i2cNavKey* p) { presenter.handleSelect(); }
-void beatCallback(uint8_t beat) { presenter.handleBeat(beat); }
-void noteOnCallback(uint8_t beat, MIDINote note)
-{
-    presenter.handleNoteOn(beat, note);
-}
-void noteOffCallback(uint8_t beat, MIDINote note)
-{
-    presenter.handleNoteOff(beat, note);
-}
-void noteGridEventHandler(keyEvent e) { presenter.handleNoteGridEvent(e); }
-void noteGridKeyPressCallback(uint8_t x, uint8_t y)
-{
-    presenter.handleNoteGridKeyPress(x, y);
-}
-
-#endif
 
 void noteGridKeyLongPressCallback(uint8_t x, uint8_t y)
 {
@@ -241,13 +199,10 @@ void setup()
 
     model.begin();
     controller.begin();
-    // presenter.begin();
-    // view.testFillScreen();
 }
 
 void loop()
 {
-    // presenter.tick();
     view.run();
     model.run();
 }

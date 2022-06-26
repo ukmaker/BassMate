@@ -2,7 +2,7 @@
 #define SIMPLEGUI_SELECT_WIDGET_H
 
 #include "Widgets/Widget.h"
-
+namespace simplegui {
 /**
  * Base class for all select widgets
  * Defines the methdos for manipulating what is selected
@@ -182,17 +182,17 @@ class SelectWidget : public Widget {
           //_drawBorder(x1 - 1, y + 2 + _highlightBorderWidth, _inner.width -
           // triangleWidth - 20, fontHeight + 2);
           fontRenderer()->setTextColor(_bg, _highlightColor);
-          display()->print(str);
+          fontRenderer()->print(str);
           fontRenderer()->setTextColor(_fg, _bg);
         } else {
-          display()->print(str);
+          fontRenderer()->print(str);
         }
         if (i == _viewIndex) {
           display()->fillTriangle(_inner.x(), y1, _inner.x(), y1 + h,
                                   _inner.x() + triangleWidth, y1 + h / 2, _highlightColor);
         }
       }
-      display()->print("\n");
+      fontRenderer()->print("\n");
     }
 
     fontRenderer()->removeTextWindow();
@@ -212,4 +212,5 @@ class SelectWidget : public Widget {
   bool _wrap = false;
   uint16_t _highlightColor = 0xffff;
 };
+}
 #endif

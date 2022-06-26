@@ -2,8 +2,8 @@
 #define SIMPLEGUI_TEXT_WIDGET_H
 
 #include "Widgets/Widget.h"
-#include "Align.h"
-
+#include "Core/Align.h"
+namespace simplegui {
 class TextWidget : public Widget
 {
 
@@ -34,5 +34,5 @@ protected:
     HAlign _halign;
     VAlign _valign;
 };
-
+}
 #endif

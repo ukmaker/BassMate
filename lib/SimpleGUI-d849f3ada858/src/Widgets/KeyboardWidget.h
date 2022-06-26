@@ -334,7 +334,7 @@ protected:
                         fontRenderer()->setTextColor(_fg, _bg);
                     }
                     fontRenderer()->setTextWindow(_keyX(x, y), _keyY(x, y), dx, dy);
-                    display()->write(_map[y][x]);
+                    fontRenderer()->write(_map[y][x]);
                 }
             }
         }
@@ -357,7 +357,7 @@ protected:
 
             fontRenderer()->getTextBounds(_buf, l, t, &x1, &y1, &w, &h);
             fontRenderer()->setTextWindow(l, t, _inner.width() - 2 * dx, dy);
-            display()->write(_buf);
+            fontRenderer()->write(_buf);
             fontRenderer()->removeTextWindow();
         }
 

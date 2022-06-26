@@ -8,6 +8,7 @@
 * Choices are presented as scrolling text, with the selected choice centred and bolded
 * Choices are mapped to a backing value
 **/
+namespace simplegui {
 template<typename V>
 class ArraySelectWidget : public AbstractSelectWidget<V>
 {
@@ -57,4 +58,5 @@ private:
     const uint16_t _numChoices;
 
 };
+}
 #endif

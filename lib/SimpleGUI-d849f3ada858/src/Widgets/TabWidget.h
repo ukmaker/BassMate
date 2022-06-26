@@ -2,7 +2,7 @@
 #define SIMPLEGUI_TAB_WIDGET_H
 
 #include "Widgets/Window.h"
-
+namespace simplegui {
 class TabWidget : public Window {
  public:
   static const uint16_t ZONE_CONTENT = 1;
@@ -63,5 +63,5 @@ class TabWidget : public Window {
   virtual void _drawChildren(bool force = false);
   virtual void _adjust();
 };
-
+}
 #endif

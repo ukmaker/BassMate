@@ -3,7 +3,7 @@
 
 #include "Renderers/VolumeBarRenderer.h"
 #include "Widgets/Widget.h"
-
+namespace simplegui {
 class VolumeWidget : public Widget {
 public:
     VolumeWidget(GraphicsContext* context)
@@ -113,7 +113,7 @@ protected:
      */
     virtual void _drawContent(bool force = false)
     {
-        Adafruit_GFX_NG* d = display();
+        Adafruit_GFX* d = display();
 
         // split the width 30% speaker 10% gap 60% volume bar
         int speakerWidth = ((_inner.width() * 3) / 10) - 1;
@@ -150,5 +150,5 @@ protected:
     uint8_t _mode = LINEAR;
     bool _muted = false;
 };
-
+}
 #endif

@@ -1,37 +1,37 @@
 #ifndef SIMPLEGUI_BEVELTOOL_H
 #define SIMPLEGUI_BEVELTOOL_H
 
-#include "Adafruit_GFX_NG.h"
+#include "Adafruit_GFX.h"
 #include "Core/Color.h"
 #include "Core/Box.h"
 #include "Core/Rectangle.h"
-
+namespace simplegui {
 class BorderTool
 {
 
 public:
-    static void bevel(Adafruit_GFX_NG *gfx, int x, int y, int w, int h, uint8_t bw, int color)
+    static void bevel(Adafruit_GFX *gfx, int x, int y, int w, int h, uint8_t bw, int color)
     {
         _draw(gfx, x, y, w, h, bw, color, true);
     }
 
-    static void border(Adafruit_GFX_NG *gfx, int x, int y, int w, int h, uint8_t bw, int color)
+    static void border(Adafruit_GFX *gfx, int x, int y, int w, int h, uint8_t bw, int color)
     {
         _draw(gfx, x, y, w, h, bw, color, false);
     }
 
-    static void bevel(Adafruit_GFX_NG *gfx, Rectangle r, Box box)
+    static void bevel(Adafruit_GFX *gfx, Rectangle r, Box box)
     {
         _draw(gfx, r, box, true);
     }
 
-    static void border(Adafruit_GFX_NG *gfx, Rectangle r, Box box)
+    static void border(Adafruit_GFX *gfx, Rectangle r, Box box)
     {
         _draw(gfx, r, box, false);
     }
 
 protected:
-    static void _draw(Adafruit_GFX_NG *gfx, int x, int y, int w, int h, int bw, int color, bool bevel)
+    static void _draw(Adafruit_GFX *gfx, int x, int y, int w, int h, int bw, int color, bool bevel)
     {
         for (int b = 0; b < bw; b++)
         {
@@ -46,7 +46,7 @@ protected:
             gfx->drawFastVLine(x + b, y + b + 1, h - 2 * b - 1, c);             // left - margin top
         }
     }
-    static void _draw(Adafruit_GFX_NG *gfx, Rectangle r, Box box, bool bevel)
+    static void _draw(Adafruit_GFX *gfx, Rectangle r, Box box, bool bevel)
     {
         int tw = box.top.margin + box.top.border;
         int rw = box.right.margin + box.right.border;
@@ -87,5 +87,5 @@ protected:
         }
     }
 };
-
+}
 #endif

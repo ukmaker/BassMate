@@ -4,7 +4,7 @@
 #include "Widgets/AbstractSelectWidget.h"
 #include "Widgets/Option.h"
 
-
+namespace simplegui {
 /**
 * a select widget allows the user to choose one of a set of choices
 * Choices are presented as scrolling text, with the selected choice centred and bolded
@@ -70,5 +70,5 @@ private:
     const Option<T> *_options;
     uint16_t _numChoices;
 };
-
+}
 #endif

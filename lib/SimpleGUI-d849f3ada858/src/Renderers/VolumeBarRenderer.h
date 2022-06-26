@@ -2,7 +2,7 @@
 #define SIMPLEGUI_VOLUMEBAR_RENDERER_H
 
 #include "Core/GraphicsContext.h"
-
+namespace simplegui {
 class VolumeBarRenderer {
  public:
   static void render(GraphicsContext *context, uint16_t x, uint16_t y,
@@ -18,4 +18,5 @@ class VolumeBarRenderer {
         x + xextent, y + barHeight - 1 - yextent, color);
   }
 };
+}
 #endif

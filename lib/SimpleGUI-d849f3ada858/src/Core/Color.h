@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-
+namespace simplegui {
 
 /*
 * Helper class to make color calculations easier
@@ -106,5 +106,5 @@ class Color {
         );
     }
 };
-
+}
 #endif

@@ -2,7 +2,7 @@
 #define SIMPLEGUI_BOX_H
 
 #include <stdint.h>
-
+namespace simplegui {
 class Edge
 {
 public:
@@ -127,5 +127,5 @@ public:
     Edge left;
 
 };
-
+}
 #endif

@@ -4,7 +4,7 @@
 #include "Core/BorderTool.h"
 #include "Core/Color.h"
 #include "Widgets/SelectWidget.h"
-
+namespace simplegui {
 /**
  * a select widget allows the user to choose one of a set of choices
  * Choices are presented as scrolling text, with the selected choice centred and
@@ -38,4 +38,5 @@ class AbstractSelectWidget : public SelectWidget {
     unselect();
   }
 };
+}
 #endif

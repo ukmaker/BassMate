@@ -1,6 +1,6 @@
 #ifndef SIMPLEGUI_LINKED_LIST_H
 #define SIMPLEGUI_LINKED_LIST_H
-
+namespace simplegui {
 template <class T>
 class LinkedListNode {
  public:
@@ -178,5 +178,5 @@ class LinkedList {
   LinkedListNode<T>* _current;
   int _size;
 };
-
+}
 #endif

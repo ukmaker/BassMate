@@ -6,7 +6,7 @@
 #include "Core/FunctionPointer.h"
 #include "Core/LinkedList.h"
 #include "Events/EventType.h"
-
+namespace simplegui {
 /**
  * Bung all the event definitions in one file so we can sort out the forward
  * definitions
@@ -133,5 +133,5 @@ private:
   LinkedList<EventListener> _listeners;
   EventQueue<16> _mailbox;
 };
-
+}
 #endif

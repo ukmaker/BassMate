@@ -433,7 +433,7 @@ protected:
     virtual void _clearButtons()
     {
         uint16_t h = fontRenderer()->getFontHeight() + 10; // including button padding and border
-        display()->fillRect(0, _buttonsY(), _inner._width, h, RED);
+        display()->fillRect(0, _buttonsY(), _inner.width(), h, RED);
     }
 
     virtual void _clearKeys()
@@ -449,10 +449,10 @@ protected:
         uint16_t l = _inner.left() + d;
         uint16_t t = _inner.top() + 4 * d;
         if (_state == TEXT) {
-            display()->fillRect(l, t, _inner._width - d, d + 2,
+            display()->fillRect(l, t, _inner.width() - d, d + 2,
                 _highlightBackgroundColor);
         } else {
-            display()->fillRect(l, t, _inner._width - d, d + 2, _bg);
+            display()->fillRect(l, t, _inner.width() - d, d + 2, _bg);
         }
     }
 
@@ -506,7 +506,7 @@ protected:
                         fontRenderer()->setTextColor(_fg, _bg);
                     }
                     fontRenderer()->setTextWindow(_keyX(x, y), _keyY(x, y), dx, dy);
-                    display()->write(_map[y][x]);
+                    fontRenderer()->write(_map[y][x]);
                 }
             }
         }
@@ -528,8 +528,8 @@ protected:
             }
 
             fontRenderer()->getTextBounds(_buf, l, t, &x1, &y1, &w, &h);
-            fontRenderer()->setTextWindow(l, t, _inner._width - 2 * dx, dy);
-            display()->write(_buf);
+            fontRenderer()->setTextWindow(l, t, _inner.width() - 2 * dx, dy);
+            fontRenderer()->write(_buf);
             fontRenderer()->removeTextWindow();
         }
 
@@ -553,7 +553,7 @@ protected:
                 n = 4;
             }
             // space the buttons equal on all sides
-            uint16_t remainingWidth = _inner._width - usedWidth;
+            uint16_t remainingWidth = _inner.width() - usedWidth;
             uint16_t spacing = remainingWidth / n;
 
             _button(x + spacing, y, cancelWidth, dy, 3, 2, _cancel, _state == CANCEL);
@@ -595,7 +595,7 @@ protected:
         fontRenderer()->setTextColor(fg, bg);
 
         fontRenderer()->setTextWindow(x + b + p, y + p, w + 2 * p, h + p);
-        display()->write(text);
+        fontRenderer()->write(text);
         fontRenderer()->removeTextWindow();
     }
 };

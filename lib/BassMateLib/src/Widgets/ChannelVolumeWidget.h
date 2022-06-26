@@ -6,6 +6,8 @@
 
 namespace bassmate {
 
+using namespace simplegui;
+
 template <int N>
 class ChannelVolumeWidget : public Widget {
   static const uint16_t ZONE_VOLS = 0;
@@ -195,7 +197,7 @@ class ChannelVolumeWidget : public Widget {
    * Draw label on the left, then a volume bar
    */
   virtual void _drawContent(bool force) {
-    Adafruit_GFX_NG *d = display();
+    Adafruit_GFX *d = display();
     const GFXfont *f = fontRenderer()->getFont();
     if (_font != nullptr) {
       fontRenderer()->setFont(_font);
@@ -250,7 +252,7 @@ class ChannelVolumeWidget : public Widget {
                          uint16_t c) {
     fontRenderer()->setTextWindow(x, y, w, h);
     fontRenderer()->setTextColor(c, _bg);
-    display()->print(t);
+    fontRenderer()->print(t);
   }
 };
 

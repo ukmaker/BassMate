@@ -1,5 +1,5 @@
 #include "Widgets/TextWidget.h"
-
+namespace simplegui {
 /**
  * A basic widget implementation which just draws some text.
  * If the text does not fit in the bounding-box it will be clipped
@@ -79,7 +79,8 @@ void TextWidget::_drawContent(bool force)
     fontRenderer()->setTextWindow(_inner.x(), _inner.y(), _inner.width(), _inner.height());
     fontRenderer()->setHAlign(_halign);
     fontRenderer()->setVAlign(_valign);
-    fontRenderer()->writeAligned(display(), _text);
+    fontRenderer()->writeAligned(_text);
     fontRenderer()->removeTextWindow();
     fontRenderer()->setFont(f);
+}
 }

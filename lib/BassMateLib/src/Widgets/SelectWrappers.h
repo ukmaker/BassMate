@@ -5,7 +5,9 @@
 
 
 
-using namespace bassmate;
+namespace bassmate {
+
+using namespace simplegui;
 
 class VoiceWrapper : public Wrapper<Voice> {
 
@@ -53,5 +55,5 @@ class BankWrapper : public Wrapper<Bank> {
 
 };
 
-
+}
 #endif

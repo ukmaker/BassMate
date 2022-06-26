@@ -2,6 +2,7 @@
 #define SIMPLEGUI_WRAPPER_SELECT_WIDGET_H
 
 #include "Widgets/AbstractSelectWidget.h"
+
 template <class V>
 class Wrapper {
   
@@ -15,8 +16,6 @@ class Wrapper {
 
 
 namespace simplegui {
-
-
 
 template <typename V>
 class WrapperSelectWidget : public AbstractSelectWidget<V> {

@@ -9,6 +9,7 @@
 * A spinner widget shows up and down arrows to set a value
 * It automatically sizes itself to fit the screen dimensions when created
 **/
+namespace simplegui {
 class SpinnerWidget : public Window
 {
 
@@ -52,4 +53,5 @@ protected:
 
     void _update();
 };
+}
 #endif

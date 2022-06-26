@@ -1,17 +1,21 @@
 #ifndef SIMPLEGUI_WIDGET_H
 #define SIMPLEGUI_WIDGET_H
+namespace simplegui {
 
 class Widget;
+}
 
 #include "Core/GraphicsContext.h"
 #include "Events/EventSystem.h"
 #include "Core/Rectangle.h"
 #include "Core/Box.h"
 #include "Core/LinkedList.h"
-#include "DefaultFontRenderer_NG.h"
+#include "Renderers/FontRenderer.h"
 /**
  * A basic widget draws itself in a rectangular area
  **/
+
+namespace simplegui {
 
 class Widget
 {
@@ -133,8 +137,8 @@ public:
     /**
      * Convenience methods
      **/
-    Adafruit_GFX_NG *display();
-    DefaultFontRenderer_NG *fontRenderer();
+    Adafruit_GFX *display();
+    FontRenderer *fontRenderer();
 
     /**************************************************
      * Templated methods need to be defined in the
@@ -208,5 +212,5 @@ protected:
     FunctionPointerArg1<void, Widget *> _onFocus;
     FunctionPointerArg1<void, Widget *> _onBlur;
 };
-
+}
 #endif
