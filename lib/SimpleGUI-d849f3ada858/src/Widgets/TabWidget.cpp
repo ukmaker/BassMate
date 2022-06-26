@@ -157,12 +157,12 @@ void TabWidget::_drawContent(bool force) {
   const GFXfont *f = fontRenderer()->getFont();
   if (_font != nullptr) fontRenderer()->setFont(_font);
 
-  uint16_t bx = _inner.x;
-  uint16_t tx = _inner.x + _tabBorderWidth;
-  uint16_t ty = _inner.y + _tabBorderWidth;
+  uint16_t bx = _inner.x();
+  uint16_t tx = _inner.x() + _tabBorderWidth;
+  uint16_t ty = _inner.y() + _tabBorderWidth;
   uint16_t fx = tx + _tabPadding;
   uint16_t fy = ty + _tabPadding;
-  uint16_t cy = _inner.y + _tabHeight;
+  uint16_t cy = _inner.y() + _tabHeight;
   uint16_t to = _tabBorderWidth + _tabPadding;
   uint16_t tw = _tabWidth - _tabBorderWidth * 2;
   uint16_t th = _tabHeight - _tabBorderWidth * 2;
@@ -173,7 +173,7 @@ void TabWidget::_drawContent(bool force) {
   _widgets.reset();
   while (w = _widgets.next()) {
     // tab border
-    BorderTool::border(display(), bx, _inner.y, _tabWidth, _tabHeight,
+    BorderTool::border(display(), bx, _inner.y(), _tabWidth, _tabHeight,
                        _tabBorderWidth, _tabBorderColor);
     if (w == _selected) {
       // fill tab
@@ -232,8 +232,8 @@ void TabWidget::_adjust() {
    */
   Widget::_adjust();
 
-  int wx = _inner.x + _tabBorderWidth;
-  int wy = _inner.y + _tabHeight;
+  int wx = _inner.x() + _tabBorderWidth;
+  int wy = _inner.y() + _tabHeight;
 
   Widget *w;
 
@@ -241,7 +241,7 @@ void TabWidget::_adjust() {
 
   while ((w = _widgets.next()) != NULL) {
     w->setOffset(wx, wy);
-    w->setSize(_inner.width - _box.getWidth(),
-               _inner.height - _box.getHeight() - _tabHeight);
+    w->setSize(_inner.width() - _box.getWidth(),
+               _inner.height() - _box.getHeight() - _tabHeight);
   }
 }

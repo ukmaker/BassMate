@@ -29,54 +29,43 @@ Widget *Widget::getParent() { return _parent; }
 // Location is referred to the offset
 void Widget::setLocation(int x, int y)
 {
-  if ((_outer.x != (x + _offset.x())) || (_outer.y != y + _offset.y()))
+  if ((_outer.x() != (x + _offset.x())) || (_outer.y() != y + _offset.y()))
   {
-    _outer.x = x + _offset.x();
-    _outer.y = y + _offset.y();
+    _outer.move(x + _offset.x(), y + _offset.y());
     adjust();
   }
 }
 
 void Widget::setSize(int width, int height)
 {
-  if (_outer.width != width || _outer.height != height)
+  if (_outer.width() != width || _outer.height() != height)
   {
-    _outer.width = width;
-    _outer.height = height;
+    _outer.resize(width, height);
     adjust();
   }
 }
 
 void Widget::setWidth(int width)
 {
-  if (_outer.width != width)
-  {
-    _outer.width = width;
-    adjust();
-  }
+  setSize(width, _outer.height());
 }
 
 void Widget::setHeight(int height)
 {
-  if (_outer.height != height)
-  {
-    _outer.height = height;
-    adjust();
-  }
+  setSize(_outer.width(), height);
 }
 
-int Widget::x() { return _outer.x; }
+int Widget::x() { return _outer.x(); }
 
-int Widget::y() { return _outer.y; }
+int Widget::y() { return _outer.y(); }
 
-int Widget::height() { return _outer.height; }
+int Widget::height() { return _outer.height(); }
 
-int Widget::width() { return _outer.width; }
+int Widget::width() { return _outer.width(); }
 
 void Widget::setOffset(int x, int y)
 {
-  _outer.x = _outer.x - _offset.x() + x;
-  _outer.y = _outer.y - _offset.y() + y;
+  _outer.move(_outer.x() - _offset.x() + x, _outer.y() - _offset.y() + y);
   _offset.x(x);
   _offset.y(y);
   adjust();
@@ -342,7 +331,7 @@ void Widget::_drawChildren(bool force){};
 
 void Widget::_clear()
 {
-  display()->fillRect(_outer.x, _outer.y, _outer.width, _outer.height, _bg);
+  display()->fillRect(_outer.x(), _outer.y(), _outer.width(), _outer.height(), _bg);
 }
 
 void Widget::_clearContent(bool force)
@@ -358,7 +347,7 @@ void Widget::_clearContent(bool force)
         return;
       }
     }
-    display()->fillRect(_inner.x, _inner.y, _inner.width, _inner.height, _bg);
+    display()->fillRect(_inner.x(), _inner.y(), _inner.width(), _inner.height(), _bg);
   }
 }
 

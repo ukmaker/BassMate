@@ -39,8 +39,8 @@ void Window::_drawChildren(bool force) {
 void Window::_adjust() {
   Widget::_adjust();
 
-  int wx = _inner.x;
-  int wy = _inner.y;
+  int wx = _inner.x();
+  int wy = _inner.y();
   int width = 0;
   int height = 0;
 

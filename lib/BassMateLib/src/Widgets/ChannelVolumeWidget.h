@@ -153,17 +153,17 @@ class ChannelVolumeWidget : public Widget {
       int barLeft, barWidth, barHeight, channelHeight, channelTopOffset;
       int textLeft;
 
-      channelHeight = _inner.height / N;
+      channelHeight = _inner.height() / N;
       channelTopOffset = (channelHeight - fontHeight) / 2;
 
-      barWidth = _inner.width - _textWidth - _textMargin;
+      barWidth = _inner.width() - _textWidth - _textMargin;
       barHeight = fontHeight;
 
       if (_textLeft) {
-        barLeft = _inner.x + _textWidth + _textMargin;
-        textLeft = _inner.x;
+        barLeft = _inner.x() + _textWidth + _textMargin;
+        textLeft = _inner.x();
       } else {
-        barLeft = _inner.x;
+        barLeft = _inner.x();
         textLeft = barLeft + barWidth + _textMargin;
       }
 
@@ -207,17 +207,17 @@ class ChannelVolumeWidget : public Widget {
     int barLeft, barWidth, barHeight, channelHeight, channelTopOffset;
     int textLeft;
 
-    channelHeight = _inner.height / N;
+    channelHeight = _inner.height() / N;
     channelTopOffset = (channelHeight - fontHeight) / 2;
 
-    barWidth = _inner.width - _textWidth - _textMargin;
+    barWidth = _inner.width() - _textWidth - _textMargin;
     barHeight = fontHeight;
 
     if (_textLeft) {
-      barLeft = _inner.x + _textWidth + _textMargin;
-      textLeft = _inner.x;
+      barLeft = _inner.x() + _textWidth + _textMargin;
+      textLeft = _inner.x();
     } else {
-      barLeft = _inner.x;
+      barLeft = _inner.x();
       textLeft = barLeft + barWidth + _textMargin;
     }
 

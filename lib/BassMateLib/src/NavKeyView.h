@@ -5,9 +5,6 @@
 #include "IController.h"
 #include "IView.h"
 
-#include "Events/NavKeyWrappers/NavKeyEventWrapper.h"
-#include "Events/NavKeyWrappers/Wrappings.h"
-
 #include <Adafruit_GFX_NG.h> // Core graphics library
 
 #include "Adafruit_ILI9341_NG.h"
@@ -15,8 +12,6 @@
 #include "Core/ColorsRGB16.h"
 #include "DefaultFontRenderer_NG.h"
 #include "Events/NavKeyEventDispatcher.h"
-#include "Events/NavKeyWrappers/ChannelVolumeWrapper.h"
-#include "Events/NavKeyWrappers/Wrappings.h"
 #include "Fonts/FreeSans9pt7b.h"
 #include "HardwareSerial.h"
 #include "NoteGrid.h"

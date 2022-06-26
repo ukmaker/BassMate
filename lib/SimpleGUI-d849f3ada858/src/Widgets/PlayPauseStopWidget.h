@@ -52,19 +52,19 @@ protected:
         switch (_state)
         {
         case STOP:
-            display()->fillRect(_inner.left(), _inner.top(), _inner.width, _inner.height, _fg);
+            display()->fillRect(_inner.left(), _inner.top(), _inner.width(), _inner.height(), _fg);
             break;
 
         case PAUSE:
-            display()->fillRect(_inner.left(), _inner.top(), _inner.width / 3, _inner.height, _fg);
-            display()->fillRect(_inner.left() + _inner.width * 2 / 3, _inner.top(), _inner.width / 3, _inner.height, _fg);
+            display()->fillRect(_inner.left(), _inner.top(), _inner.width() / 3, _inner.height(), _fg);
+            display()->fillRect(_inner.left() + _inner.width() * 2 / 3, _inner.top(), _inner.width() / 3, _inner.height(), _fg);
             break;
 
         case PLAY:
             display()->fillTriangle(
                 _inner.left(), _inner.top(),
                 _inner.left(), _inner.bottom(),
-                _inner.right(), _inner.top() + _inner.height / 2, _fg);
+                _inner.right(), _inner.top() + _inner.height() / 2, _fg);
             break;
 
         default:

@@ -82,7 +82,7 @@ class ValueWidget : public Widget {
     const GFXfont *f = fontRenderer()->getFont();
     fontRenderer()->setFont(_font);
     fontRenderer()->setTextColor(_fg, _bg);
-    fontRenderer()->setTextWindow(_inner.x, _inner.y, _inner.width, _inner.height);
+    fontRenderer()->setTextWindow(_inner.x(), _inner.y(), _inner.width(), _inner.height());
     display()->print(_value);
     fontRenderer()->removeTextWindow();
     fontRenderer()->setFont(f);

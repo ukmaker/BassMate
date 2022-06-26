@@ -80,8 +80,8 @@ class Button : public Widget {
       fontRenderer()->getTextBounds(_label, x, y, &x1, &y1, &width, &h);
 
       // centre the button vertically and horizontally
-      x = _inner.left() + (_inner.width - width) / 2;
-      y = _inner.top() + (_inner.height - dy)/2;
+      x = _inner.left() + (_inner.width() - width) / 2;
+      y = _inner.top() + (_inner.height() - dy)/2;
 
       _button(x, y, width, dy, 3, 2, _label, hasFocus());
     }

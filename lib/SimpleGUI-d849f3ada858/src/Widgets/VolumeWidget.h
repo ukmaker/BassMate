@@ -116,31 +116,31 @@ protected:
         Adafruit_GFX_NG* d = display();
 
         // split the width 30% speaker 10% gap 60% volume bar
-        int speakerWidth = ((_inner.width * 3) / 10) - 1;
-        int barWidth = (_inner.width * 6) / 10;
-        int gap = _inner.width - speakerWidth - barWidth;
+        int speakerWidth = ((_inner.width() * 3) / 10) - 1;
+        int barWidth = (_inner.width() * 6) / 10;
+        int gap = _inner.width() - speakerWidth - barWidth;
         int squareSide = (speakerWidth * 5) / 10;
 
         int x = _inner.left();
-        int y = _inner.top() + (_inner.height - squareSide) / 2;
+        int y = _inner.top() + (_inner.height() - squareSide) / 2;
 
         // draw the wee speaker always
         d->fillRect(x, y, squareSide, squareSide, _fg);
-        d->fillTriangle(_inner.left(), _inner.top() + _inner.height / 2,
-            _inner.left() + speakerWidth, _inner.top() + _inner.height,
+        d->fillTriangle(_inner.left(), _inner.top() + _inner.height() / 2,
+            _inner.left() + speakerWidth, _inner.top() + _inner.height(),
             _inner.left() + speakerWidth, _inner.top(), _fg);
 
         if (_muted) {
             // draw an X
             x = _inner.left() + speakerWidth + 4;
-            y = _inner.top() + (_inner.height - speakerWidth) / 2;
+            y = _inner.top() + (_inner.height() - speakerWidth) / 2;
             d->drawLine(x, y, x + speakerWidth, y + speakerWidth - 2, _fg);
             d->drawLine(x, y + speakerWidth - 2, x + speakerWidth, y, _fg);
         } else {
             // draw the volume bar
             int left = _inner.left() + speakerWidth + gap;
             VolumeBarRenderer::render(_context, left, _inner.top(), barWidth,
-                _inner.height, _percent, _fg);
+                _inner.height(), _percent, _fg);
         }
     }
 

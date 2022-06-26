@@ -140,7 +140,7 @@ protected:
     }
     if (force || _dirtyContent & ZONE_TITLE)
     {
-      display()->fillRect(_inner.top(), _inner.left(), _inner.width,
+      display()->fillRect(_inner.top(), _inner.left(), _inner.width(),
                           _titleBarHeight, bg);
     }
   }
@@ -198,7 +198,7 @@ protected:
     }
     fontRenderer()->setFont(getFont());
     fontRenderer()->setTextWindow(_inner.left() + triw + 4, _inner.top() + 1,
-                                  _inner.width - 2 * triw - 8,
+                                  _inner.width() - 2 * triw - 8,
                                   _titleBarHeight - 2);
     fontRenderer()->setTextColor(fg, bg);
     Widget *widget = _widgets.getByIndex((uint16_t)_idx);

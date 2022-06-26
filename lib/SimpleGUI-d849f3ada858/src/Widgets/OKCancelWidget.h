@@ -160,7 +160,7 @@ class OKCancelWidget : public Widget {
   virtual void _clearButtons() {
     uint16_t h = fontRenderer()->getFontHeight() +
                  10;  // including button padding and border
-    display()->fillRect(0, _buttonsY(), _inner.width, h, _bg);
+    display()->fillRect(0, _buttonsY(), _inner.width(), h, _bg);
   }
 
   uint16_t _buttonsY() {
@@ -199,7 +199,7 @@ class OKCancelWidget : public Widget {
         n = 4;
       }
       // space the buttons equal on all sides
-      uint16_t remainingWidth = _inner.width - usedWidth;
+      uint16_t remainingWidth = _inner.width() - usedWidth;
       uint16_t spacing = remainingWidth / n;
 
       _button(x + spacing, y, cancelWidth, dy, 3, 2, _cancel, _state == CANCEL);

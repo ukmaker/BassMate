@@ -10,28 +10,33 @@ class Rectangle
 
 public:
 
-    Rectangle(int _x, int _y, int _w, int _h) :
-        x(_x), y(_y), width(_w), height(_h) {}
+    Rectangle(int x, int y, int w, int h) :
+        _x(x), _y(y), _width(w), _height(h) {}
 
     void resize(const Rectangle &outer, Box box) {
-        x = outer.x+box.left.thickness();
-        y = outer.y+box.top.thickness();
-        width = outer.width - box.getWidth();
-        height = outer.height - box.getHeight();
+        _x = outer._x+box.left.thickness();
+        _y = outer._y+box.top.thickness();
+        _width = outer._width - box.getWidth();
+        _height = outer._height - box.getHeight();
+    }
+
+    void resize(int w, int h) {
+        _width = w;
+        _height = h;
     }
 
     bool contains(int pointX, int pointY) {
-        return pointX >= x
-               && pointX <= (x+width)
-               && pointY >= y
-               && pointY <= (y+height);
+        return pointX >= _x
+               && pointX <= (_x+_width)
+               && pointY >= _y
+               && pointY <= (_y+_height);
     }
 
     bool intersects(const Rectangle &r) {
-        int x1 = std::max(x, r.x);
-        int x2 = std::min(x+width, r.x + r.width);
-        int y1 = std::max(y, r.y);
-        int y2 = std::min(y+height, r.y + r.height);
+        int x1 = std::max(_x, r._x);
+        int x2 = std::min(_x+_width, r._x + r._width);
+        int y1 = std::max(_y, r._y);
+        int y2 = std::min(_y+_height, r._y + r._height);
         if((x2 < x1) || (y2 < y1)) {
             return false;
         }
@@ -39,26 +44,48 @@ public:
     }
     
     bool isLocatedAt(Point *p) {
-        return p->x() == x && p->y() == y;
+        return p->x() == _x && p->y() == _y;
     }
 
-    int left() {
-        return x;
+    inline int left() {
+        return _x;
     }
 
-    int right() {
-        return x + width - 1;
+    inline int right() {
+        return _x + _width - 1;
     }
 
-    int top() {
-        return y;
+    inline int top() {
+        return _y;
     }
 
-    int bottom() {
-        return y + height -1;
+    inline int bottom() {
+        return _y + _height -1;
     }
-    
-    int x, y, width, height;
+
+    inline int x() {
+        return _x;
+    }
+
+    inline int y() {
+        return _y;
+    }
+
+    inline int width() {
+        return _width;
+    }
+
+    inline int height() {
+        return _height;
+    }
+
+    void move(int x, int y) {
+        _x = x;
+        _y = y;
+    }
+
+    protected:
+    int _x, _y, _width, _height;
 };
 
 #endif

@@ -76,7 +76,7 @@ void TextWidget::_drawContent(bool force)
 
     fontRenderer()->setTextColor(_fg, _bg);
 
-    fontRenderer()->setTextWindow(_inner.x, _inner.y, _inner.width, _inner.height);
+    fontRenderer()->setTextWindow(_inner.x(), _inner.y(), _inner.width(), _inner.height());
     fontRenderer()->setHAlign(_halign);
     fontRenderer()->setVAlign(_valign);
     fontRenderer()->writeAligned(display(), _text);

@@ -128,15 +128,15 @@ class SelectWidget : public Widget {
     uint16_t fontHeight = fontRenderer()->getFontHeight();
     uint16_t triangleWidth = fontHeight / 2;
 
-    uint16_t lines = _inner.height / fontHeight;
+    uint16_t lines = _inner.height() / fontHeight;
     if (getNumChoices() < lines) {
       lines = getNumChoices();
     }
 
     int sel = -1;
     fontRenderer()->setTextColor(_fg, _bg);
-    fontRenderer()->setTextWindow(_inner.x + triangleWidth + 2, _inner.y,
-                                  _inner.width - triangleWidth - 20,
+    fontRenderer()->setTextWindow(_inner.x() + triangleWidth + 2, _inner.y(),
+                                  _inner.width() - triangleWidth - 20,
                                   lines * fontHeight);
 
     /**
@@ -177,7 +177,7 @@ class SelectWidget : public Widget {
           // when using a custom (i.e. new-style) font, print() ignores
           // background color, so we have to clear it ourselves
           display()->fillRect(x1 - 1, y - fontHeight + 4,
-                              _inner.width - triangleWidth - 20, fontHeight,
+                              _inner.width() - triangleWidth - 20, fontHeight,
                               _highlightColor);
           //_drawBorder(x1 - 1, y + 2 + _highlightBorderWidth, _inner.width -
           // triangleWidth - 20, fontHeight + 2);
@@ -188,8 +188,8 @@ class SelectWidget : public Widget {
           display()->print(str);
         }
         if (i == _viewIndex) {
-          display()->fillTriangle(_inner.x, y1, _inner.x, y1 + h,
-                                  _inner.x + triangleWidth, y1 + h / 2, _highlightColor);
+          display()->fillTriangle(_inner.x(), y1, _inner.x(), y1 + h,
+                                  _inner.x() + triangleWidth, y1 + h / 2, _highlightColor);
         }
       }
       display()->print("\n");

@@ -1,14 +1,9 @@
 #include <Wire.h>
-
 #include "Model.h"
 #include "NoteGrid.h"
-#include "Presenter.h"
 #include "STMDMA.h"
-//#include "View.h"
-
 #include "Controller.h"
 #include "Events/NavKeyEventDispatcher.h"
-#include "Events/NavKeyWrappers/Wrappings.h"
 #include "NavKeyView.h"
 
 #define NEW_VIEW

@@ -282,10 +282,10 @@ protected:
         uint16_t l = _inner.left() + d;
         uint16_t t = _inner.top() + 4 * d;
         if (hasFocus() && _state == TEXT) {
-            display()->fillRect(l, t, _inner.width - d, d + 2,
+            display()->fillRect(l, t, _inner.width() - d, d + 2,
                 _highlightBackgroundColor);
         } else {
-            display()->fillRect(l, t, _inner.width - d, d + 2, _bg);
+            display()->fillRect(l, t, _inner.width() - d, d + 2, _bg);
         }
     }
 
@@ -356,7 +356,7 @@ protected:
             }
 
             fontRenderer()->getTextBounds(_buf, l, t, &x1, &y1, &w, &h);
-            fontRenderer()->setTextWindow(l, t, _inner.width - 2 * dx, dy);
+            fontRenderer()->setTextWindow(l, t, _inner.width() - 2 * dx, dy);
             display()->write(_buf);
             fontRenderer()->removeTextWindow();
         }

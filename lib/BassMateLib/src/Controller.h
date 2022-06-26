@@ -5,6 +5,7 @@
 #include "IView.h"
 #include "Model.h"
 #include "NoteGrid.h"
+#include "PresetHandler.h"
 
 namespace bassmate {
 /**

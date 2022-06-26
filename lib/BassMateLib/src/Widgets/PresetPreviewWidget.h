@@ -27,8 +27,8 @@ protected:
 
     virtual void _drawContent(bool force)
     {
-        uint16_t w = _inner.width / 12;
-        uint16_t h = _inner.height / 12;
+        uint16_t w = _inner.width() / 12;
+        uint16_t h = _inner.height() / 12;
         if (w > h) {
             w = h;
         } else {
@@ -36,8 +36,8 @@ protected:
         }
         uint16_t r = w / 4;
 
-        uint16_t dx = _inner.width / 9;
-        uint16_t dy = _inner.height / 5;
+        uint16_t dx = _inner.width() / 9;
+        uint16_t dy = _inner.height() / 5;
         if (dx > dy)
             dx = dy;
 

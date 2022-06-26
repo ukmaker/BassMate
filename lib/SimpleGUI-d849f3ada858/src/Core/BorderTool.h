@@ -67,8 +67,8 @@ protected:
 
         int x = r.left();
         int y = r.top();
-        int w = r.width;
-        int h = r.height;
+        int w = r.width();
+        int h = r.height();
         
         for (int b = 0; b < mw; b++)
         {

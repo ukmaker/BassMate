@@ -46,8 +46,8 @@ void BitmapWidget::_drawContent(bool force)
 {
     
     if(_monochrome) {
-        display()->drawBitmap(_inner.x, _inner.y, _bitmap, _inner.width, _inner.height, _fg);
+        display()->drawBitmap(_inner.x(), _inner.y(), _bitmap, _inner.width(), _inner.height(), _fg);
     } else {
-        display()->drawRGBBitmap(_inner.x, _inner.y, (uint16_t*)_bitmap, _inner.width, _inner.height);
+        display()->drawRGBBitmap(_inner.x(), _inner.y(), (uint16_t*)_bitmap, _inner.width(), _inner.height());
     }
 }
