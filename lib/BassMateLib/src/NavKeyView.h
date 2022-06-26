@@ -118,8 +118,6 @@ public:
             contextWindow->setTitleBarBackground(HL);
             contextWindow->setTitleBarForeground(BG);
             contextWindow->setTitleBarHeight(30);
-            contextWindow->onFocus(this, &NavKeyView::contextWindowOnFocus);
-            contextWindow->onBlur(this, &NavKeyView::contextWindowOnFocus);
         }
 
         sequencerWindow = new Window(context);
@@ -166,6 +164,7 @@ public:
             tempoWidget->setLocation(200, 0);
             tempoWidget->onFocus(this, &NavKeyView::tempoOnFocus);
             tempoWidget->onBlur(this, &NavKeyView::tempoOnBlur);
+            tempoWidget->onChange(this, &NavKeyView::onTempoChange);
         }
 
         playPauseStopWidget = new PlayPauseStopWidget(context);
@@ -191,7 +190,6 @@ public:
             voiceSelect->setHighlightColor(HL);
             voiceSelect->onChange(this, &NavKeyView::onVoiceChange);
             voiceSelect->onFocus(this, &NavKeyView::voiceSelectOnFocus);
-            voiceSelect->onBlur(this, &NavKeyView::voiceSelectOnBlur);
         }
 
         FamilyWrapper* familyWrapper = new FamilyWrapper();
@@ -202,7 +200,6 @@ public:
             familySelect->setHighlightColor(HL);
             familySelect->onChange(this, &NavKeyView::onFamilyChange);
             familySelect->onFocus(this, &NavKeyView::familySelectOnFocus);
-            familySelect->onBlur(this, &NavKeyView::familySelectOnBlur);
         }
 
         channelVols = new ChannelVolumeWidget<4>(context);
@@ -224,7 +221,6 @@ public:
             channelVols->setSelectedColor(HL);
             channelVols->setStep(5);
             channelVols->onFocus(this, &NavKeyView::channelVolsOnFocus);
-            channelVols->onBlur(this, &NavKeyView::channelVolsOnBlur);
         }
 
         selectPreset = new StorageSelectWidget<8>(context, _storage);
@@ -250,8 +246,6 @@ public:
             savePresetOKCancelWidget->setLocation(0, 120);
             savePresetOKCancelWidget->onOK(this, &NavKeyView::onSavePresetOK);
             savePresetOKCancelWidget->onCancel(this, &NavKeyView::onSavePresetCancel);
-            savePresetOKCancelWidget->onFocus(this, &NavKeyView::saveButtonsOnFocus);
-            savePresetOKCancelWidget->onBlur(this, &NavKeyView::saveButtonsOnBlur);
         }
 
         keyboard = new KeyboardWidget(context, textBuffer, 9);
@@ -262,8 +256,6 @@ public:
             keyboard->setText("hello world", 11);
             keyboard->setLocation(0, 0);
             keyboard->setBackground(BG);
-            keyboard->onFocus(this, &NavKeyView::keyboardOnFocus);
-            keyboard->onBlur(this, &NavKeyView::keyboardOnBlur);
         }
         savePresetDialog->attach(savePresetOKCancelWidget);
         savePresetDialog->attachFocus(keyboard);
@@ -501,22 +493,13 @@ public:
             playPauseStopWidget->toggle();
             break;
 
-        case NAV_UP:
-            tempoWidget->blur();
-            playPauseStopWidget->blur();
-            transition(&NavKeyView::contextHandler);
-            break;
-
-        case NAV_DOWN:
-            tempoWidget->blur();
-            playPauseStopWidget->blur();
-            transition(&NavKeyView::channelsHandler);
-            break;
-
         case NAV_LEFT:
             tempoWidget->blur();
             playPauseStopWidget->blur();
             transition(&NavKeyView::volumeHandler);
+            break;
+
+        default:
             break;
         }
     }
@@ -877,16 +860,6 @@ public:
         }
     }
 
-    void contextWindowOnFocus(Widget* w)
-    {
-        // nothing to do
-    }
-
-    void contextWindowOnBlur(Widget* w)
-    {
-        // nothing to do
-    }
-
     void channelTabsOnFocus(Widget* w)
     {
         focusTabs(channelTabs);
@@ -930,9 +903,6 @@ public:
         familySelect->setLabel("Family");
     }
 
-    void channelVolsOnBlur(Widget* w)
-    {
-    }
     void voiceSelectOnFocus(Widget* w)
     {
         // get updated values
@@ -945,20 +915,12 @@ public:
         familySelect->setLabel(familySelect->getSelectedValue().name);
     }
 
-    void voiceSelectOnBlur(Widget* w)
-    {
-    }
-
     void familySelectOnFocus(Widget* w)
     {
         _controller->familyRefresh(channelVols->getSelected());
         // force redraw to take account of the family name change
         channelTabs->noteDirty();
         channelTabs->selectTab(familySelect);
-    }
-
-    void familySelectOnBlur(Widget* w)
-    {
     }
 
     void presetsTabsOnFocus(Widget* w)
@@ -980,22 +942,6 @@ public:
     void selectPresetOnBlur(Widget* w)
     {
         blurSelect(selectPreset);
-    }
-
-    void keyboardOnFocus(Widget* w)
-    {
-    }
-
-    void keyboardOnBlur(Widget* w)
-    {
-    }
-
-    void saveButtonsOnFocus(Widget* w)
-    {
-    }
-
-    void saveButtonsOnBlur(Widget* w)
-    {
     }
 
     /**********************************************

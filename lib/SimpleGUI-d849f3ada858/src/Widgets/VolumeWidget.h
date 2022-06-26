@@ -4,6 +4,15 @@
 #include "Renderers/VolumeBarRenderer.h"
 #include "Widgets/Widget.h"
 namespace simplegui {
+
+    /**
+     * @brief Widget to show a small loudspeaker icon and 
+     * a triangle volume bar.
+     * 
+     * Methods allow to increase and decrease the volume
+     * A mute method replaces the volume bar with an X
+     * 
+     */
 class VolumeWidget : public Widget {
 public:
     VolumeWidget(GraphicsContext* context)

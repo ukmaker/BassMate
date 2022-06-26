@@ -27,6 +27,7 @@ class ValueWidget : public Widget {
     if (_value != v) {
       _value = v;
       noteDirtyContent(ZONE_VALUE);
+      _onChange.call(this);
     }
   }
 
@@ -41,19 +42,19 @@ class ValueWidget : public Widget {
   int getMin() { return _min; }
 
   void increment() {
-    _value += _step;
-    if (_value > _max) {
-      _value = _max;
+    int value = _value + _step;
+    if (value > _max) {
+      value = _max;
     }
-    noteDirtyContent(ZONE_VALUE);
+    setValue(value);
   }
 
   void decrement() {
-    _value -= _step;
-    if (_value < _min) {
-      _value = _min;
+    int value = _value - _step;
+    if (value < _min) {
+      value = _min;
     }
-    noteDirtyContent(ZONE_VALUE);
+    setValue(value);
   }
   void setStep(uint8_t step) {
     if (step > _max / 2) return;

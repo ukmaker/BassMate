@@ -8,7 +8,7 @@ namespace simplegui {
 /**
  * a select widget allows the user to choose one of a set of choices
  * Choices are presented as scrolling text, with the selected choice centred and
- *bolded Choices are mapped to a backing value
+ * bolded Choices are mapped to a backing value
  **/
 template <typename V>
 class AbstractSelectWidget : public SelectWidget {

@@ -1,9 +1,5 @@
 #ifndef SIMPLEGUI_WIDGET_H
 #define SIMPLEGUI_WIDGET_H
-namespace simplegui {
-
-class Widget;
-}
 
 #include "Core/GraphicsContext.h"
 #include "Events/EventSystem.h"
@@ -11,12 +7,14 @@ class Widget;
 #include "Core/Box.h"
 #include "Core/LinkedList.h"
 #include "Renderers/FontRenderer.h"
-/**
- * A basic widget draws itself in a rectangular area
- **/
 
 namespace simplegui {
 
+/**
+ * A basic widget draws itself in a rectangular area
+ * Implementing classes must at least override the protected methods
+ * _drawContent and/or _drawChildren
+ **/
 class Widget
 {
 public:
@@ -141,10 +139,7 @@ public:
     FontRenderer *fontRenderer();
 
     /**************************************************
-     * Templated methods need to be defined in the
-     * header file, not the .cpp file
-     * Otherwise they are not visible to derived classes
-     * Isn't C++ just wonderful...
+     * Basic event handlers
      **************************************************/
     template <class T>
     void onFocus(T *tptr, void (T::*mptr)(Widget *))
