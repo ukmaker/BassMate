@@ -1,10 +1,11 @@
-#include <Wire.h>
-#include "Model.h"
-#include "NoteGrid.h"
-#include "Hardware/STM_SPIDMA.h"
 #include "Controller.h"
 #include "Events/NavKeyEventDispatcher.h"
+#include "Hardware/STM_SPIDMA.h"
+#include "Hardware/STM_TimerEncoder.h"
+#include "Model.h"
 #include "NavKeyView.h"
+#include "NoteGrid.h"
+#include <Wire.h>
 
 #define NEW_VIEW
 
@@ -14,7 +15,7 @@
 #define MISO PB14
 #define MOSI PB15
 #define SC_CS PB12
-#define SC_DC PA8
+#define SC_DC PA15
 #define SC_RESET PB4
 
 #define SCL PB6
@@ -29,6 +30,10 @@
 #define VS_DCS PB10
 #define VS_RESET PB0
 
+#define ENC_A PA8
+#define ENC_B PA9
+#define ENC_C PA10
+
 using namespace bassmate;
 
 SPIClass spi2(MOSI, MISO, SCK, SC_CS);
@@ -36,6 +41,8 @@ Adafruit_ILI9341_DMA tft = Adafruit_ILI9341_DMA(&spi2, SC_DC, SC_CS, SC_RESET);
 
 volatile bool spiDmaTransferComplete = true;
 STM_SPIDMA stmdma(&tft, 32768, SPI2, DMA1_Stream4);
+
+STMTimerEncoder stimer;
 
 extern "C" {
 void DMA1_Stream4_IRQHandler()
@@ -82,16 +89,16 @@ NavKeyEventDispatcher navKeyEventDispatcher(&view);
 Controller controller(model, view, noteGrid);
 void UP_Button_Pressed(i2cNavKey* p)
 {
-    navKeyEventDispatcher.UP_Button_Pressed(p);
+    navKeyEventDispatcher.UP_Button_Pressed();
 }
-void DOWN_Button_Pressed(i2cNavKey* p) { navKeyEventDispatcher.DOWN_Button_Pressed(p); }
-void LEFT_Button_Pressed(i2cNavKey* p) { navKeyEventDispatcher.LEFT_Button_Pressed(p); }
-void RIGHT_Button_Pressed(i2cNavKey* p) { navKeyEventDispatcher.RIGHT_Button_Pressed(p); }
+void DOWN_Button_Pressed(i2cNavKey* p) { navKeyEventDispatcher.DOWN_Button_Pressed(); }
+void LEFT_Button_Pressed(i2cNavKey* p) { navKeyEventDispatcher.LEFT_Button_Pressed(); }
+void RIGHT_Button_Pressed(i2cNavKey* p) { navKeyEventDispatcher.RIGHT_Button_Pressed(); }
 
-void Encoder_Increment(i2cNavKey* p) { navKeyEventDispatcher.Encoder_Increment(p); }
-void Encoder_Decrement(i2cNavKey* p) { navKeyEventDispatcher.Encoder_Decrement(p); }
-void Encoder_Push(i2cNavKey* p) { navKeyEventDispatcher.Encoder_Push(p); }
-void Encoder_Release(i2cNavKey* p) { navKeyEventDispatcher.Encoder_Release(p); }
+void Encoder_Increment(i2cNavKey* p) { navKeyEventDispatcher.Encoder_Increment(); }
+void Encoder_Decrement(i2cNavKey* p) { navKeyEventDispatcher.Encoder_Decrement(); }
+void Encoder_Push(i2cNavKey* p) { navKeyEventDispatcher.Encoder_Push(); }
+void Encoder_Release(i2cNavKey* p) { navKeyEventDispatcher.Encoder_Release(); }
 
 void beatCallback(uint8_t beat) { controller.handleBeat(beat); }
 void noteOnCallback(uint8_t beat, MIDINote note)
@@ -145,6 +152,9 @@ void setup()
     sequencer.attachNoteOffCallback(noteOffCallback);
     sequencer.attachBeatCallback(beatCallback);
 
+    stimer.onIncrement(&navKeyEventDispatcher, &NavKeyEventDispatcher::Encoder_Increment);
+    stimer.onDecrement(&navKeyEventDispatcher, &NavKeyEventDispatcher::Encoder_Decrement);
+    stimer.onClick(&navKeyEventDispatcher, &NavKeyEventDispatcher::Encoder_Push);
 
     Serial.begin(9600);
     spi1.begin(48000000);
@@ -173,6 +183,10 @@ void setup()
     digitalWrite(SCL, 1);
     digitalWrite(SDA, 1);
 
+    pinMode(ENC_A, INPUT_PULLUP);
+    pinMode(ENC_B, INPUT_PULLUP);
+    pinMode(ENC_C, INPUT_PULLUP);
+
     Wire.begin((uint32_t)SDA, (uint32_t)SCL);
     Wire.setClock(400000);
     Serial2.begin(31250);
@@ -199,10 +213,12 @@ void setup()
 
     model.begin();
     controller.begin();
+    stimer.begin();
 }
 
 void loop()
 {
+    stimer.tick();
     view.run();
     model.run();
 }

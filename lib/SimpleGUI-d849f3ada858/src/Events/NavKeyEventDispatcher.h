@@ -20,50 +20,50 @@ namespace simplegui
       }
     }
 
-    void UP_Button_Pressed(i2cNavKey *p)
+    void UP_Button_Pressed()
     {
       Event e;
       e.type = EventType::NAV_UP;
       dispatch(e);
     }
-    void DOWN_Button_Pressed(i2cNavKey *p)
+    void DOWN_Button_Pressed()
     {
       Event e;
       e.type = EventType::NAV_DOWN;
       dispatch(e);
     }
-    void LEFT_Button_Pressed(i2cNavKey *p)
+    void LEFT_Button_Pressed()
     {
       Event e;
       e.type = EventType::NAV_LEFT;
       dispatch(e);
     }
-    void RIGHT_Button_Pressed(i2cNavKey *p)
+    void RIGHT_Button_Pressed()
     {
       Event e;
       e.type = EventType::NAV_RIGHT;
       dispatch(e);
     }
 
-    void Encoder_Increment(i2cNavKey *p)
+    void Encoder_Increment()
     {
       Event e;
       e.type = EventType::NAV_INC;
       dispatch(e);
     }
-    void Encoder_Decrement(i2cNavKey *p)
+    void Encoder_Decrement()
     {
       Event e;
       e.type = EventType::NAV_DEC;
       dispatch(e);
     }
-    void Encoder_Push(i2cNavKey *p)
+    void Encoder_Push()
     {
       Event e;
       e.type = EventType::NAV_SELECT;
       dispatch(e);
     }
-    void Encoder_Release(i2cNavKey *p)
+    void Encoder_Release()
     {
       Event e;
       e.type = EventType::NAV_RELEASE;
