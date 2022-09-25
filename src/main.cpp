@@ -1,7 +1,7 @@
 #include "Controller.h"
 #include "Events/NavKeyEventDispatcher.h"
 #include "Hardware/STM_SPIDMA.h"
-#include "Hardware/STM_TimerEncoder.h"
+#include "STM32/STM32F411_Timer1Encoder.h"
 #include "Model.h"
 #include "NavKeyView.h"
 #include "NoteGrid.h"
@@ -15,8 +15,8 @@
 #define MISO PB14
 #define MOSI PB15
 #define SC_CS PB12
-#define SC_DC PA15
-#define SC_RESET PB4
+#define SC_DC PB3
+#define SC_RESET PB5
 
 #define SCL PB6
 #define SDA PB7
@@ -42,7 +42,7 @@ Adafruit_ILI9341_DMA tft = Adafruit_ILI9341_DMA(&spi2, SC_DC, SC_CS, SC_RESET);
 volatile bool spiDmaTransferComplete = true;
 STM_SPIDMA stmdma(&tft, 32768, SPI2, DMA1_Stream4);
 
-STMTimerEncoder stimer;
+STM32F411_Timer1Encoder volumeEncoder(PA10);
 
 extern "C" {
 void DMA1_Stream4_IRQHandler()
@@ -152,9 +152,9 @@ void setup()
     sequencer.attachNoteOffCallback(noteOffCallback);
     sequencer.attachBeatCallback(beatCallback);
 
-    stimer.onIncrement(&navKeyEventDispatcher, &NavKeyEventDispatcher::Encoder_Increment);
-    stimer.onDecrement(&navKeyEventDispatcher, &NavKeyEventDispatcher::Encoder_Decrement);
-    stimer.onClick(&navKeyEventDispatcher, &NavKeyEventDispatcher::Encoder_Push);
+    volumeEncoder.onIncrement(&navKeyEventDispatcher, &NavKeyEventDispatcher::Encoder_Increment);
+    volumeEncoder.onDecrement(&navKeyEventDispatcher, &NavKeyEventDispatcher::Encoder_Decrement);
+    volumeEncoder.onClick(&navKeyEventDispatcher, &NavKeyEventDispatcher::Encoder_Push);
 
     Serial.begin(9600);
     spi1.begin(48000000);
@@ -183,9 +183,7 @@ void setup()
     digitalWrite(SCL, 1);
     digitalWrite(SDA, 1);
 
-    pinMode(ENC_A, INPUT_PULLUP);
-    pinMode(ENC_B, INPUT_PULLUP);
-    pinMode(ENC_C, INPUT_PULLUP);
+    volumeEncoder.setupIO(true);
 
     Wire.begin((uint32_t)SDA, (uint32_t)SCL);
     Wire.setClock(400000);
@@ -213,12 +211,12 @@ void setup()
 
     model.begin();
     controller.begin();
-    stimer.begin();
+    volumeEncoder.begin();
 }
 
 void loop()
 {
-    stimer.tick();
+    volumeEncoder.tick();
     view.run();
     model.run();
 }

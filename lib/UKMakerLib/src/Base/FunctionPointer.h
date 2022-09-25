@@ -1,7 +1,4 @@
-/* Copied from the mbed library
- *
- *
- * mbed Microcontroller Library
+/* mbed Microcontroller Library
  * Copyright (c) 2006-2015 ARM Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef MBED_FUNCTIONPOINTER_H
-#define MBED_FUNCTIONPOINTER_H
+#ifndef UKMAKER_MBED_FUNCTIONPOINTER_H
+#define UKMAKER_MBED_FUNCTIONPOINTER_H
 
 #include <stdint.h>
 #include <string.h>
 
-namespace simplegui {
+namespace ukmaker {
 
 /* If we had variaditic templates, this wouldn't be a problem, but until C++11 is enabled, we are stuck with multiple classes... */
 
@@ -205,6 +202,6 @@ private:
 typedef FunctionPointerArg1<void, void> FunctionPointer;
 typedef FunctionPointerArg1<void, int> event_callback_t;
 
-} // namespace simplegui
+} // namespace ukmaker
 
 #endif

@@ -1206,7 +1206,7 @@ public:
     }
 
 protected:
-    FunctionPointerArg1<void, Event> _fp;
+    simplegui::FunctionPointerArg1<void, Event> _fp;
     IController* _controller;
 
 public:

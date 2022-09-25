@@ -4,9 +4,11 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "BufferedEEPROM.h"
+#include "STM32/BufferedEEPROM.h"
 
 namespace bassmate {
+
+using namespace ukmaker;
 
 /**
  * This class encapsulates the functionality needed to save and load
