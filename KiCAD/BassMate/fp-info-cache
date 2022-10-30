@@ -1,4 +1,4 @@
-20380298398054619
+20381961832153088
 Audio_Module
 Reverb_BTDR-1H
 Digital Reverberation Unit, http://www.belton.co.kr/inc/downfile.php?seq=17&file=pdf (footprint from http://www.uk-electronic.de/PDF/BTDR-1.pdf)
@@ -85259,6 +85259,13 @@ diode bridge, 2KBP series
 0
 4
 4
+UKMaker
+Connector_Audio_Phono_Socket
+
+
+0
+3
+2
 UKMaker
 DIP-8_4_300_ELL
 8/4 pins DIL package, elliptical pads

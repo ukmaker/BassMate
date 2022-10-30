@@ -1,3 +1,13 @@
+LAYER_HEIGHT = 0.3;
+
+use <../../ukmaker_openscad_lib/Standoffs.scad>
+
+
+
+panel_thickness = 2.5;
+
+panel_rounding = 3;
+
 trellis_button_side = 10.5;
 trellis_button_grid = 15;
 trellis_button_squish = 2;
@@ -34,6 +44,7 @@ i2c_navkey_board_offset = 6;
 box_margin = 10;
 box_width = tft_w + i2c_navkey_pcb_side + 3 * box_margin;
 box_height =  trellis_button_grid * (trellis_rows-1)+ trellis_button_side + 2 * box_margin + tft_h + box_margin;
+
 module i2c_navkey() {
     t1 = (i2c_navkey_pcb_side - i2c_navkey_mounting_hole_centres)/2;
     t2 = i2c_navkey_pcb_side - t1;
@@ -82,17 +93,12 @@ module i2c_navkey() {
 
 module i2c_navkey_standoff() {
     
-    translate([-i2c_navkey_pcb_side/2, -i2c_navkey_pcb_side/2, 0])
+    translate([-i2c_navkey_pcb_side/2, -i2c_navkey_pcb_side/2, LAYER_HEIGHT])
     rotate([180,0,0])
-    difference() {
-        union() {
-            cylinder(h=i2c_navkey_standoff_outer_height, d=i2c_navkey_standoff_outer_dia);
-            translate([0,0,i2c_navkey_standoff_outer_height])
-            cylinder(h=i2c_navkey_standoff_inner_height, d=i2c_navkey_standoff_inner_dia);
-        }
-        
-        cylinder(h=(i2c_navkey_standoff_inner_height+i2c_navkey_standoff_outer_height+0.2), d=i2c_navkey_standoff_hole_dia);
-    }
+    part_centred_screw_standoff(i2c_navkey_standoff_outer_height+LAYER_HEIGHT, i2c_navkey_standoff_outer_dia,
+        i2c_navkey_standoff_inner_height,
+        i2c_navkey_standoff_inner_dia,
+        i2c_navkey_standoff_hole_dia, LAYER_HEIGHT);
 }
 
 
@@ -195,6 +201,18 @@ $fn=100;
 
 module trellis() {
     buttons(trellis_button_side, trellis_button_side, 1, trellis_button_grid, 4, 8);
+    
+    screw_spacing = trellis_button_side+(trellis_button_grid-trellis_button_side)/2;
+    trellis_side = trellis_button_grid*3 + trellis_button_side;
+    
+    op_4_grid(trellis_side,trellis_side,
+    screw_spacing,screw_spacing,screw_spacing,screw_spacing)
+    countersunk(2,3);
+
+    translate([trellis_side+trellis_button_grid - trellis_button_side,0,0])
+    op_4_grid(trellis_side,trellis_side,
+    screw_spacing,screw_spacing,screw_spacing,screw_spacing)
+    countersunk(2,3);
 }
 
 module control_buttons() {
@@ -237,7 +255,7 @@ module option2() {
     // panel
     difference() {
         
-         linear_extrude(height = 2.5) roundedSquare(box_width, box_height, 2);
+         linear_extrude(height = panel_thickness) roundedSquare(box_width, box_height, panel_rounding);
 
         //cube([box_width, box_height, 2.5]);
         translate([trellis_button_grid/1.5, trellis_button_grid * 5, -0.1])
@@ -271,4 +289,4 @@ module option2() {
     }
 }
 
-option2();
+//option2();
