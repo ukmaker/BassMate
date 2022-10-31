@@ -1,12 +1,19 @@
-LAYER_HEIGHT = 0.3;
+LAYER_HEIGHT = 0.4;
+
+use <../../ukmaker_openscad_lib/Generics.scad>
 
 use <../../ukmaker_openscad_lib/Standoffs.scad>
 
+use <../../ukmaker_openscad_lib/TFTs.scad>
 
 
-panel_thickness = 2.5;
+use <../../ukmaker_openscad_lib/I2CNavKey.scad>
+include <../../ukmaker_openscad_lib/I2CNavKey.h>
 
-panel_rounding = 3;
+
+panel_thickness = 3;
+
+panel_rounding = 5;
 
 trellis_button_side = 10.5;
 trellis_button_grid = 15;
@@ -24,123 +31,14 @@ tft_h = 50;
 encoder_side = 14;
 encoder_hole_dia = 8;
 
-i2c_navkey_pcb_side = 42.5;
-i2c_navkey_mounting_hole_centres = 34;
-i2c_navkey_mounting_hole_dia = 3;
-
-i2c_navkey_standoff_hole_dia = 2;
-i2c_navkey_standoff_inner_dia = 2.9;
-i2c_navkey_standoff_outer_dia = 4;
-i2c_navkey_standoff_inner_height = 1;
-i2c_navkey_standoff_outer_height = 3;
-
-i2c_navkey_dia_1 = 34.4;
-i2c_navkey_dia_2 = 32;
-i2c_navkey_dia_3 = 22.9;
-i2c_navkey_dia_4 = 8.1;
-i2c_navkey_joypad_height = 3;
-i2c_navkey_board_offset = 6;
 
 box_margin = 10;
 box_width = tft_w + i2c_navkey_pcb_side + 3 * box_margin;
 box_height =  trellis_button_grid * (trellis_rows-1)+ trellis_button_side + 2 * box_margin + tft_h + box_margin;
 
-module i2c_navkey() {
-    t1 = (i2c_navkey_pcb_side - i2c_navkey_mounting_hole_centres)/2;
-    t2 = i2c_navkey_pcb_side - t1;
-    
-    
-    color("Gray")
-    translate([-i2c_navkey_pcb_side/2, -i2c_navkey_pcb_side/2, 0]) {
-    // PCB
-    difference() {
-
-        translate([0,0,-0.1])
-        cube([i2c_navkey_pcb_side, i2c_navkey_pcb_side, 1.1]);
-        
-        translate([0,0,-0.1]) {
-            translate([t1, t1, 0])
-            cylinder(h=1.2, d = i2c_navkey_mounting_hole_dia);
-            
-            translate([t1, t2, 0])
-            cylinder(h=1.2, d = i2c_navkey_mounting_hole_dia);
-            
-            translate([t2, t2, 0])
-            cylinder(h=1.2, d = i2c_navkey_mounting_hole_dia);
-            
-            translate([t2, t1, 0])
-            cylinder(h=1.2, d = i2c_navkey_mounting_hole_dia);
-        }
-    }
-    
-    // Jog dial
-    translate([i2c_navkey_pcb_side/2,i2c_navkey_pcb_side/2,2.5]) {
-        rotate_extrude(angle=360)
-        polygon([
-        [i2c_navkey_dia_1/2,0],
-        [i2c_navkey_dia_1/2, 0.5],
-        [i2c_navkey_dia_2/2,0.5],
-        [i2c_navkey_dia_2/2,i2c_navkey_joypad_height],
-        [i2c_navkey_dia_3/2,i2c_navkey_joypad_height-1]
-        ]);
-        
-        cylinder(h=i2c_navkey_joypad_height-1, d=i2c_navkey_dia_3-0.5);
-        cylinder(h=i2c_navkey_joypad_height-0.5, d=i2c_navkey_dia_4);
-
-    }
-}
-}
-
-module i2c_navkey_standoff() {
-    
-    translate([-i2c_navkey_pcb_side/2, -i2c_navkey_pcb_side/2, LAYER_HEIGHT])
-    rotate([180,0,0])
-    part_centred_screw_standoff(i2c_navkey_standoff_outer_height+LAYER_HEIGHT, i2c_navkey_standoff_outer_dia,
-        i2c_navkey_standoff_inner_height,
-        i2c_navkey_standoff_inner_dia,
-        i2c_navkey_standoff_hole_dia, LAYER_HEIGHT);
-}
-
-
-module i2c_navkey_standoffs() {
-    t1 = (i2c_navkey_pcb_side - i2c_navkey_mounting_hole_centres)/2;
-    t2 = i2c_navkey_pcb_side - t1;
-
-    translate([0,0,-0.1]) {
-        translate([t1, t1, 0])
-        i2c_navkey_standoff();
-        
-        translate([t1, t2, 0])
-        i2c_navkey_standoff();
-        
-        translate([t2, t2, 0])
-        i2c_navkey_standoff();
-        
-        translate([t2, t1, 0])
-        i2c_navkey_standoff();
-    }
-}  
-
-module roundedSquare(length, width, radius) {
-    
-    //translate([radius - (side_length / 2), radius - (side_length / 2), 0])
-    translate([radius, radius, 0])
-    hull() {
-        circle(r=radius);
-        
-        translate([length - 2 * radius,0,0])
-        circle(r=radius);
-        
-        translate([length - 2 * radius, width - 2 * radius,0])
-        circle(r=radius);
-        
-        translate([0, width - 2 * radius,0])
-        circle(r=radius);
-    }
-}
 
 module button(h, w, r) {
-    linear_extrude(height = h) roundedSquare(h, w, r);
+    linear_extrude(height = h) rounded_square(h, w, r);
 }
 
 module buttons(h, w, r, s, rows, cols) {
@@ -207,12 +105,12 @@ module trellis() {
     
     op_4_grid(trellis_side,trellis_side,
     screw_spacing,screw_spacing,screw_spacing,screw_spacing)
-    countersunk(2,3);
+    countersink(2,panel_thickness+LAYER_HEIGHT);
 
     translate([trellis_side+trellis_button_grid - trellis_button_side,0,0])
     op_4_grid(trellis_side,trellis_side,
     screw_spacing,screw_spacing,screw_spacing,screw_spacing)
-    countersunk(2,3);
+    countersink(2,panel_thickness+LAYER_HEIGHT);
 }
 
 module control_buttons() {
@@ -255,7 +153,7 @@ module option2() {
     // panel
     difference() {
         
-         linear_extrude(height = panel_thickness) roundedSquare(box_width, box_height, panel_rounding);
+         linear_extrude(height = panel_thickness) rounded_square(box_width, box_height, panel_rounding);
 
         //cube([box_width, box_height, 2.5]);
         translate([trellis_button_grid/1.5, trellis_button_grid * 5, -0.1])
@@ -263,29 +161,33 @@ module option2() {
         
         // navkey hole
         i2c_navkey_locate()
-        cylinder(h=3,d=i2c_navkey_dia_2);
+        cylinder(h=panel_thickness+LAYER_HEIGHT,d=i2c_navkey_dia_2);
         
         // TFT hole
-        translate([box_margin,box_margin,-0.1])
-        cube([tft_w, tft_h, 3]);
-        
+        translate([box_margin,box_margin,-0.1]) {
+        mnt_cutout_tft_2_8(panel_thickness+LAYER_HEIGHT);
+        }
         
         // encoder holes
         translate([-encoder_side, i2c_navkey_pcb_side/2 + encoder_side/2, -0.1])
         i2c_navkey_locate()
-        cylinder(h=3, d=encoder_hole_dia);
+        cylinder(h=panel_thickness+LAYER_HEIGHT, d=encoder_hole_dia);
 
         translate([encoder_side, i2c_navkey_pcb_side/2 + encoder_side/2, -0.1])
         i2c_navkey_locate()
-        cylinder(h=3, d=encoder_hole_dia);
+        cylinder(h=panel_thickness+LAYER_HEIGHT, d=encoder_hole_dia);
 
     }
         
-            
+     
     i2c_navkey_locate() {
-      //  translate([0,0,-i2c_navkey_joypad_height])
-       // i2c_navkey();
-        i2c_navkey_standoffs();
+        mirror([0,0,1])
+        i2c_navkey_snaps();
+    }
+    
+    translate([box_margin,box_margin,-0.1]) {
+       mirror([0,0,1])
+        mnt_snap_tft_2_8(panel_thickness);
     }
 }
 

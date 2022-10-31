@@ -23,13 +23,13 @@ rotate([0,0,90])
 }
 
 module panel() {
-difference() {
+    difference() {
     option2();
     translate([-1.5,-1.5,0])
     op_4_grid (box_width+3,
                         box_height+3,
                         screw_hole_offset,screw_hole_offset,screw_hole_offset,screw_hole_offset)
-    countersunk(screw_hole_dia, thickness);
+    countersink(screw_hole_dia, thickness+2 * LAYER_HEIGHT);
     
 }
 }
@@ -39,6 +39,6 @@ module body() {
 sloping_body (box_height+3, box_width+3, 40, 60, 3, 5, 3);
 }
 
-//panel();
+panel();
 
-body();
+//body();
