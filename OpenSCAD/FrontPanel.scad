@@ -1,23 +1,26 @@
 LAYER_HEIGHT = 0.4;
 
-use <../../ukmaker_openscad_lib/Generics.scad>
+use <ukmaker_openscad_lib/Generics.scad>
 
-use <../../ukmaker_openscad_lib/Standoffs.scad>
+use <ukmaker_openscad_lib/Standoffs.scad>
 
-use <../../ukmaker_openscad_lib/TFTs.scad>
+use <ukmaker_openscad_lib/TFTs.scad>
 
 
-use <../../ukmaker_openscad_lib/I2CNavKey.scad>
-include <../../ukmaker_openscad_lib/I2CNavKey.h>
+use <ukmaker_openscad_lib/I2CNavKey.scad>
+include <ukmaker_openscad_lib/I2CNavKey.h>
 
 
 panel_thickness = 3;
 
 panel_rounding = 5;
 
-trellis_button_side = 10.5;
+trellis_button_side = 11;
 trellis_button_grid = 15;
 trellis_button_squish = 2;
+
+trellis_width = 60;
+trellis_height = 60;
 
 trellis_rows = 4;
 trellis_cols = 8;
@@ -28,7 +31,8 @@ tbt_grid = 25;
 tft_w = 80;
 tft_h = 50;
 
-encoder_side = 14;
+encoder_side = 12.5;
+encoder_recess_depth = 1;
 encoder_hole_dia = 8;
 
 
@@ -36,6 +40,10 @@ box_margin = 10;
 box_width = tft_w + i2c_navkey_pcb_side + 3 * box_margin;
 box_height =  trellis_button_grid * (trellis_rows-1)+ trellis_button_side + 2 * box_margin + tft_h + box_margin;
 
+speaker_dia = 40;
+speaker_lip = 1;
+speaker_mounting_hole_dia = 3;
+speaker_mounting_hole_grid = 33;
 
 module button(h, w, r) {
     linear_extrude(height = h) rounded_square(h, w, r);
@@ -156,38 +164,52 @@ module option2() {
          linear_extrude(height = panel_thickness) rounded_square(box_width, box_height, panel_rounding);
 
         //cube([box_width, box_height, 2.5]);
-        translate([trellis_button_grid/1.5, trellis_button_grid * 5, -0.1])
+        tl = (box_width - trellis_width * 2) / 2;
+        translate([tl, trellis_button_grid * 5 - 2, -0.1])
         trellis();
         
         // navkey hole
         i2c_navkey_locate()
-        cylinder(h=panel_thickness+LAYER_HEIGHT,d=i2c_navkey_dia_2);
+        cylinder(h=panel_thickness+LAYER_HEIGHT,d=i2c_navkey_dia_2 + i2c_navkey_rim_clearance);
+        
+        i2c_navkey_locate()
+        cylinder(h=i2c_navkey_joypad_rim_thickness + 1,d=i2c_navkey_dia_1 + 1);
         
         // TFT hole
         translate([box_margin,box_margin,-0.1]) {
-        mnt_cutout_tft_2_8(panel_thickness+LAYER_HEIGHT);
+        mnt_cutout_bezel_tft_2_8(thickness, panel_thickness+LAYER_HEIGHT);
         }
         
         // encoder holes
-        translate([-encoder_side, i2c_navkey_pcb_side/2 + encoder_side/2, -0.1])
-        i2c_navkey_locate()
+        translate([-encoder_side-4, i2c_navkey_pcb_side/2 + encoder_side/2 + 1, -0.1])
+        i2c_navkey_locate() {
         cylinder(h=panel_thickness+LAYER_HEIGHT, d=encoder_hole_dia);
+        translate([-encoder_side/2,-encoder_side/2,-LAYER_HEIGHT])
+        cube([encoder_side,encoder_side,encoder_recess_depth+LAYER_HEIGHT]);
+        
+        }
 
-        translate([encoder_side, i2c_navkey_pcb_side/2 + encoder_side/2, -0.1])
-        i2c_navkey_locate()
+        translate([encoder_side+4, i2c_navkey_pcb_side/2 + encoder_side/2 + 1, -0.1])
+        i2c_navkey_locate() {
         cylinder(h=panel_thickness+LAYER_HEIGHT, d=encoder_hole_dia);
-
+        translate([-encoder_side/2,-encoder_side/2,-LAYER_HEIGHT])
+        cube([encoder_side,encoder_side,encoder_recess_depth+LAYER_HEIGHT]);
+        }
     }
         
      
     i2c_navkey_locate() {
         mirror([0,0,1])
-        i2c_navkey_snaps();
+        i2c_navkey_melt_standoffs(i2c_navkey_board_offset - panel_thickness + 0.5, 4, LAYER_HEIGHT );
     }
     
-    translate([box_margin,box_margin,-0.1]) {
+    translate([box_margin,box_margin,-LAYER_HEIGHT]) {
        mirror([0,0,1])
-        mnt_snap_tft_2_8(panel_thickness);
+        mnt_melt_bezel_tft_2_8(LAYER_HEIGHT);
+    }
+    translate([box_margin,box_margin,0]) {
+        // Add the bezel
+        mnt_bezel_tft_2_8(thickness, thickness);
     }
 }
 
