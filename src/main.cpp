@@ -2,6 +2,7 @@
 #include "Events/NavKeyEventDispatcher.h"
 #include "Hardware/STM_SPIDMA.h"
 #include "STM32/STM32F411_Timer1Encoder.h"
+#include "STM32/STM32F411_Timer2Encoder.h"
 #include "Model.h"
 #include "NavKeyView.h"
 #include "NoteGrid.h"
@@ -34,6 +35,10 @@
 #define ENC_B PA9
 #define ENC_C PA10
 
+#define DP_CS_PIN PB10
+#define DP_SCK_PIN PA4
+#define DP_SDI_PIN PA3
+
 using namespace bassmate;
 
 SPIClass spi2(MOSI, MISO, SCK, SC_CS);
@@ -43,6 +48,9 @@ volatile bool spiDmaTransferComplete = true;
 STM_SPIDMA stmdma(&tft, 32768, SPI2, DMA1_Stream4);
 
 STM32F411_Timer1Encoder volumeEncoder(PA10);
+STM32F411_Timer2Encoder tempoEncoder(PC15);
+
+AD5204 digipot(DP_CS_PIN, DP_SCK_PIN, DP_SDI_PIN);
 
 extern "C" {
 void DMA1_Stream4_IRQHandler()
@@ -79,7 +87,7 @@ VS1053 midi(VS_CS, VS_DCS, VS_RESET, spi1, Serial2);
 Sequencer sequencer;
 Storage* storage = new Storage();
 uint8_t instrumentGroupMap[4];
-Model model(navkey, NK_INT, midi, sequencer, storage);
+Model model(navkey, NK_INT, midi, sequencer, storage, digipot);
 
 /*
  * View
@@ -152,9 +160,13 @@ void setup()
     sequencer.attachNoteOffCallback(noteOffCallback);
     sequencer.attachBeatCallback(beatCallback);
 
-    volumeEncoder.onIncrement(&navKeyEventDispatcher, &NavKeyEventDispatcher::Encoder_Increment);
-    volumeEncoder.onDecrement(&navKeyEventDispatcher, &NavKeyEventDispatcher::Encoder_Decrement);
-    volumeEncoder.onClick(&navKeyEventDispatcher, &NavKeyEventDispatcher::Encoder_Push);
+    volumeEncoder.onDecrement(&view, &NavKeyView::volumeUp);
+    volumeEncoder.onIncrement(&view, &NavKeyView::volumeDown);
+    volumeEncoder.onClick(&view, &NavKeyView::toggleMute);
+
+    tempoEncoder.onIncrement(&view, &NavKeyView::faster);
+    tempoEncoder.onDecrement(&view, &NavKeyView::slower);
+    tempoEncoder.onClick(&view, &NavKeyView::togglePause);
 
     Serial.begin(9600);
     spi1.begin(48000000);
@@ -183,7 +195,9 @@ void setup()
     digitalWrite(SCL, 1);
     digitalWrite(SDA, 1);
 
+
     volumeEncoder.setupIO(true);
+    tempoEncoder.setupIO(true);
 
     Wire.begin((uint32_t)SDA, (uint32_t)SCL);
     Wire.setClock(400000);
@@ -198,7 +212,7 @@ void setup()
     stmdma.begin();
 
     tft.begin(48000000);
-    tft.setRotation(1);
+    tft.setRotation(3);
 
     view.setController(&controller);
 
@@ -212,11 +226,14 @@ void setup()
     model.begin();
     controller.begin();
     volumeEncoder.begin();
+    tempoEncoder.begin();
+    pinMode(DP_SDI_PIN, OUTPUT);
 }
 
 void loop()
 {
     volumeEncoder.tick();
+    tempoEncoder.tick();
     view.run();
     model.run();
 }

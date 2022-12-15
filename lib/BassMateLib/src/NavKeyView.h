@@ -221,6 +221,7 @@ public:
             channelVols->setSelectedColor(HL);
             channelVols->setStep(5);
             channelVols->onFocus(this, &NavKeyView::channelVolsOnFocus);
+            channelVols->onChange(this, &NavKeyView::onChannelVolumeChange);
         }
 
         selectPreset = new StorageSelectWidget<8>(context, _storage);
@@ -1006,9 +1007,33 @@ public:
         volumeWidget->setPercent(volume);
     }
 
+    void volumeUp() {
+        volumeWidget->increment();
+    }
+
+    void volumeDown() {
+        volumeWidget->decrement();
+    }
+
+    void toggleMute() {
+        volumeWidget->toggleMute();
+    }
+
     void setTempo(uint8_t tempo)
     {
         tempoWidget->setValue(tempo);
+    }
+
+    void faster() {
+        tempoWidget->increment();
+    }
+
+    void slower() {
+        tempoWidget->decrement();
+    }
+
+    void togglePause() {
+        playPauseStopWidget->toggle();
     }
 
     void setPlayPauseStop(PlayPauseStop pps)
@@ -1080,7 +1105,12 @@ public:
      ********************************************************************/
     void onVolumeChange(Widget* w)
     {
-        _controller->volumeChange(volumeWidget->getValue());
+        if(volumeWidget->isMuted()) {
+            _controller->mute();
+        } else {
+            _controller->unmute();
+            _controller->volumeChange(volumeWidget->getValue());
+        }
     }
 
     void onChannelVolumeChange(Widget* w)

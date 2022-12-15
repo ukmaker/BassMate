@@ -14,6 +14,8 @@ public:
     virtual void begin() = 0;
 
     virtual void volumeChange(uint8_t volume) = 0;
+    virtual void mute() = 0;
+    virtual void unmute() = 0;
     virtual void tempoChange(int tempo) = 0;
     virtual void playPauseStopChange(uint8_t pps) = 0;
     virtual void channelVolumeChange(uint8_t channel, int volume) = 0;

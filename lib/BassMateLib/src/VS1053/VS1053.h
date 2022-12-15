@@ -103,10 +103,16 @@ class VS1053 {
     sendCommand(VS_REG_CLOCKF, (VS_CLOCK_MULT_5_0 << VS_SC_MULT));
     // let it settle
     delay(100);
+    setVolume(0, 0);
+    setVolume(1, 0);
+    setVolume(2, 0);
+    setVolume(3, 0);
+    delay(10);
     setBank(0, _percussion.getBank()->id);
     setBank(1, _percussion.getBank()->id);
     setBank(2, _percussion.getBank()->id);
     setBank(3, _percussion.getBank()->id);
+    delay(10);
     setVolume(0, 15);
     setVolume(1, 15);
     setVolume(2, 15);
@@ -132,6 +138,10 @@ class VS1053 {
     sendMIDIByte(note.velocity & 0x7f);
   }
 
+  /**
+   * Set the overall volume
+   * @param vol - from 0 to 100
+  */
   void setVolume(uint8_t vol) {
     // SCI_VOL register is actually attenuation in 0.5dB steps
     // MSB is left channel, LSB is right channel

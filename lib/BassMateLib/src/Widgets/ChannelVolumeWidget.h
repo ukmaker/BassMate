@@ -29,6 +29,7 @@ class ChannelVolumeWidget : public Widget {
     if (_percent[channel] != percent) {
       _percent[channel] = percent;
       noteDirtyContent(1 << (channel + ZONE_VOLS));
+      _onChange.call(this);
     }
   }
 

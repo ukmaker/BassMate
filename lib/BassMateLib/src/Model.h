@@ -5,17 +5,20 @@
 #include "VS1053/VS1053.h"
 #include "i2cNavKey.h"
 #include "Storage.h"
+#include "AD5204.h"
 
 namespace bassmate {
 
 class Model {
  public:
   Model(i2cNavKey &navkey, uint8_t navKeyInterrupt, VS1053 &midi,
-        Sequencer &sequencer, Storage *storage)
+        Sequencer &sequencer, Storage *storage, AD5204 &digipot)
       : _navkey(navkey),
         _nki(navKeyInterrupt),
         _midi(midi),
-        _sequencer(sequencer) {
+        _sequencer(sequencer),
+        _digipot(digipot)
+        {
         _storage = storage;
         }
 
@@ -36,6 +39,7 @@ class Model {
     _midi.setInstrument(2, 31);
     _midi.setInstrument(3, 28);
     _midi.setVolume(254);
+    _digipot.digitalPotWrite(2, 128);
   }
 
   void run() {
@@ -51,6 +55,7 @@ class Model {
   VS1053 &_midi;
   Sequencer &_sequencer;
   Storage *_storage;
+  AD5204 &_digipot;
 };
 
 }  // namespace bassmate

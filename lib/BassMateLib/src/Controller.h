@@ -37,9 +37,9 @@ public:
         _view.setTempo(90);
         tempoChange(90);
 
-        _view.setVolume(80);
-        _model._midi.setVolume(225 + (80 * 29) / 100);
-        _model._midi.setBass(15);
+        _view.setVolume(25);
+        volumeChange(25);
+        _model._midi.setBass(7);
     }
 
     /*
@@ -84,7 +84,18 @@ public:
 
     void volumeChange(uint8_t volume)
     {
-        _model._midi.setVolume(225 + (volume * 29) / 100);
+        _model._digipot.digitalPotWrite(0, 254-volume*2);
+        _model._digipot.digitalPotWrite(1, 254-volume*2);
+        _model._digipot.digitalPotWrite(2, 254-volume*2);
+        _model._digipot.digitalPotWrite(3, 254-volume*2);
+    }
+
+    void mute() {
+        _model._midi.setVolume(0);
+    }
+
+    void unmute() {
+        _model._midi.setVolume(254);
     }
 
     void tempoChange(int tempo)
@@ -117,7 +128,7 @@ public:
 
     void channelVolumeChange(uint8_t channel, int volume)
     {
-        _model._midi.setVolume(channel, (volume * 127) / 100);
+        _model._midi.setVolume(channel, ((uint16_t)volume * 127) / 100);
     }
 
     void voiceChange(uint8_t channel, int voiceId)

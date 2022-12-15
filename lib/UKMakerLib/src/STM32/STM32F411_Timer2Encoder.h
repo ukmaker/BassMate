@@ -6,7 +6,7 @@
 namespace ukmaker {
 
 /**
- * Attach encoder to PA8 and PA9, button to e.g. PA10
+ * Attach encoder to PA0 and PA1, button to e.g. PA2
  **/
 class STM32F411_Timer2Encoder : public STM32F411_TimerEncoder {
 public:
