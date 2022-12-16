@@ -18,4 +18,4 @@ So I remixed everything, sprinkled a new flavour of my GUI library (https://os.m
 
 ![The Finished BassMate](https://raw.githubusercontent.com/ukmaker/BassMate/master/assets/SideView.JPG)
 
-![BassMate in action](https://youtu.be/EM4BZbcfi_k)
+![BassMate in action](https://youtu.be/vi/EM4BZbcfi_k/0.jpg)(https://youtu.be/watch?v=EM4BZbcfi_k)
