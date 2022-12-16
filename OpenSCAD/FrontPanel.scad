@@ -1,5 +1,7 @@
 LAYER_HEIGHT = 0.4;
-
+/**
+* Uses the pre-release version 0.1 of ukmaker_openscad_lib
+**/
 use <ukmaker_openscad_lib/Generics.scad>
 
 use <ukmaker_openscad_lib/Standoffs.scad>

@@ -1,7 +1,9 @@
 
 
 include <FrontPanel.scad>
-
+/**
+* Uses the pre-release version 0.1 of ukmaker_openscad_lib
+**/
 include <ukmaker_openscad_lib/Boxes.scad>
 $fn = 100;
 /**

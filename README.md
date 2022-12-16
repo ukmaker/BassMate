@@ -14,12 +14,8 @@ The UI of BassedMate felt a bit off, and when I came across the NavKey (https://
 I thought I'd try something different. I also had an STM32F411 BlackPill (https://shop.pimoroni.com/products/stm32f411-blackpill-development-board?variant=39274213343315)
 which has tons of memory and is really cheap.
 
-So I remixed everything, sprinkled a new flavour of my GUI library (https://os.mbed.com/users/duncanFrance/code/SimpleGUI/) on the top and seem to be making 
-progress. 
+So I remixed everything, sprinkled a new flavour of my GUI library (https://os.mbed.com/users/duncanFrance/code/SimpleGUI/) on the top and am happy with the result.
 
-Note the the guts of the applicatio code are in lib/BassMate. I'm using the Model View Presenter pattern, where the Presenter maintains overall app state and 
-is responsible for routing UI interactions to the Model and View. Traditional MVC doesn't really work in this kind of product since it relies and
-a windowing system routing mouse-clicks directly to on-screen widgets which can then source events.
+![The Finished BassMate](https://raw.githubusercontent.com/ukmaker/BassMate/master/assets/SideView.JPG)
 
-![The Teensy Board](https://raw.githubusercontent.com/ukmaker/BassMate/master/assets/BassedMate-MainBoard.jpeg)
-![The Prototype UI](https://raw.githubusercontent.com/ukmaker/BassMate/master/assets/BassedMate-Top.jpeg)
+![BassMate in action](https://raw.githubusercontent.com/ukmaker/BassMate/master/assets/Demo.MOV)
