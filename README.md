@@ -24,12 +24,12 @@ So I remixed everything, sprinkled a new flavour of my GUI library (https://os.m
 This is a PlatformIO project.
 
 Clone this repository somewhere, then get the git submodules:
-`
+```
   git clone git@github.com:ukmaker/BassMate.git
   cd BassMate
   git submodule init
   git submodule update
-`
+```
 
 Open the folder in PlatformIO, build and deploy as usual.
 
