@@ -19,3 +19,16 @@ So I remixed everything, sprinkled a new flavour of my GUI library (https://os.m
 ![The Finished BassMate](https://raw.githubusercontent.com/ukmaker/BassMate/master/assets/SideView.JPG)
 
 ![BassMate in action](https://youtu.be/vi/EM4BZbcfi_k/0.jpg)(https://youtu.be/watch?v=EM4BZbcfi_k)
+
+# Installation
+This is a PlatformIO project.
+
+Clone this repository somewhere, then get the git submodules:
+  git clone git@github.com:ukmaker/BassMate.git
+  cd BassMate
+  git submodule init
+
+Open the folder in PlatformIO, build and deploy as usual.
+
+I have an ST-LINK V2 clone which I use to program Blue- and Black-pills. I throroughly
+recommend it since with it you get to debug with single-step etc.
