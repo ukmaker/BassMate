@@ -1,7 +1,7 @@
 #ifndef BM_NOTE_GRID_H
 #define BM_NOTE_GRID_H
 
-#include "Adafruit_NeoTrellis.h"
+#include <Adafruit_NeoTrellis.h>
 
 #define NG_GLOW_TICKS 25
 

@@ -1,0 +1,9 @@
+[submodule "lib/Adafruit_Seesaw"]
+	path = lib/Adafruit_Seesaw
+	url = https://github.com/ukmaker/Adafruit_Seesaw
+[submodule "lib/SimpleGUI"]
+	path = lib/SimpleGUI
+	url = git@github.com:ukmaker/SimpleGUI.git
+[submodule "lib/UKMakerArduinoLib"]
+	path = lib/UKMakerArduinoLib
+	url = git@github.com:ukmaker/UKMakerArduinoLib.git
